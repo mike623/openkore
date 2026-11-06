@@ -22,7 +22,7 @@ use Globals qw(
 	@friendsID %friends %pet @partyUsersID %spells
 	@chatRoomsID %chatRooms @venderListsID %venderLists $hotkeyList
 	%config $questList $incomingMessages $masterServer $messageSender
-	%cashShop
+	%cashShop %rpackets
 );
 use Base::Ragnarok::MapServer;
 use base qw(Base::Ragnarok::MapServer);
@@ -200,6 +200,9 @@ sub map_loaded {
 	$self->send_avoid_sprite_error_hack($client, $char);
 	$self->send_npc_info($client);
 	$self->send_inventory($client, $char);
+	$self->send_hotkeys($client);
+	$self->send_quest_info($client);
+	$self->send_guild_info($client);
 	$self->send_ground_items($client);
 	$self->send_portals($client);
 	$self->send_npcs($client);
@@ -220,6 +223,19 @@ sub map_loaded {
 
 sub send_quest_info {
 	my ($self, $client) = @_;
+	if ($rpackets{'09F8'}) {
+		my ($body, $count) = ('', 0);
+		no warnings 'uninitialized';
+		foreach my $questID (keys %{$questList}) {
+			my $quest = $questList->{$questID};
+			my @missions = sort { $a->{mission_index} <=> $b->{mission_index} } values %{$quest->{missions} || {}};
+			$body .= pack('V C V2 v', $questID, $quest->{active}, $quest->{time_expire}, $quest->{time_start}, scalar @missions);
+			$body .= pack('V3 v4 Z24', @{$_}{qw(hunt_id mob_type mob_id min_level max_level mob_count mob_goal mob_name_original)}) foreach @missions;
+			$count++;
+		}
+		$client->send(pack('v2 V', 0x09F8, length($body) + 8, $count) . $body);
+		return;
+	}
 	my $data = undef;
 	my $q_output = '';
 	my $m_output = '';
@@ -246,6 +262,15 @@ sub send_quest_info {
 		$data .= pack('C2 v V', 0xB2, 0x02, length($m_output) + 8, $k) . $m_output;
 		$client->send($data);
 	}
+}
+
+sub send_hotkeys {
+	my ($self, $client) = @_;
+	return unless $rpackets{'0B20'} && $hotkeyList;
+	my $data = '';
+	no warnings 'uninitialized';
+	$data .= pack('C V v', @{$_}{qw(type ID lv)}) foreach @$hotkeyList;
+	$client->send(pack('v C v a266', 0x0B20, 0, 0, $data));
 }
 
 sub send_guild_info {
@@ -366,6 +391,8 @@ sub send_pets {
 		shiftPack(\$coords, $pet->{look}{body}, 4);
 		$data .= $self->{recvPacketParser}->reconstruct({
 			switch => 'actor_exists',
+			# 09FF's name is a fixed 24 bytes (108 in all): a shorter one panics the client. Blank: it asks the server.
+			name => pack('a23', ''),
 			walk_speed => $pet->{walk_speed} * 1000,
 			coords => $coords,
 			map { $_ => $pet->{$_} } qw(object_type ID type hair_style lv)
@@ -384,6 +411,8 @@ sub send_monsters {
 		shiftPack(\$coords, $monster->{look}{body}, 4);
 		$data .= $self->{recvPacketParser}->reconstruct({
 			switch => 'actor_exists',
+			# 09FF's name is a fixed 24 bytes (108 in all): a shorter one panics the client. Blank: it asks the server.
+			name => pack('a23', ''),
 			walk_speed => $monster->{walk_speed} * 1000,
 			coords => $coords,
 			map { $_ => $monster->{$_} } qw(object_type ID opt1 opt2 option type lv)
@@ -402,6 +431,8 @@ sub send_npcs {
 		shiftPack(\$coords, $npc->{look}{body}, 4);
 		$data .= $self->{recvPacketParser}->reconstruct({
 			switch => 'actor_exists',
+			# 09FF's name is a fixed 24 bytes (108 in all): a shorter one panics the client. Blank: it asks the server.
+			name => pack('a23', ''),
 			coords => $coords,
 			map { $_ => $npc->{$_} } qw(object_type ID opt1 opt2 option type)
 		});
@@ -421,6 +452,8 @@ sub send_portals {
 		shiftPack(\$coords, 0, 4);
 		$data .= $self->{recvPacketParser}->reconstruct({
 			switch => $switch,
+			# 09FF's name is a fixed 24 bytes (108 in all): a shorter one panics the client. Blank: it asks the server.
+			name => pack('a23', ''),
 			coords => $coords,
 			map { $_ => $portal->{$_} } qw(object_type ID type)
 		});
@@ -512,6 +545,20 @@ sub send_player_info {
 	$data .= pack('C2 V3', 0x41, 0x01, 18, $char->{luk}, $char->{luk_bonus});
 	$client->send($data);
 
+	# Levels, experience and zeny: without them the client shows level 1, 0% and 0 z.
+	$data  = pack('C2 v V', 0xB0, 0x00, 11, $char->{lv});				# Base level
+	$data .= pack('C2 v V', 0xB0, 0x00, 55, $char->{lv_job});			# Job level
+	$data .= pack('C2 v V', 0xB0, 0x00, 9, $char->{points_free});		# Status points
+	$data .= pack('C2 v V', 0xB1, 0x00, 20, $char->{zeny});				# Zeny
+	foreach ([1, 'exp'], [2, 'exp_job'], [22, 'exp_max'], [23, 'exp_job_max']) {
+		my ($type, $key) = @$_;
+		my $value = $char->{$key} || 0;
+		$data .= $rpackets{'0ACB'}
+			? pack('v2 V2', 0x0ACB, $type, $value % 4294967296, int($value / 4294967296))	# 64-bit from 2018
+			: pack('C2 v V', 0xB1, 0x00, $type, $value);
+	}
+	$client->send($data);
+
 	# # Make the character face the correct direction
 	$client->send(pack('C2 a4 C1 x1 C1', 0x9C, 0x00,
 		$char->{ID}, $char->{look}{head}, $char->{look}{body})
@@ -520,7 +567,10 @@ sub send_player_info {
 	# Send attack range
 	$data  = pack('C2 v', 0x3A, 0x01, $char->{attack_range});
 	# Send weapon/shield appearance
-	$data .= pack('C2 a4 C v2', 0xD7, 0x01, $char->{ID}, 2, $char->{weapon}, $char->{shield});
+	# The server's own 01D7 (15 bytes from 2006 on): an 11-byte one desyncs the client for every packet after it.
+	$data .= $self->{recvPacketParser}->reconstruct({
+		switch => '01D7', ID => $char->{ID}, type => 2, value1 => $char->{weapon}, value2 => $char->{shield},
+	});
 	# Send status info
 	$data .= pack('v a4 v3 x', 0x119, $char->{ID}, $char->{opt1}, $char->{opt2}, $char->{option});
 	$client->send($data);
@@ -565,8 +615,8 @@ sub send_player_info {
 	$data = pack('C2 v', 0x0F, 0x01, length($data) + 4) . $data;
 	$client->send($data);
 
-	# Send Hotkeys
-	if ($hotkeyList) {
+	# Send Hotkeys (send_hotkeys sends 0B20 where the server uses it)
+	if ($hotkeyList && !$rpackets{'0B20'}) {
 		$data = undef;
 		if(@{$hotkeyList} <= 28) { # todo: there is also 07D9,254
 			$data .=  pack('v', 0x02B9); # old interface (28 hotkeys)
@@ -608,9 +658,41 @@ sub send_player_info {
 	$client->send($data) if (length($data) > 0);
 }
 
+# One item list the way the server sends it from 2018 (0B08 start, 0B09 stackable, 0B39/0B0A
+# equipment, 0B0B end), packed with the same layouts Receive unpacks it with.
+sub send_item_list {
+	my ($self, $client, $invType, $items) = @_;
+	my $parser = $self->{recvPacketParser};
+	my $equipSwitch = $rpackets{'0B39'} ? '0B39' : '0B0A';
+	my $stackLayout = $parser->items_stackable({switch => '0B09'});
+	my $equipLayout = $parser->items_nonstackable({switch => $equipSwitch});
+	my ($stack, $equip) = ('', '');
+	no warnings 'uninitialized';
+	foreach my $item (@$items) {
+		if ($item->{type} <= 3 || $item->{type} == 6 || $item->{type} == 10 || $item->{type} == 16 || $item->{type} == 17 || $item->{type} == 19) {
+			$stack .= pack($stackLayout->{types}, map { $item->{$_} } @{$stackLayout->{keys}});
+		} else {
+			$equip .= pack($equipLayout->{types}, map { $item->{$_} } @{$equipLayout->{keys}});
+		}
+	}
+	$client->send(pack('v2 C x', 0x0B08, 6, $invType));
+	$client->send(pack('v2 C', 0x0B09, length($stack) + 5, $invType) . $stack) if length $stack;
+	$client->send(pack('v2 C', hex $equipSwitch, length($equip) + 5, $invType) . $equip) if length $equip;
+	$client->send(pack('v C2', 0x0B0B, $invType, 0));
+}
+
 sub send_inventory {
 	my ($self, $client, $char) = @_;
 	my $data = undef;
+	if ($rpackets{'0B09'}) {
+		if (!$client->{session}{dummy} && $char->cartActive) {
+			$client->send(pack('C2 v2 V2', 0x21, 0x01, $char->cart->items, $char->cart->items_max, ($char->cart->{weight} * 10), ($char->cart->{weight_max} * 10)));
+			$self->send_item_list($client, 1, $char->cart->getItems());
+		}
+		$self->send_item_list($client, 0, $char->inventory->getItems()) if UNIVERSAL::isa($char, 'Actor::You');
+		$client->send(pack('C2 v', 0x3C, 0x01, $char->{arrow})) if ($char->{arrow});
+		return;
+	}
 	# Send cart information includeing the items
 	if (!$client->{session}{dummy} && $char->cartActive && $RunOnce) {
 		$data = pack('C2 v2 V2', 0x21, 0x01, $char->cart->items, $char->cart->items_max, ($char->cart->{weight} * 10), ($char->cart->{weight_max} * 10));
@@ -726,6 +808,8 @@ sub send_npc_info {
 		shiftPack(\$coords, $npc->{look}{body}, 4);
 		$data .= $self->{recvPacketParser}->reconstruct({
 			switch => $switch,
+			# 09FF's name is a fixed 24 bytes (108 in all): a shorter one panics the client. Blank: it asks the server.
+			name => pack('a23', ''),
 			coords => $coords,
 			map { $_ => $npc->{$_} } qw(object_type ID opt1 opt2 option type)
 		});
