@@ -49,3 +49,10 @@ tables/**/npcs.txt
 tables/**/monsters.txt
 *.xpm
 *.weight
+
+# Ragnarok Offline fork: local secrets and state
+/control/backups/
+/web/kore-gateway.invite
+/web/*.log
+/web/__pycache__/
+/src/auto/XSTools/XSTools.bundle

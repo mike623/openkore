@@ -1,0 +1,2 @@
+#!/bin/sh
+exec uv run --no-project --python 3 python "$@"

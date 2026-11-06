@@ -370,3 +370,14 @@ dead_message RMS Test Server was closed on 2022.
 [International - iRO: Poring]
 dead 1
 dead_message iRO Transcendence was closed on 31 of March, 2022. Visit official website for more details.
+
+[Ragnarok Offline (local)]
+ip 127.0.0.1
+port 6900
+private 1
+master_version 1
+version 1
+serverType rAthena_Main20250716
+serverEncoding Big5
+addTableFolders kRO/Ragexe_2021_11_03;kRO
+charBlockSize 175
