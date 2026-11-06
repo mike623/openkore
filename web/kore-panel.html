@@ -3,251 +3,447 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#111418">
+<meta name="theme-color" content="#FFFFFF">
 <title>Kore Panel</title>
 <style>
-:root{--bg:#111418;--card:#1a1f26;--line:#2a313b;--fg:#e6e9ee;--dim:#8a94a3;--hp:#e0525a;--sp:#4a8de0;--exp:#e0b44a;--job:#9b6be0;--ok:#3fbf7f;--warn:#e6c547;--err:#ff6b6b;--acc:#4a8de0}
+:root{--win:#F0F0F0;--pane:#FFFFFF;--bd:#ADADAD;--bd2:#D4D4D4;--bd3:#E0E0E0;--fg:#111;--dim:#555;--sel:#CCE4F7;--pri:#0067C0;--pri2:#005FB8;--hot:#E5F1FB;--gauge:#06B025;--gsp:#2F7FE0;--err:#A61B0F;--ok:#0F7B0F;--rw:360px;--mono:Consolas,Menlo,ui-monospace,monospace}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-html,body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+html,body{margin:0;background:var(--win);color:var(--fg);font:13px/1.35 "Segoe UI",system-ui,-apple-system,sans-serif}
 body{height:100dvh;overflow:hidden;display:flex;flex-direction:column}
 #app{flex:1;min-height:0;display:flex;flex-direction:column}
-.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
-.row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
-.name{font-weight:600;font-size:16px}
-.dim{color:var(--dim)}
-.small{font-size:12px}
-.badge{font-size:12px;padding:2px 8px;border-radius:999px;background:var(--line);text-transform:uppercase;letter-spacing:.04em}
-.badge.auto{background:#1f4d36;color:#8ff0bf}.badge.manual{background:#4d441f;color:#f0dc8f}.badge.off,.badge.offline{background:#4d1f22;color:#f09a9f}
-.bar{position:relative;height:16px;background:#0c0f12;border-radius:4px;overflow:hidden;margin-top:6px}
-.bar>i{position:absolute;inset:0 auto 0 0;width:0;transition:width .4s}
-.bar>span{position:relative;font-size:11px;padding-left:6px;line-height:16px;text-shadow:0 1px 1px #000}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;margin-top:8px;font-size:13px}
-details{margin-top:8px}summary{cursor:pointer;color:var(--dim);min-height:32px;display:list-item;padding-top:6px}
-ul{margin:4px 0 0;padding-left:18px;font-size:13px}
-.btns{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
-.btns.c3{grid-template-columns:repeat(3,1fr)}.btns.c4{grid-template-columns:repeat(4,1fr)}.btns.c2{grid-template-columns:1fr 1fr}
-button{background:#232a33;color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:9px 4px;min-height:44px;font:inherit;font-size:13px;touch-action:manipulation;cursor:pointer}
-button:active{background:#2f3844}
-button:disabled{opacity:.5}
-button.on{background:#2f3d4f;border-color:var(--acc)}
-button.danger{color:#ffb3b3;border-color:#5a2a2e}
-button.primary{background:#24476e;border-color:var(--acc)}
-#log{flex:1;min-height:120px;overflow-y:auto;background:#0b0d10;border:1px solid var(--line);border-radius:10px;padding:8px;font:12px/1.35 ui-monospace,Menlo,monospace;white-space:pre-wrap;word-break:break-word;-webkit-overflow-scrolling:touch}
-#log .error{color:var(--err)}#log .warning{color:var(--warn)}#log .debug{color:#5d6672}#log .input{color:#7fc4ff}#log .sys{color:var(--dim);font-style:italic}
-form{display:flex;gap:6px}
-input,select{min-width:0;background:#0b0d10;color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:10px;font:16px ui-monospace,Menlo,monospace;min-height:44px}
-form input{flex:1}
-#gate{display:none;text-align:center;padding:40px 12px;margin:12px}
-#conn{width:10px;height:10px;border-radius:50%;background:var(--err);display:inline-block;flex:none}
-#conn.on{background:var(--ok)}
-.set{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr) 36px;gap:6px;align-items:center;padding:4px 0;border-bottom:1px solid var(--line)}
-.set label{font-size:12px;word-break:break-all}.set label small{display:block;color:var(--dim);word-break:normal}
-.set input,.set select{font-size:16px;padding:6px 8px;width:100%}.set.dirty input,.set.dirty select{border-color:var(--exp)}
-a.help{display:flex;align-items:center;justify-content:center;width:36px;height:44px;color:var(--acc);text-decoration:none;font-weight:700;border:1px solid var(--line);border-radius:8px}
-textarea{width:100%;height:60vh;background:#0b0d10;color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:8px;font:12px/1.35 ui-monospace,Menlo,monospace}
-#cf-text{height:50vh}
-.savebar{position:sticky;bottom:0;display:flex;gap:6px;align-items:center;background:var(--bg);padding:6px 0}
-.msg{font-size:13px}.msg.err{color:var(--err)}.msg.ok{color:var(--ok)}
-h3{margin:0 0 6px;font-size:14px}
+a{color:#0055CC}a:hover{color:#003D99}
+.dim{color:var(--dim)}.small{font-size:12px}.mono{font-family:var(--mono)}
+.grow{flex:1;min-width:0}
 
-/* header */
-#hdr{display:flex;align-items:center;gap:8px;padding:calc(6px + env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) 6px max(12px,env(safe-area-inset-left));border-bottom:1px solid var(--line);background:#0e1115}
-#hdr .who{flex:1;min-width:0}
-#hdr .who b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px}
-#hdr .mini{display:flex;gap:4px;margin-top:3px}
-#hdr .mini i{display:block;height:4px;border-radius:2px;background:#0c0f12;flex:1;overflow:hidden}
-#hdr .mini i>u{display:block;height:100%;width:0;transition:width .4s}
-#hdr button{min-width:44px;padding:0 10px;font-family:ui-monospace,Menlo,monospace}
+/* Wx buttons / inputs */
+button{height:28px;padding:0 12px;border:1px solid var(--bd);border-radius:3px;background:#FFF;color:var(--fg);font:inherit;cursor:pointer;touch-action:manipulation;white-space:nowrap}
+button:hover{background:var(--hot);border-color:#0078D4}
+button:active{background:var(--sel)}
+button:disabled{background:#F4F4F4;border-color:#D0D0D0;color:#767676;cursor:default}
+button.primary{background:var(--pri);border-color:var(--pri2);color:#FFF;font-weight:600}
+button.primary:hover{background:#1975C5}
+button.danger{border-color:#C42B1C;color:var(--err)}
+button.on{background:var(--sel);border-color:#0078D4}
+input,select,textarea{font:inherit;color:var(--fg);background:#FFF;border:1px solid var(--bd);border-radius:2px;min-width:0}
+input,select{height:28px;padding:0 6px}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#3A7BD5;box-shadow:0 0 0 1px #3A7BD5 inset}
+textarea{width:100%;padding:6px;font:12px/1.4 var(--mono);resize:vertical}
 
-/* deal banner */
-#deal{margin:6px max(12px,env(safe-area-inset-right)) 0 max(12px,env(safe-area-inset-left));border-color:var(--exp)}
-#deal .cols{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px;margin:6px 0}
+/* menu bar */
+#menubar{display:flex;align-items:center;gap:2px;padding:2px max(6px,env(safe-area-inset-right)) 2px max(6px,env(safe-area-inset-left));padding-top:calc(2px + env(safe-area-inset-top));background:#FFF;border-bottom:1px solid var(--bd2);flex:none}
+#menubar .mb{height:30px;padding:0 10px;border:0;border-radius:3px;background:transparent}
+#menubar .mb:hover,#menubar .mb.open{background:var(--sel)}
+#menubar .names{display:flex;align-items:center;gap:6px;font-size:12px;color:#444;margin-left:auto;white-space:nowrap}
+#menubar .names select{height:26px;border-radius:3px}
+#menudrop{position:fixed;z-index:40;min-width:240px;max-width:calc(100vw - 8px);overflow-y:auto;background:#F9F9F9;border:1px solid #CCC;border-radius:4px;box-shadow:0 8px 24px rgba(0,0,0,.18);padding:4px 0}
+#menudrop .mi{display:flex;align-items:center;gap:24px;width:100%;height:28px;padding:0 14px 0 28px;border:0;border-radius:0;background:transparent;text-align:left;position:relative}
+#menudrop .mi:hover{background:var(--sel)}
+#menudrop .mi .k{margin-left:auto;color:#6A6A6A;font:11px var(--mono)}
+#menudrop .mi.chk::before{content:"\2713";position:absolute;left:10px}
+#menudrop .msep{height:1px;background:#DCDCDC;margin:4px 8px}
+#menudrop .mhd{padding:6px 14px 2px 28px;color:#6A6A6A;font-size:11px;font-weight:600}
 
-/* views */
-#views{flex:1;min-height:0;position:relative}
-.view{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px max(12px,env(safe-area-inset-right)) 12px max(12px,env(safe-area-inset-left));display:none;flex-direction:column;gap:10px}
-.view.on{display:flex}
-#v-map.on,#v-more.on{overflow:hidden}
+/* info bar */
+#infobar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;padding:6px 8px;border-bottom:1px solid var(--bd2);flex:none}
+.gauge{display:flex;align-items:center;gap:6px;flex:1 1 150px;min-width:0}
+.gauge>span{min-width:44px;white-space:nowrap}
+.gbar{position:relative;flex:1;min-width:0;height:18px;background:#E6E6E6;border:1px solid #BCBCBC;border-radius:2px;overflow:hidden}
+.gbar>i{position:absolute;inset:0 auto 0 0;width:0;background:var(--gauge);transition:width .4s}
+.gbar>b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:400;white-space:nowrap;overflow:hidden}
 
-/* tab bar */
-#tabbar{display:grid;grid-template-columns:repeat(7,1fr);border-top:1px solid var(--line);background:#0e1115;padding:0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
-#tabbar button{border:0;border-radius:0;background:none;color:var(--dim);font-size:11px;padding:0 2px;min-height:50px;position:relative}
-#tabbar button.on{color:var(--fg);box-shadow:inset 0 2px 0 var(--acc)}
-#tabbar .nb{position:absolute;top:5px;right:6px;background:var(--hp);color:#fff;border-radius:999px;font-size:10px;min-width:16px;padding:0 4px;line-height:16px}
+/* deal bar */
+#deal{display:flex;flex-wrap:wrap;align-items:flex-start;gap:6px 14px;padding:6px 8px;background:#FFF4CC;border-bottom:1px solid #E0C870;flex:none}
+#deal .cols{display:flex;gap:20px;font-size:12px}
+#deal ul{margin:2px 0 0;padding-left:16px}
+#deal .acts{display:flex;gap:6px;margin-left:auto}
+.badge{font-size:11px;padding:1px 6px;border:1px solid var(--bd);border-radius:2px;background:#FFF;text-transform:uppercase}
 
-/* segmented / chips */
-.seg{display:flex;gap:4px;flex-wrap:wrap}
-.seg button{flex:1;min-width:0}
-.chips{display:flex;gap:4px;overflow-x:auto}
-.chips button{flex:none;padding:0 12px;font-size:12px}
+/* main splitter window */
+#main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 6px var(--rw);grid-template-rows:auto minmax(0,1fr);padding:4px max(4px,env(safe-area-inset-right)) 0 max(4px,env(safe-area-inset-left))}
+#main.nomap{grid-template-columns:minmax(0,1fr)}
+#main.nomap #split,#main.nomap #right{display:none}
+#nb{grid-column:1;grid-row:1;display:flex;align-items:flex-end;gap:2px;padding-left:4px;overflow-x:auto;scrollbar-width:none}
+#nb::-webkit-scrollbar{display:none}
+.tab{flex:none;height:28px;margin-top:2px;padding:0 14px;border:1px solid #C8C8C8;border-bottom:0;border-radius:4px 4px 0 0;background:#E4E4E4}
+.tab:hover{background:#EDEDED;border-color:#C8C8C8}
+.tab.on{height:30px;margin-top:0;border-color:var(--bd);background:#FFF;font-weight:600;position:relative;z-index:1;margin-bottom:-1px}
+.tab .nb{color:#A0005F;font-weight:600;margin-left:4px}
+.tab .s{display:none}
+#pages{grid-column:1;grid-row:2;min-height:0;position:relative;background:#FFF;border:1px solid var(--bd)}
+#split{grid-column:2;grid-row:1/3;cursor:col-resize;touch-action:none}
+#split:hover{background:#DADADA}
+#right{grid-column:3;grid-row:1/3;min-height:0;display:flex;flex-direction:column;gap:4px}
+.page{position:absolute;inset:0;display:none;flex-direction:column;min-height:0}
+.page.on{display:flex}
+.scroll{flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch}
 
-/* lists */
-.list{display:flex;flex-direction:column;gap:4px}
-.li{display:flex;align-items:center;gap:8px;text-align:left;width:100%;padding:6px 10px}
-.li .grow{flex:1;min-width:0}
-.li .grow b{font-weight:500;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.li .sub{font-size:11px;color:var(--dim)}
-.li .amt{font-variant-numeric:tabular-nums;color:var(--dim)}
-.tag{font-size:10px;padding:1px 6px;border-radius:999px;background:var(--line);color:var(--fg);margin-left:4px;white-space:nowrap}
-.tag.eq{background:#1f3d5a}.tag.bad{background:#5a1f22}.tag.unid{background:#4d441f}
-.empty{color:var(--dim);text-align:center;padding:16px 0;font-size:13px}
+/* console + chat */
+#log{flex:1;min-height:0;overflow-y:auto;background:#000;color:#FFF;padding:6px 8px;font:13px/1.45 var(--mono);white-space:pre-wrap;word-break:break-word;-webkit-overflow-scrolling:touch}
+#log .sys{color:#888;font-style:italic}
+#log .b{font-weight:700}
+.tb{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:6px 8px;border-bottom:1px solid var(--bd3);background:#FAFAFA;flex:none}
+.seg{display:flex;gap:0}
+.seg button{border-radius:0;margin-left:-1px}
+.seg button:first-child{border-radius:3px 0 0 3px;margin-left:0}.seg button:last-child{border-radius:0 3px 3px 0}
+#chatlog{flex:1;min-height:0;overflow-y:auto;padding:4px 8px;font-size:13px;word-break:break-word}
+#chatlog>div{padding:2px 0;border-bottom:1px solid #F3F3F3}
+#chatlog time{color:#888;font-size:11px;margin-right:6px;font-variant-numeric:tabular-nums}
+.d-pm,.d-pmsent{color:#8E7800}.d-partychat{color:#A4008F}.d-guildchat{color:#00B16C}.d-selfchat{color:#009400}.d-schat{color:#D65D00}
+.empty{color:#767676;text-align:center;padding:16px 8px;font-size:13px}
 
-/* stats */
-.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:6px 12px;margin-top:6px}
-.stat{display:flex;align-items:center;gap:6px;font-size:13px}
-.stat span{flex:1}
-.stat button{min-width:44px;padding:0}
-.chipl{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
-.chipl span{font-size:12px;background:var(--line);border-radius:999px;padding:2px 8px}
+/* Wx list tables */
+.th,.tr{display:grid;align-items:center}
+#i-pacts button,#i-pacts select{flex:none}
+.th{background:#F5F5F5;border-bottom:1px solid var(--bd2);font-size:12px;position:sticky;top:0;z-index:1}
+.th>span{padding:4px 8px;border-right:1px solid var(--bd3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.th>span:last-child{border-right:0}
+.tr{min-height:28px;border-bottom:1px solid #F0F0F0;cursor:default}
+.tr>span{padding:0 8px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tr:hover{background:#F2F8FD}
+.tr.sel{background:var(--sel)}
+.tr .c2{color:var(--dim)}
+.it-grid{grid-template-columns:52px minmax(0,1fr) 80px 110px 150px}
+.sk-grid{grid-template-columns:minmax(0,1fr) 70px 70px 90px 120px}
+.tag{font-size:10px;padding:0 5px;border:1px solid #C8C8C8;border-radius:2px;margin-left:6px;color:#444;background:#FFF}
+.tag.unid{border-color:#C9A227;color:#7A5D00}.tag.bad{border-color:#C42B1C;color:var(--err)}.tag.eq{border-color:#3A7BD5;color:#0F4C9C}
+.tr .sub{display:none}
+.acts-cell{display:flex;gap:4px;justify-content:flex-end}
+.acts-cell button{height:24px;padding:0 10px}
 
-/* map */
-#mapwrap{flex:1;min-height:200px;position:relative;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#0b0d10}
+/* status page */
+.pad{padding:10px;display:flex;flex-direction:column;gap:12px}
+.st-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.st-head b{font-size:17px}
+.st-gauges{display:flex;flex-direction:column;gap:6px}
+.st-gauges .gr{display:grid;grid-template-columns:72px minmax(0,1fr);align-items:center;gap:6px}
+.st-gauges .gbar{height:20px}.st-gauges .gbar>b{font-size:12px}
+.stgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;align-items:start}
+fieldset{margin:0;padding:8px 10px 10px;border:1px solid #C8C8C8;border-radius:3px;min-width:0}
+legend{padding:0 4px;font-weight:600}
+.kv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 12px;font-size:13px}
+.kv>div{display:flex;justify-content:space-between;gap:6px;border-bottom:1px dotted #DDD;padding:2px 0;min-width:0}
+.kv>div>span:first-child{color:#444}.kv>div>span:last-child{font-weight:600;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.kv.one{grid-template-columns:1fr}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 12px}
+.stat{display:flex;align-items:center;gap:8px;min-height:28px}
+.stat b{width:34px}.stat span{flex:1}
+.stat button{width:36px;padding:0;font-weight:600}
+.chipl{display:flex;flex-wrap:wrap;gap:4px}
+.chipl span{font-size:12px;border:1px solid #C8C8C8;border-radius:2px;padding:1px 6px;background:#FAFAFA}
+.btnrow{display:flex;flex-wrap:wrap;gap:6px}
+details summary{cursor:pointer;padding:3px 0;color:#333}
+details ul{margin:4px 0 0;padding-left:18px;font-size:13px}
+
+/* right column: list + map */
+#actpane{flex:1 1 40%;min-height:150px;display:flex;flex-direction:column;background:#FFF;border:1px solid var(--bd);overflow:hidden}
+.ac-grid{grid-template-columns:48px minmax(0,1fr) 56px}
+#actpane .tr{min-height:26px}
+#actpane .tr>span{padding:0 6px}
+#actpane .th>span{padding:4px 6px}
+#actpane .tr>span.verb{padding:0 4px 0 0}
+.verb{display:none}
+#mapdock{flex:1 1 60%;min-height:200px;display:flex;flex-direction:column;border:1px solid var(--bd);background:#FFF}
+.dockh{display:flex;align-items:center;gap:6px;padding:3px 6px 3px 8px;background:#F5F5F5;border-bottom:1px solid var(--bd2);font-size:12px;flex:none}
+.dockh b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dockh button{height:24px;padding:0 8px;font-size:12px}
+#mapwrap{flex:1;min-height:0;position:relative;background:#000;overflow:hidden}
 #mapcv{position:absolute;inset:0;width:100%;height:100%;touch-action:none;display:block}
-#mapinfo{position:absolute;left:6px;top:6px;font-size:11px;background:#000a;padding:2px 6px;border-radius:6px;pointer-events:none}
-#mappick{position:absolute;left:6px;right:6px;bottom:6px;font-size:12px;background:#24476ee6;padding:6px 8px;border-radius:8px;display:flex;align-items:center;gap:6px}
+#mapinfo{color:#666;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px}
+.legend{position:absolute;left:6px;bottom:6px;display:flex;flex-wrap:wrap;gap:2px 8px;padding:2px 6px;background:rgba(0,0,0,.75);color:#DDD;font-size:11px;pointer-events:none;max-width:calc(100% - 12px)}
+#mappick{position:absolute;left:6px;right:6px;top:6px;font-size:12px;background:#FFFFE1;border:1px solid #767676;padding:4px 6px 4px 8px;display:flex;align-items:center;gap:6px}
 #mappick span{flex:1}
-#mappick button{min-height:36px;padding:0 10px}
-.legend{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:11px;color:var(--dim)}
-.legend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;vertical-align:middle}
-#mapnear{max-height:30vh;overflow-y:auto}
 
-/* chat */
-#chatlog{flex:1;min-height:120px;overflow-y:auto;background:#0b0d10;border:1px solid var(--line);border-radius:10px;padding:6px 8px;font-size:13px;word-break:break-word}
-#chatlog div{padding:3px 0;border-bottom:1px solid #161a20}
-#chatlog time{color:var(--dim);font-size:10px;margin-right:6px;font-variant-numeric:tabular-nums}
-.d-pm{color:#f0a6e8}.d-partychat{color:#8ff0bf}.d-guildchat{color:#8fd8f0}.d-selfchat{color:#b8c0cc}.d-schat{color:var(--warn)}
-#v-chat{overflow:hidden}
+/* input row + status bar */
+#inrow{display:flex;gap:4px;padding:4px max(4px,env(safe-area-inset-right)) 4px max(4px,env(safe-area-inset-left));flex:none}
+#pmto{flex:0 1 150px}
+#cmd{flex:999 1 300px;border-color:#3A7BD5;font-family:var(--mono)}
+#mode{flex:0 0 auto}
+#sendbtn,#quick{display:none}
+#quick{gap:6px;padding:6px max(4px,env(safe-area-inset-right)) 0 max(4px,env(safe-area-inset-left));overflow-x:auto;white-space:nowrap;flex:none;scrollbar-width:none}
+#quick::-webkit-scrollbar{display:none}
+#quick button{flex:none}
+#sb{display:grid;grid-template-columns:minmax(0,1fr) 120px 200px;border-top:1px solid var(--bd2);background:var(--win);font-size:12px;color:#333;padding:0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);flex:none}
+#sb>span{padding:4px 8px;border-right:1px solid var(--bd2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#sb>span:last-child{border-right:0}
+#conn{display:inline-block;width:8px;height:8px;border-radius:50%;background:#C42B1C;margin-right:6px;vertical-align:0}
+#conn.on{background:#13A10E}
 
-/* sheet + modal */
-.overlay{position:fixed;inset:0;background:#000a;z-index:20;display:flex;align-items:flex-end;justify-content:center}
-.sheet{width:100%;max-width:520px;max-height:80dvh;overflow-y:auto;background:var(--card);border-radius:14px 14px 0 0;padding:10px max(12px,env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));display:flex;flex-direction:column;gap:6px}
-.sheet .ttl{font-weight:600;padding:4px 2px 2px}
-.sheet .sub{font-size:12px;color:var(--dim);padding:0 2px 4px}
-.sheet button{width:100%}
-#talk{z-index:15;align-items:center}
-#talk .sheet{border-radius:14px;margin:12px;max-height:85dvh}
-#talk .msgs{background:#0b0d10;border:1px solid var(--line);border-radius:8px;padding:8px;font-size:13px;max-height:40dvh;overflow-y:auto;white-space:pre-wrap}
-#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(64px + env(safe-area-inset-bottom));background:#2f3844;padding:6px 12px;border-radius:999px;font:12px ui-monospace,Menlo,monospace;z-index:30;max-width:90vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none;opacity:0;transition:opacity .2s}
+/* config page */
+.cfgwrap{flex:1;min-height:0;display:flex;gap:8px;padding:8px}
+.cfgside{flex:0 1 210px;min-width:160px;display:flex;flex-direction:column;gap:6px}
+.cfgside label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:#444}
+#c-cats{flex:1;overflow:auto;border:1px solid var(--bd)}
+#c-cats .cat{padding:6px 10px;cursor:pointer;white-space:nowrap}
+#c-cats .cat:hover{background:#F2F8FD}
+#c-cats .cat.sel{background:var(--pri);color:#FFF}
+#c-cats .cat small{opacity:.7;margin-left:4px}
+.cfgmain{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
+#c-grid{flex:1;min-height:0;overflow:auto;border:1px solid var(--bd)}
+.cg{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 46px}
+.set{min-height:32px}
+.set.dirty{background:#FFF4CC}
+.set.focus{background:#F2F8FD}.set.dirty.focus{background:#FFEFB0}
+.set>span{white-space:normal!important}
+.set .key{font:12px var(--mono);word-break:break-all}
+.set .key small{display:block;font:11px var(--mono);color:var(--dim)}
+.set .key.lbl{font:13px "Segoe UI",system-ui,-apple-system,sans-serif}
+.set .val{padding:2px 4px!important;border-left:1px solid #E8E8E8;border-right:1px solid #E8E8E8;align-self:stretch;display:flex;align-items:center}
+.set .val input,.set .val select{width:100%;height:26px;border-color:#D0D0D0;font:13px var(--mono)}
+.set.dirty .val input,.set.dirty .val select{border-color:#C9A227}
+a.help{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;font-weight:700;text-decoration:none}
+#c-help{height:130px;overflow:auto;padding:8px 10px;border:1px solid var(--bd);background:#FFFFF4;font-size:13px;flex:none}
+#c-help p{margin:6px 0 0}
+.cfgbar{display:flex;flex-wrap:wrap;align-items:center;gap:6px;flex:none}
+#c-count{flex:1 1 200px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cfgbar button{height:32px;padding:0 16px}
+.cfgpane{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:8px}
+#c-raw{flex:1;min-height:240px}
+#cf-text{min-height:260px;flex:1}
+.msg{font-size:12px}.msg.err{color:var(--err)}.msg.ok{color:var(--ok)}
+.row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+
+/* dialogs */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.28);z-index:30;display:flex;align-items:center;justify-content:center;padding:16px}
+.dlg{width:440px;max-width:100%;max-height:85dvh;display:flex;flex-direction:column;background:var(--win);border:1px solid #8A8A8A;border-radius:6px;box-shadow:0 12px 40px rgba(0,0,0,.35);overflow:hidden}
+.dlg-h{display:flex;align-items:center;gap:8px;padding:6px 6px 6px 12px;background:#FFF;border-bottom:1px solid var(--bd2);flex:none}
+.dlg-h b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dlg-h .x{width:30px;height:30px;padding:0;border:0;background:transparent;font:600 16px sans-serif;color:#333}
+.dlg-b{padding:12px;display:flex;flex-direction:column;gap:8px;overflow-y:auto}
+.dlg-b .sub{font-size:12px;color:var(--dim)}
+.dlg-f{display:flex;justify-content:flex-end;gap:6px;flex-wrap:wrap}
+.dlg-f button{height:32px;padding:0 16px}
+.sact{width:100%;height:34px;text-align:left;padding:0 12px}
+.tmsg{min-height:96px;max-height:40dvh;overflow-y:auto;padding:8px 10px;background:#FFF;border:1px solid var(--bd);white-space:pre-wrap;font-size:13px}
+.lbox{background:#FFF;border:1px solid var(--bd);max-height:36dvh;overflow-y:auto}
+.lbox .opt{padding:7px 10px;cursor:pointer}
+.lbox .opt:hover{background:#F2F8FD}
+.lbox .opt.sel{background:var(--sel)}
+#talk{z-index:25}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(64px + env(safe-area-inset-bottom));background:#FFFFE1;color:#111;border:1px solid #767676;padding:4px 10px;font:12px var(--mono);z-index:50;max-width:90vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none;opacity:0;transition:opacity .2s;box-shadow:0 2px 6px rgba(0,0,0,.2)}
 #toast.on{opacity:1}
-#talkfab{position:fixed;right:12px;bottom:calc(64px + env(safe-area-inset-bottom));z-index:14;background:#24476e;border-color:var(--acc);border-radius:999px;padding:0 14px}
+#talkfab{position:fixed;right:12px;bottom:calc(72px + env(safe-area-inset-bottom));z-index:24;height:36px}
+#gate{display:none;text-align:center;padding:40px 12px;margin:12px;background:#FFF;border:1px solid var(--bd)}
+
+/* ---------------- phone: same window, panes become tabs ---------------- */
+@media (max-width:899px){
+  html,body{font-size:14px}
+  #menubar{overflow-x:auto;flex-wrap:nowrap;white-space:nowrap;gap:0;padding-top:calc(4px + env(safe-area-inset-top));scrollbar-width:none}
+  #menubar::-webkit-scrollbar{display:none}
+  #menubar .mb{height:44px;padding:0 12px;flex:none}
+  #menubar .names{padding-left:8px}
+  #menubar .names select{height:36px;font-size:16px}
+  #menudrop .mi{height:44px}
+  #infobar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 10px;padding:8px 10px}
+  .gauge>span{min-width:30px;font-size:13px}
+  #gw-weight{display:none}
+  #main{grid-template-columns:minmax(0,1fr)!important;padding-top:6px}
+  #split{display:none!important}
+  #right{grid-column:1;grid-row:2;display:none!important}
+  #main.mapview #right{display:flex!important}
+  #main.mapview #pages{display:none}
+  #nb{padding-left:0}
+  .tab{height:38px;padding:0 12px}
+  .tab.on{height:40px;padding:0 14px}
+  .tab .l{display:none}.tab .s{display:inline}
+  .tab.phone{display:block}
+  button{height:44px;padding:0 14px}
+  .tb button,.acts-cell button,.dockh button{height:36px}
+  input,select{height:44px;font-size:16px}
+  textarea{font-size:16px}
+  #log{font-size:12px}
+  #inrow{flex-wrap:nowrap;padding-bottom:6px}
+  #mode{order:-1;max-width:30%}
+  #pmto{display:none;flex:0 1 32%}
+  #inrow.pm #pmto{display:block}
+  #cmd{flex:1}
+  #sendbtn{display:block}
+  #quick{display:flex}
+  #sb{grid-template-columns:minmax(0,1fr) auto auto;padding-bottom:max(4px,env(safe-area-inset-bottom))}
+  #sb>span{padding:5px 8px}
+  #mapdock{order:-1;flex:0 0 auto;height:42dvh}
+  #actpane{flex:1 1 auto;margin-bottom:4px;min-height:120px}
+  .ac-grid{grid-template-columns:40px minmax(0,1fr) 48px 72px}
+  #actpane .tr{min-height:46px}
+  .verb{display:block}
+  .verb button{height:36px;width:64px;padding:0}
+  .dockh{font-size:13px;padding:4px 6px 4px 8px}
+  .dockh button{min-width:44px}
+  #mapinfo{display:none}
+  .dockh .mt{display:none}
+  .dockh b{flex:1;min-width:0}
+  #i-tb2{flex-wrap:nowrap;overflow-x:auto}
+  #i-tb2 #i-head{flex:none}
+  #i-pacts{flex-wrap:nowrap}
+  .it-grid{grid-template-columns:40px minmax(0,1fr) 56px}
+  .it-grid>.c4,.it-grid>.c5{display:none}
+  .tr .sub{display:block;font-size:11px;color:var(--dim);white-space:normal}
+  .it-grid.tr,.sk-grid.tr{min-height:44px;padding:3px 0}
+  .tr>span{white-space:normal}
+  .sk-grid{grid-template-columns:minmax(0,1fr) 120px}
+  .sk-grid>.c2,.sk-grid>.c3,.sk-grid>.c4{display:none}
+  .stat button{width:44px;height:36px}
+  .cfgwrap{flex-direction:column;padding:6px;overflow:auto}
+  .cfgside{flex:none;min-width:0}
+  #c-cats{display:flex;overflow-x:auto;flex:none}
+  #c-cats .cat{padding:0 12px;line-height:44px}
+  .cfgmain{flex:none}
+  #c-grid{flex:none;max-height:none;overflow:visible}
+  .cg{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr) 40px}
+  .set .val input,.set .val select{height:40px;font-size:16px}
+  a.help{min-width:36px;height:40px}
+  #c-help{height:auto;max-height:160px}
+  .cfgpane{overflow:visible}
+  .overlay.sheet{align-items:flex-end;padding:0}
+  .overlay.sheet .dlg{width:100%;border-radius:10px 10px 0 0;padding-bottom:env(safe-area-inset-bottom)}
+  .sact{height:44px}
+  .dlg-f button{height:44px}
+  .lbox .opt{padding:12px 10px}
+  #talkfab{bottom:calc(150px + env(safe-area-inset-bottom));height:44px}
+  #toast{bottom:calc(150px + env(safe-area-inset-bottom))}
+}
+@media (min-width:900px){ .tab.phone{display:none} }
 </style>
 </head>
 <body>
-<div id="gate" class="card">Open the invitation link to use this panel.</div>
+<div id="gate">Open the invitation link to use this panel.</div>
 <div id="app">
-  <div id="hdr">
-    <span id="conn" title="console"></span>
-    <div class="who"><b id="h-name">-</b>
-      <div class="mini"><i><u id="h-hp" style="background:var(--hp)"></u></i><i><u id="h-sp" style="background:var(--sp)"></u></i></div>
+  <nav id="menubar" aria-label="Menu bar">
+    <span id="mb-menus" style="display:contents"></span>
+    <label class="names">Names
+      <select id="h-lang" title="Item and skill names"><option value="en">English</option><option value="zh-tw">繁體中文</option><option value="zh-cn">简体中文</option><option value="raw">Bot (kRO)</option></select>
+    </label>
+  </nav>
+  <div id="menudrop" role="menu" hidden></div>
+
+  <section id="infobar" aria-label="Info bar">
+    <div class="gauge" id="gw-hp"><span>HP:</span><div class="gbar" id="g-hp" role="progressbar" aria-label="HP" aria-valuemin="0" aria-valuemax="100"><i></i><b>-</b></div></div>
+    <div class="gauge" id="gw-sp"><span>SP:</span><div class="gbar" id="g-sp" role="progressbar" aria-label="SP" aria-valuemin="0" aria-valuemax="100"><i style="background:var(--gsp)"></i><b>-</b></div></div>
+    <div class="gauge" id="gw-exp"><span>Exp:</span><div class="gbar" id="g-exp" role="progressbar" aria-label="Base experience" aria-valuemin="0" aria-valuemax="100"><i></i><b>-</b></div></div>
+    <div class="gauge" id="gw-job"><span>Job:</span><div class="gbar" id="g-job" role="progressbar" aria-label="Job experience" aria-valuemin="0" aria-valuemax="100"><i></i><b>-</b></div></div>
+    <div class="gauge" id="gw-weight"><span>Weight:</span><div class="gbar" id="g-weight" role="progressbar" aria-label="Weight" aria-valuemin="0" aria-valuemax="100"><i></i><b>-</b></div></div>
+  </section>
+
+  <div id="deal" hidden></div>
+
+  <div id="main">
+    <div id="nb" role="tablist" aria-label="Notebook"></div>
+    <div id="pages">
+      <!-- CONSOLE -->
+      <section class="page" id="p-console" role="tabpanel"><div id="log" role="log" aria-label="Console output"></div></section>
+
+      <!-- CHAT LOG -->
+      <section class="page" id="p-chat" role="tabpanel">
+        <div class="tb"><div class="seg" id="ch-sub"></div><span class="grow"></span><span class="dim small">Collected while this page is open · click a PM line to reply</span></div>
+        <div id="chatlog"></div>
+      </section>
+
+      <!-- STATUS -->
+      <section class="page" id="p-status" role="tabpanel"><div class="scroll"><div class="pad" id="st-pad">
+        <div id="st-head"></div>
+        <div class="st-gauges" id="st-gauges"></div>
+        <div class="stgrid">
+          <fieldset id="st-stats" hidden></fieldset>
+          <fieldset id="st-battle" hidden></fieldset>
+          <fieldset id="st-session"></fieldset>
+          <fieldset id="st-statuses" hidden></fieldset>
+          <div id="st-comp" style="display:contents"></div>
+          <fieldset id="st-party" hidden></fieldset>
+          <fieldset id="st-exp"></fieldset>
+        </div>
+        <div class="btnrow" id="st-btns"></div>
+      </div></div></section>
+
+      <!-- INVENTORY / CART / STORAGE -->
+      <section class="page" id="p-items" role="tabpanel">
+        <div class="tb" id="i-tb"></div>
+        <div class="tb" id="i-tb2" style="padding:4px 8px"><span id="i-head" class="small dim grow"></span><span id="i-pacts" class="row"></span></div>
+        <div class="scroll" id="i-list"></div>
+      </section>
+
+      <!-- SKILLS -->
+      <section class="page" id="p-skills" role="tabpanel">
+        <div class="tb"><span id="k-points" class="grow">-</span><button type="button" id="k-list">skills (console)</button></div>
+        <div class="scroll" id="k-list-box"></div>
+      </section>
+
+      <!-- ADVANCED CONFIGURATION -->
+      <section class="page" id="p-cfg" role="tabpanel">
+        <div class="cfgwrap">
+          <div class="cfgside">
+            <label>Find option<input id="c-q" type="search" placeholder="e.g. sitAuto" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
+            <div id="c-cats" role="listbox" aria-label="Categories"></div>
+          </div>
+          <div class="cfgmain">
+            <div id="c-gridpane" class="cfgpane" style="overflow:visible">
+              <div id="c-grid" role="grid"></div>
+              <div id="c-help"></div>
+            </div>
+            <div id="c-rawpane" class="cfgpane" hidden>
+              <div class="small dim">Raw config.txt — skill blocks, everything. Passwords show as ******** and are kept.</div>
+              <textarea id="c-raw" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea>
+              <div class="row"><span class="grow"></span><button type="button" id="c-saveraw" class="primary">Save raw file</button></div>
+            </div>
+            <div id="c-bkpane" class="cfgpane" hidden>
+              <fieldset><legend>config.txt backups</legend>
+                <div class="row"><select id="c-bk" class="grow"></select><button type="button" id="c-restore">Restore</button></div>
+                <p class="small dim" style="margin:6px 0 0">A backup is made before every save. Passwords stay on the Mac and can't be changed here.</p>
+              </fieldset>
+            </div>
+            <div id="c-filespane" class="cfgpane" hidden>
+              <div class="row"><select id="cf-pick" class="grow"></select><button type="button" id="cf-refresh">Refresh</button></div>
+              <div id="cf-box" hidden style="display:flex;flex-direction:column;gap:6px;flex:1;min-height:0">
+                <textarea id="cf-text" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea>
+                <div class="row"><select id="cf-bk" class="grow"></select><button type="button" id="cf-restore">Restore</button><button type="button" id="cf-save" class="primary">Save &amp; reload</button></div>
+              </div>
+              <div id="cf-msg" class="msg"></div>
+            </div>
+            <div class="cfgbar" id="c-bar">
+              <span class="small dim" id="c-count">-</span>
+              <span id="c-msg" class="msg"></span>
+              <button type="button" id="c-revert" disabled>Revert</button>
+              <button type="button" id="c-reload">Reload</button>
+              <button type="button" id="c-save" class="primary" disabled>Save &amp; reload</button>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
-    <span class="dim small" id="h-pos"></span>
-    <select id="h-lang" title="Item and skill names" style="font-size:13px;padding:6px 4px;min-height:36px"><option value="en">EN</option><option value="zh-tw">繁中</option><option value="zh-cn">简中</option><option value="raw">Bot</option></select>
-    <button type="button" id="h-con" title="Console">&gt;_</button>
+    <div id="split" title="Drag to resize"></div>
+    <aside id="right">
+      <section id="actpane" aria-label="Players, Monsters &amp; Items">
+        <div class="th ac-grid"><span>ID</span><span>Players, Monsters &amp; Items (<span id="m-ncount">0</span>)</span><span>Dist</span><span class="verb"></span></div>
+        <div class="scroll" id="actlist"></div>
+      </section>
+      <section id="mapdock" aria-label="Map">
+        <div class="dockh"><b><span class="mt">Map — </span><span id="m-title">-</span></b><span id="mapinfo" class="grow"></span>
+          <button type="button" id="m-out" aria-label="Zoom out" title="Zoom out">&minus;</button><button type="button" id="m-in" aria-label="Zoom in" title="Zoom in">+</button><button type="button" id="m-fit">Fit</button><button type="button" id="m-follow" class="on">Follow</button></div>
+        <div id="mapwrap" title="Click to walk · wheel or pinch to zoom · drag to pan"><canvas id="mapcv"></canvas><div class="legend" id="m-legend"></div>
+          <div id="mappick" hidden><span id="mappick-t"></span><button type="button" id="mappick-x">Cancel</button></div></div>
+      </section>
+    </aside>
   </div>
-  <div id="deal" class="card" hidden></div>
-  <main id="views">
-    <!-- STATUS -->
-    <section class="view" id="v-status">
-      <div class="card" id="status">
-        <div class="row"><span class="name" id="s-name">-</span><span class="badge" id="s-ai">offline</span></div>
-        <div class="row dim"><span id="s-job">-</span><span id="s-map">-</span></div>
-        <div class="bar"><i id="b-hp" style="background:var(--hp)"></i><span id="t-hp">HP</span></div>
-        <div class="bar"><i id="b-sp" style="background:var(--sp)"></i><span id="t-sp">SP</span></div>
-        <div class="bar"><i id="b-exp" style="background:var(--exp)"></i><span id="t-exp">Base</span></div>
-        <div class="bar"><i id="b-job" style="background:var(--job)"></i><span id="t-job">Job</span></div>
-        <div class="grid">
-          <span>Zeny <b id="s-zeny">-</b></span><span>Weight <b id="s-weight">-</b></span>
-          <span>Base/h <b id="s-beh">-</b></span><span>Job/h <b id="s-jeh">-</b></span>
-          <span>Zeny/h <b id="s-zh">-</b></span><span class="dim" id="s-state">-</span>
-        </div>
-        <div style="margin-top:6px;font-size:13px">Action: <b id="s-action">-</b> <span class="dim" id="s-target"></span></div>
-        <details id="mons"><summary>Nearby monsters (<span id="s-mcount">0</span>)</summary><ul id="s-mlist"></ul></details>
-      </div>
-      <div class="btns" id="btns"></div>
-      <div class="card" id="st-stats" hidden></div>
-      <div class="card" id="st-statuses" hidden></div>
-      <div id="st-comp" style="display:contents"></div>
-      <div class="card" id="st-party" hidden></div>
-      <div class="card" id="st-exp"></div>
-    </section>
 
-    <!-- MAP -->
-    <section class="view" id="v-map">
-      <div id="mapwrap"><canvas id="mapcv"></canvas><div id="mapinfo">-</div>
-        <div id="mappick" hidden><span id="mappick-t"></span><button type="button" id="mappick-x">Cancel</button></div></div>
-      <div class="btns c4"><button type="button" id="m-out">Zoom -</button><button type="button" id="m-in">Zoom +</button><button type="button" id="m-fit">Fit</button><button type="button" id="m-follow" class="on">Follow me</button></div>
-      <div class="legend" id="m-legend"></div>
-      <details id="mapneard"><summary>Nearby (<span id="m-ncount">0</span>)</summary><div class="list" id="mapnear"></div></details>
-    </section>
-
-    <!-- ITEMS -->
-    <section class="view" id="v-items">
-      <div class="seg" id="i-sub"></div>
-      <div class="row small dim" id="i-head"></div>
-      <div class="chips" id="i-filter"></div>
-      <div class="btns c3" id="i-acts"></div>
-      <div class="list" id="i-list"></div>
-    </section>
-
-    <!-- SKILLS -->
-    <section class="view" id="v-skills">
-      <div class="row small dim"><span id="k-points">-</span><button type="button" id="k-list" style="padding:0 12px">skills (console)</button></div>
-      <div class="list" id="k-list-box"></div>
-    </section>
-
-    <!-- CHAT -->
-    <section class="view" id="v-chat">
-      <div class="seg" id="ch-sub"></div>
-      <div id="chatlog"></div>
-      <form id="ch-form">
-        <select id="ch-mode"><option value="c">Say</option><option value="p">Party</option><option value="g">Guild</option><option value="pm">PM</option></select>
-        <input id="ch-to" placeholder="name" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" hidden style="flex:0 1 30%">
-      </form>
-      <form id="ch-form2"><input id="ch-text" placeholder="message" autocomplete="off" enterkeyhint="send"><button type="submit" style="padding:0 14px">Send</button></form>
-    </section>
-
-    <!-- CONFIG -->
-    <section class="view" id="v-cfg">
-      <div class="card"><h3>Common</h3><div id="c-common"></div></div>
-      <div class="card"><h3>All settings</h3><input id="c-q" placeholder="search, e.g. sitAuto" autocomplete="off" autocapitalize="off" spellcheck="false" style="width:100%"><div id="c-all"></div></div>
-      <div class="card"><details id="c-rawbox"><summary>Raw config.txt (skill blocks, everything)</summary><textarea id="c-raw" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea><button type="button" id="c-saveraw" style="width:100%;margin-top:6px">Save raw file</button></details></div>
-      <div class="card"><h3>Backups</h3><div class="row"><select id="c-bk" style="flex:1;padding:8px"></select><button type="button" id="c-restore" style="padding:8px 12px">Restore</button></div><div class="dim" style="font-size:12px;margin-top:4px">A backup is made before every save. Passwords stay on the Mac and can't be changed here.</div></div>
-      <div class="savebar"><button type="button" id="c-save" style="flex:1" disabled>No changes</button><button type="button" id="c-reload" style="padding:9px 12px">Reload</button></div>
-      <div id="c-msg" class="msg"></div>
-      <div class="card"><h3>Control files</h3>
-        <div class="row"><select id="cf-pick" style="flex:1"></select><button type="button" id="cf-refresh" style="padding:0 12px">Refresh</button></div>
-        <div id="cf-box" hidden>
-          <textarea id="cf-text" spellcheck="false" autocapitalize="off" autocorrect="off" style="margin-top:6px"></textarea>
-          <button type="button" id="cf-save" class="primary" style="width:100%;margin-top:6px">Save</button>
-          <div class="row" style="margin-top:6px"><select id="cf-bk" style="flex:1"></select><button type="button" id="cf-restore" style="padding:0 12px">Restore</button></div>
-        </div>
-        <div id="cf-msg" class="msg" style="margin-top:4px"></div>
-      </div>
-    </section>
-
-    <!-- MORE -->
-    <section class="view" id="v-more">
-      <div class="seg" id="mo-sub"><button type="button" id="mo-con" class="on">Console</button><button type="button" id="mo-menu">Menus</button></div>
-      <div id="mo-console" style="display:flex;flex-direction:column;gap:8px;flex:1;min-height:0">
-        <div id="log"></div>
-        <form id="f"><input id="cmd" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="send" placeholder="command"><button type="submit" style="padding:0 14px">Send</button></form>
-      </div>
-      <div id="mo-menus" hidden style="flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:10px"></div>
-    </section>
-  </main>
-  <nav id="tabbar"></nav>
+  <div id="quick"></div>
+  <form id="inrow" aria-label="Input" autocomplete="off">
+    <input id="pmto" placeholder="PM target" list="pmNames" aria-label="PM target" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+    <datalist id="pmNames"></datalist>
+    <input id="cmd" aria-label="Command" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="send" placeholder="Type a command, e.g. ai off, move 120 150, talk 2">
+    <select id="mode" aria-label="Send as"><option value="cmd">Command</option><option value="c">Public chat</option><option value="p">Party chat</option><option value="g">Guild chat</option><option value="pm">PM</option></select>
+    <button type="submit" id="sendbtn" class="primary">Send</button>
+  </form>
+  <footer id="sb"><span><i id="conn"></i><span id="sb1">-</span></span><span id="sb2">AI: -</span><span id="sb3">-</span></footer>
 </div>
-<div id="sheet" class="overlay" hidden><div class="sheet" id="sheet-box"></div></div>
-<div id="talk" class="overlay" hidden><div class="sheet" id="talk-box"></div></div>
-<button type="button" id="talkfab" hidden>NPC</button>
-<div id="toast"></div>
+<div id="sheet" class="overlay sheet" hidden><div class="dlg" id="sheet-box" role="dialog" aria-modal="true"></div></div>
+<div id="talk" class="overlay" hidden><section class="dlg" id="talk-box" role="dialog" aria-modal="true"></section></div>
+<button type="button" id="talkfab" class="primary" hidden>NPC talk</button>
+<div id="toast" role="status"></div>
 <script>
 "use strict";
 const $ = id => document.getElementById(id);
 const fmt = n => n == null || !isFinite(Number(n)) ? "-" : Number(n).toLocaleString();
 const pct = (a, b) => (a == null || !b) ? 0 : Math.max(0, Math.min(100, a / b * 100));
-let ws = null, backoff = 1000, hist = [], hpos = -1, authed = false;
+let ws = null, backoff = 1000, hist = [], hpos = -1, authed = false, wsOn = false;
 
 // ---- safe data helpers (status fields may be null/missing/garbage) ----
 const arr = v => Array.isArray(v) ? v : [];
@@ -276,9 +472,16 @@ function el(tag, props, ...kids){
 function fill(n, ...k){ n.replaceChildren(...k.flat().filter(c => c != null && c !== false)); return n; }
 function safe(fn, ...a){ try { return fn(...a); } catch (e) { console.error(e); } }
 function store(k, v){ try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
+// rebuild a section only when its data changed (keeps buttons clickable between polls)
+const SECKEY = {};
+function sec(id, key, build){ if (SECKEY[id] === key) return; SECKEY[id] = key; build($(id)); }
 
 let S = {state: "offline"};   // last status
-let view = "status";
+let view = "console";
+const PHONE = matchMedia("(max-width: 899px)");
+const isPhone = () => PHONE.matches;
+let mapHidden = store("kp-nomap") === "1", infoHidden = store("kp-noinfo") === "1";
+const mapVisible = () => isPhone() ? view === "map" : !mapHidden;
 
 function gate(){ $("gate").style.display = "block"; $("app").style.display = "none"; }
 
@@ -292,18 +495,11 @@ function run(cmd, opt){
   if (opt.confirm && !confirm(opt.confirm)) return false;
   send(cmd);
   if (/^conf\s/.test(cmd)) cfgStale = true;
-  if (opt.console) { show("more"); moreSub(true); } else toast("> " + cmd);
+  if (opt.console) show("console"); else toast("> " + cmd);
   return true;
 }
 
-// ---------------------------------------------------------------- status
-function bar(key, label, cur, max, isPct){
-  cur = num(cur); max = num(max);
-  const p = pct(cur, max);
-  $("b-" + key).style.width = p + "%";
-  $("t-" + key).textContent = cur == null ? label + " -" : isPct ? `${label} ${p.toFixed(2)}%` : `${label} ${fmt(cur)} / ${fmt(max)}`;
-}
-
+// ---------------------------------------------------------------- names (EN / 繁中 / 简中 / Bot)
 // Item/skill names: OpenKore uses its kRO (Korean) tables; swap by id/handle to the chosen
 // language. Slot "[n]" and refine "+n " parts of the bot's name are kept.
 const NAMES = {lang: store("lang") || "en", t: null, loading: null};
@@ -327,124 +523,155 @@ function tr(s){
   if (Array.isArray(s.skills)) for (const k of s.skills) { const n = obj(k) && t.skills && t.skills[k.handle]; if (n) k.name = n; }
   return s;
 }
+
+// ---------------------------------------------------------------- render
 function render(s){
   if (!obj(s)) s = {state: "offline"};
   const raw = s.__raw || JSON.parse(JSON.stringify(s));
   s = tr(JSON.parse(JSON.stringify(raw))); s.__raw = raw;
   S = s;
-  safe(renderCore, s); safe(renderHeader, s);
+  safe(renderInfo, s);
   safe(renderTalk, s); safe(renderDeal, s);
-  if (view === "status") safe(renderStatusExtra, s);
-  if (view === "map") safe(mapUpdate, s);
-  if (view === "items") safe(renderItems);
+  safe(updPmNames, s);
+  if (view === "status") safe(renderStatus, s);
+  if (view === "inv" || view === "cart" || view === "storage") safe(renderItems);
   if (view === "skills") safe(renderSkills);
+  if (mapVisible()) safe(mapUpdate, s);
 }
 
-function renderCore(s){
-  const set = (id, v) => { $(id).textContent = v == null || v === "" ? "-" : v; };
-  set("s-name", s.name ? `${s.name}  Lv ${s.lv ?? "?"} / ${s.job_lv ?? "?"}` : "-");
-  set("s-job", s.job);
-  set("s-map", s.map ? `${s.map} (${s.x ?? "?"}, ${s.y ?? "?"})` : null);
-  const ai = s.state === "offline" ? "offline" : str(s.ai || "?");
-  $("s-ai").textContent = ai; $("s-ai").className = "badge " + ai.replace(/[^a-z]/gi, "");
-  bar("hp", "HP", s.hp, s.hp_max); bar("sp", "SP", s.sp, s.sp_max);
-  bar("exp", "Base", s.exp, s.exp_max, true); bar("job", "Job", s.job_exp, s.job_exp_max, true);
-  set("s-zeny", fmt(s.zeny)); set("s-weight", s.weight == null ? null : `${fmt(s.weight)}/${fmt(s.weight_max)}`);
-  set("s-beh", fmt(s.base_exp_hour)); set("s-jeh", fmt(s.job_exp_hour)); set("s-zh", fmt(s.zeny_hour));
-  set("s-state", s.state == null ? null : str(s.state)); set("s-action", s.action == null ? null : str(s.action));
-  $("s-target").textContent = s.target ? "-> " + s.target : "";
-  const ms = byDist(s.monsters).slice(0, 15);
-  $("s-mcount").textContent = ms.length;
-  const ul = $("s-mlist"); ul.replaceChildren();
-  for (const m of ms){ const li = document.createElement("li"); li.textContent = `${m.name ?? "?"} (${m.x ?? "?"}, ${m.y ?? "?"}) d=${m.dist ?? "?"}` + (num(m.hp_pct) != null ? ` ${m.hp_pct}%` : ""); ul.append(li); }
+const aiName = s => s.state === "offline" ? "offline" : str(s.ai || "?");
+const aiIs = m => str(S.ai).toLowerCase() === m && S.state !== "offline";
+function gauge(g, cur, max, isPct, color){
+  cur = num(cur); max = num(max);
+  const p = pct(cur, max), i = g.querySelector("i");
+  i.style.width = p + "%"; if (color) i.style.background = color;
+  g.querySelector("b").textContent = cur == null ? "-" : isPct ? `${p.toFixed(2)}%` : `${fmt(cur)} / ${fmt(max)}`;
+  g.title = cur == null ? "" : `${fmt(cur)} / ${fmt(max)} (${p.toFixed(2)}%)`;
+  g.setAttribute("aria-valuenow", String(Math.round(p)));
+}
+const hpColor = (c, m) => pct(num(c), num(m)) < 25 && num(c) != null ? "#E81123" : null;
+const wtColor = (c, m) => { const p = pct(num(c), num(m)); return p >= 90 ? "#E81123" : p >= 50 ? "#C27C0E" : "var(--gauge)"; };
+let pageNote = "";
+function renderInfo(s){
+  gauge($("g-hp"), s.hp, s.hp_max, false, hpColor(s.hp, s.hp_max) || "var(--gauge)");
+  gauge($("g-sp"), s.sp, s.sp_max);
+  gauge($("g-exp"), s.exp, s.exp_max, true); gauge($("g-job"), s.job_exp, s.job_exp_max, true);
+  gauge($("g-weight"), s.weight, s.weight_max, false, wtColor(s.weight, s.weight_max));
+  updSB();
+}
+function updSB(){
+  const s = S, ai = aiName(s);
+  $("sb2").textContent = "AI: " + (ai ? ai[0].toUpperCase() + ai.slice(1) : "-");
+  $("sb3").textContent = s.map ? `${s.map} (${s.x ?? "?"}, ${s.y ?? "?"})` : (s.state === "offline" ? "offline" : "-");
+  $("conn").className = wsOn ? "on" : "";
+  $("conn").title = wsOn ? "console connected" : "console disconnected";
+  const who = s.name ? `${s.name}  Lv ${s.lv ?? "?"}/${s.job_lv ?? "?"}` : (s.state === "offline" ? "Bot offline" : "-");
+  const usePage = pageNote && (view === "inv" || view === "cart" || view === "storage" || view === "cfg");
+  $("sb1").textContent = usePage ? pageNote : `${who} · ${wsOn ? "console live" : "console disconnected"}`;
 }
 
-function renderHeader(s){
-  $("h-name").textContent = s.name ? `${s.name}  ${s.lv ?? "?"}/${s.job_lv ?? "?"}` : (s.state === "offline" ? "offline" : "-");
-  $("h-pos").textContent = s.map ? `${s.map} ${s.x ?? "?"},${s.y ?? "?"}` : "";
-  $("h-hp").style.width = pct(num(s.hp), num(s.hp_max)) + "%";
-  $("h-sp").style.width = pct(num(s.sp), num(s.sp_max)) + "%";
-}
-
+// ---------------------------------------------------------------- status page (Wx Status window)
 const STAT_KEYS = ["str", "agi", "vit", "int", "dex", "luk"];
-function renderStatusExtra(s){
-  // stats
-  const st = obj(s.stats), box = $("st-stats");
-  box.hidden = !st;
-  if (st){
+const kv = (k, v) => el("div", null, el("span", null, k), el("span", null, v));
+function mkGauge(label, cur, max, text, color){
+  const p = pct(num(cur), num(max));
+  return el("div", {class: "gr"}, el("span", null, label),
+    el("div", {class: "gbar", role: "progressbar", "aria-label": label, "aria-valuenow": String(Math.round(p)), "aria-valuemin": "0", "aria-valuemax": "100"},
+      el("i", {style: `width:${p}%;background:${color || "var(--gauge)"}`}), el("b", null, text)));
+}
+const openD = new Set();
+function det(id, summary, kids){
+  return el("details", {open: openD.has(id), ontoggle: e => { e.target.open ? openD.add(id) : openD.delete(id); }}, el("summary", null, summary), kids);
+}
+function renderStatus(s){
+  const st = obj(s.stats);
+  const pctTxt = (c, m) => num(c) == null ? "-" : `${fmt(c)} / ${fmt(m)} · ${pct(num(c), num(m)).toFixed(2)}%`;
+  fill($("st-head"), el("div", {class: "st-head"},
+    el("b", null, s.name ? str(s.name) : (s.state === "offline" ? "Bot offline" : "-")),
+    el("span", {style: "color:#444"}, [dash(s.job), st && st.sex != null ? str(st.sex) : null].filter(Boolean).join(" · "))));
+  fill($("st-gauges"),
+    mkGauge("HP", s.hp, s.hp_max, num(s.hp) == null ? "-" : `${fmt(s.hp)} / ${fmt(s.hp_max)}`, hpColor(s.hp, s.hp_max)),
+    mkGauge("SP", s.sp, s.sp_max, num(s.sp) == null ? "-" : `${fmt(s.sp)} / ${fmt(s.sp_max)}`, "var(--gsp)"),
+    mkGauge(`Base ${s.lv ?? ""}`, s.exp, s.exp_max, pctTxt(s.exp, s.exp_max)),
+    mkGauge(`Job ${s.job_lv ?? ""}`, s.job_exp, s.job_exp_max, pctTxt(s.job_exp, s.job_exp_max)),
+    mkGauge("Weight", s.weight, s.weight_max, num(s.weight) == null ? "-" : `${fmt(s.weight)} / ${fmt(s.weight_max)}`, wtColor(s.weight, s.weight_max)));
+
+  // stats (+ buttons)
+  sec("st-stats", JSON.stringify(st && [STAT_KEYS.map(k => [st[k], st[k + "_bonus"]]), st.points_free, st.skill_points_free]), box => {
+    box.hidden = !st; if (!st) return;
     const free = int(st.points_free) ?? 0;
-    const bonus = k => num(st[k + "_bonus"]) ? `+${st[k + "_bonus"]}` : "";
-    const plus = (a, b) => a == null ? "-" : (num(b) ? `${a} + ${b}` : String(a));
-    fill(box,
-      el("div", {class: "row"}, el("h3", null, "Stats"), el("span", {class: "dim small"}, `Points: ${free}` + (int(st.skill_points_free) != null ? `  Skill pts: ${st.skill_points_free}` : ""))),
+    fill(box, el("legend", null, `Stats · ${free} point${free === 1 ? "" : "s"} left`),
       el("div", {class: "stats"}, STAT_KEYS.map(k => el("div", {class: "stat"},
-        el("span", null, el("b", null, k.toUpperCase() + " "), dash(st[k]), " ", el("span", {class: "dim"}, bonus(k))),
-        free > 0 ? el("button", {type: "button", onclick: () => run("stat_add " + k, {confirm: `Add a stat point to ${k.toUpperCase()}?`})}, "+") : null))),
-      el("div", {class: "grid"},
-        el("span", null, "ATK ", el("b", null, plus(st.atk, st.atk_bonus))),
-        el("span", null, "MATK ", el("b", null, st.matk_min == null ? "-" : `${st.matk_min}~${st.matk_max ?? "?"}`)),
-        el("span", null, "DEF ", el("b", null, plus(st.def, st.def_bonus))),
-        el("span", null, "MDEF ", el("b", null, plus(st.mdef, st.mdef_bonus))),
-        el("span", null, "HIT ", el("b", null, dash(st.hit))),
-        el("span", null, "FLEE ", el("b", null, plus(st.flee, st.flee_bonus))),
-        el("span", null, "CRIT ", el("b", null, dash(st.critical))),
-        el("span", null, "ASPD ", el("b", null, dash(st.aspd)))),
-      el("div", {class: "btns c2", style: "margin-top:8px"},
-        el("button", {type: "button", onclick: () => run("st", {console: true})}, "st (console)"),
-        el("button", {type: "button", onclick: () => run("s", {console: true})}, "s (console)")));
-  }
-  // statuses
+        el("b", null, k[0].toUpperCase() + k.slice(1)),
+        el("span", null, dash(st[k]), num(st[k + "_bonus"]) ? ` + ${st[k + "_bonus"]}` : ""),
+        free > 0 ? el("button", {type: "button", "aria-label": `Add a point to ${k.toUpperCase()}`, onclick: () => run("stat_add " + k, {confirm: `Add a stat point to ${k.toUpperCase()}?`})}, "+") : null))));
+  });
+  // battle
+  const plus = (a, b) => a == null ? "-" : (num(b) ? `${a} + ${b}` : String(a));
+  sec("st-battle", JSON.stringify(st && [st.atk, st.atk_bonus, st.matk_min, st.matk_max, st.def, st.def_bonus, st.mdef, st.mdef_bonus, st.hit, st.flee, st.flee_bonus, st.critical, st.aspd]), box => {
+    box.hidden = !st; if (!st) return;
+    fill(box, el("legend", null, "Battle"), el("div", {class: "kv"},
+      kv("Atk", plus(st.atk, st.atk_bonus)), kv("Matk", st.matk_min == null ? "-" : `${st.matk_min} ~ ${st.matk_max ?? "?"}`),
+      kv("Def", plus(st.def, st.def_bonus)), kv("Mdef", plus(st.mdef, st.mdef_bonus)),
+      kv("Hit", dash(st.hit)), kv("Flee", plus(st.flee, st.flee_bonus)),
+      kv("Critical", dash(st.critical)), kv("Aspd", dash(st.aspd))));
+  });
+  // session: zeny, rates, AI state, nearby monsters
+  const ms = byDist(s.monsters).slice(0, 15);
+  fill($("st-session"), el("legend", null, "Session"),
+    el("div", {class: "kv"},
+      kv("Zeny", fmt(s.zeny)), kv("Skill points", st ? dash(st.skill_points_free) : "-"),
+      kv("Base/h", fmt(s.base_exp_hour)), kv("Job/h", fmt(s.job_exp_hour)),
+      kv("Zeny/h", fmt(s.zeny_hour)), kv("State", s.state == null ? "-" : str(s.state)),
+      kv("AI", aiName(s)), kv("Action", (s.action == null ? "-" : str(s.action)) + (s.target ? " -> " + s.target : ""))),
+    det("mons", `Nearby monsters (${ms.length})`, el("ul", null, ms.map(m => el("li", null,
+      `${m.name ?? "?"} (${m.x ?? "?"}, ${m.y ?? "?"}) d=${m.dist ?? "?"}` + (num(m.hp_pct) != null ? ` ${m.hp_pct}%` : ""))))));
+  // status effects
   const sts = arr(s.statuses).filter(x => x != null && x !== "");
   $("st-statuses").hidden = !sts.length;
-  $("st-statuses").replaceChildren(el("h3", null, "Status effects"), el("div", {class: "chipl"}, sts.map(x => el("span", null, str(x)))));
+  fill($("st-statuses"), el("legend", null, "Status effects"), el("div", {class: "chipl"}, sts.map(x => el("span", null, str(x)))));
   // companions
-  const comp = $("st-comp"); comp.replaceChildren();
-  for (const [key, label, cmd] of [["homun", "Homunculus", "homun s"], ["merc", "Mercenary", "merc s"], ["pet", "Pet", "pet s"]]){
-    const c = obj(s[key]); if (!c) continue;
-    const mk = (lab, cur, max, color) => num(cur) == null ? null : el("div", {class: "bar"},
-      el("i", {style: `background:${color};width:${pct(num(cur), num(max))}%`}), el("span", null, max == null ? `${lab} ${fmt(cur)}` : `${lab} ${fmt(cur)} / ${fmt(max)}`));
-    comp.append(el("div", {class: "card"},
-      el("div", {class: "row"}, el("b", null, `${label}: ${dash(c.name)}`), el("span", {class: "dim small"}, c.lv == null ? "" : "Lv " + c.lv)),
-      mk("HP", c.hp, c.hp_max, "var(--hp)"), mk("SP", c.sp, c.sp_max, "var(--sp)"), mk("EXP", c.exp, c.exp_max, "var(--exp)"),
-      (c.hunger != null || c.intimacy != null) ? el("div", {class: "grid"}, el("span", null, "Hunger ", el("b", null, dash(c.hunger))), el("span", null, "Intimacy ", el("b", null, dash(c.intimacy)))) : null,
-      el("button", {type: "button", style: "width:100%;margin-top:6px", onclick: () => run(cmd, {console: true})}, cmd)));
-  }
+  sec("st-comp", JSON.stringify([s.homun, s.merc, s.pet]), comp => {
+    comp.replaceChildren();
+    for (const [key, label, cmd] of [["homun", "Homunculus", "homun s"], ["merc", "Mercenary", "merc s"], ["pet", "Pet", "pet s"]]){
+      const c = obj(s[key]); if (!c) continue;
+      const g = (lab, cur, max, color) => num(cur) == null ? null : mkGauge(lab, cur, max, max == null ? fmt(cur) : `${fmt(cur)} / ${fmt(max)}`, color);
+      comp.append(el("fieldset", null, el("legend", null, `${label}: ${dash(c.name)}${c.lv == null ? "" : "  Lv " + c.lv}`),
+        el("div", {class: "st-gauges"}, g("HP", c.hp, c.hp_max), g("SP", c.sp, c.sp_max, "var(--gsp)"), g("EXP", c.exp, c.exp_max)),
+        (c.hunger != null || c.intimacy != null) ? el("div", {class: "kv", style: "margin-top:6px"}, kv("Hunger", dash(c.hunger)), kv("Intimacy", dash(c.intimacy))) : null,
+        el("div", {class: "btnrow", style: "margin-top:6px"}, el("button", {type: "button", onclick: () => run(cmd, {console: true})}, cmd))));
+    }
+  });
   // party + guild
   const p = obj(s.party), g = obj(s.guild), pb = $("st-party");
   pb.hidden = !p && !g;
-  pb.replaceChildren();
-  if (p){
-    pb.append(el("h3", null, "Party: " + dash(p.name)));
-    const list = el("div", {class: "list"});
-    for (const m of arr(p.members).filter(obj)){
-      list.append(el("div", {class: "li", style: "padding:4px 0"},
-        el("div", {class: "grow"}, el("b", null, (m.leader ? "* " : "") + dash(m.name)),
-          el("div", {class: "sub"}, `${m.online === false ? "offline" : dash(m.map)} ${m.x ?? ""},${m.y ?? ""}`)),
-        num(m.hp_max) ? el("div", {style: "width:35%"}, el("div", {class: "bar", style: "margin:0"}, el("i", {style: `background:var(--hp);width:${pct(num(m.hp), num(m.hp_max))}%`}), el("span", null, `${fmt(m.hp)}`))) : null));
-    }
-    pb.append(list);
-  }
-  if (g) pb.append(el("div", {class: "small", style: "margin-top:6px"}, "Guild: ", el("b", null, dash(g.name)), el("span", {class: "dim"}, ` Lv ${dash(g.lv)}, ${dash(g.members_online)} online`)));
+  fill(pb, el("legend", null, p ? "Party: " + dash(p.name) : "Guild"),
+    p ? el("div", {class: "kv one"}, arr(p.members).filter(obj).map(m => el("div", null,
+      el("span", null, (m.leader ? "★ " : "") + dash(m.name), el("span", {class: "dim small"}, `  ${m.online === false ? "offline" : dash(m.map)} ${m.x ?? ""},${m.y ?? ""}`)),
+      el("span", null, num(m.hp_max) ? `${fmt(m.hp)} / ${fmt(m.hp_max)}` : "")))) : null,
+    g ? el("div", {class: "small", style: "margin-top:6px"}, "Guild: ", el("b", null, dash(g.name)), el("span", {class: "dim"}, ` Lv ${dash(g.lv)}, ${dash(g.members_online)} online`)) : null);
   // exp report
-  const r = obj(s.exp_report), eb = $("st-exp");
-  const secs = num(r && r.seconds);
-  const hms = secs == null ? "-" : `${Math.floor(secs / 3600)}h ${String(Math.floor(secs / 60) % 60).padStart(2, "0")}m`;
-  const perH = v => secs && num(v) != null ? ` (${fmt(Math.round(num(v) * 3600 / secs))}/h)` : "";
-  const top = (list, label) => {
-    const l = arr(list).filter(obj).slice().sort((a, b) => (num(b.count) ?? 0) - (num(a.count) ?? 0));
-    return l.length ? el("details", null, el("summary", null, `${label} (${l.length})`), el("ul", null, l.slice(0, 50).map(x => el("li", null, `${dash(x.name)} x ${dash(x.count)}`)))) : null;
-  };
-  fill(eb, el("h3", null, "Experience report"),
-    r ? el("div", {class: "grid", style: "grid-template-columns:1fr"},
-      el("span", null, "Time ", el("b", null, hms)),
-      el("span", null, "Base ", el("b", null, fmt(r.base)), el("span", {class: "dim"}, perH(r.base))),
-      el("span", null, "Job ", el("b", null, fmt(r.job)), el("span", {class: "dim"}, perH(r.job))),
-      el("span", null, "Zeny ", el("b", null, fmt(r.zeny)), el("span", {class: "dim"}, perH(r.zeny)))) : el("div", {class: "dim small"}, "No report yet."),
-    r ? top(r.monsters, "Monsters killed") : null, r ? top(r.items, "Item changes") : null,
-    el("div", {class: "btns c2", style: "margin-top:8px"},
-      el("button", {type: "button", onclick: () => run("exp", {console: true})}, "exp (console)"),
-      el("button", {type: "button", class: "danger", onclick: () => run("exp reset", {confirm: "Reset the experience report?"})}, "exp reset")));
+  const r = obj(s.exp_report);
+  sec("st-exp", JSON.stringify(r) + [...openD].join(), eb => {
+    const secs = num(r && r.seconds);
+    const hms = secs == null ? "-" : `${Math.floor(secs / 3600)}h ${String(Math.floor(secs / 60) % 60).padStart(2, "0")}m`;
+    const perH = v => secs && num(v) != null ? ` (${fmt(Math.round(num(v) * 3600 / secs))}/h)` : "";
+    const top = (list, label, id) => {
+      const l = arr(list).filter(obj).slice().sort((a, b) => (num(b.count) ?? 0) - (num(a.count) ?? 0));
+      return l.length ? det(id, `${label} (${l.length})`, el("ul", null, l.slice(0, 50).map(x => el("li", null, `${dash(x.name)} x ${dash(x.count)}`)))) : null;
+    };
+    fill(eb, el("legend", null, "Experience report"),
+      r ? el("div", {class: "kv one"}, kv("Time", hms), kv("Base", fmt(r.base) + perH(r.base)), kv("Job", fmt(r.job) + perH(r.job)), kv("Zeny", fmt(r.zeny) + perH(r.zeny)))
+        : el("div", {class: "dim small"}, "No report yet."),
+      r ? top(r.monsters, "Monsters killed", "xm") : null, r ? top(r.items, "Item changes", "xi") : null,
+      el("div", {class: "btnrow", style: "margin-top:8px"},
+        el("button", {type: "button", onclick: () => run("exp", {console: true})}, "exp (console)"),
+        el("button", {type: "button", class: "danger", onclick: () => run("exp reset", {confirm: "Reset the experience report?"})}, "exp reset")));
+  });
 }
+fill($("st-btns"),
+  el("button", {type: "button", onclick: () => run("st", {console: true})}, "st (console)"),
+  el("button", {type: "button", onclick: () => run("s", {console: true})}, "s (console)"));
 
 async function poll(){
   try {
@@ -452,16 +679,25 @@ async function poll(){
     if (r.status === 403) { gate(); return; }
     render(await r.json());
   } catch (e) { render({state: "offline"}); }
-  setTimeout(poll, view === "map" ? 1000 : 2000);
+  setTimeout(poll, mapVisible() ? 1000 : 2000);
 }
 
-// ---------------------------------------------------------------- console
+// ---------------------------------------------------------------- console (consolecolors.txt)
+const FG = {white: "#FFFFFF", yellow: "#FFFF55", green: "#00FF00", darkgreen: "#00AA00", cyan: "#55FFFF", darkcyan: "#00AAAA", magenta: "#FF55FF", darkmagenta: "#AA00AA",
+  blue: "#7A9AE1", darkblue: "#5555FF", brown: "#AA5500", gray: "#AAAAAA", grey: "#AAAAAA", darkgray: "#555555", red: "#FF0000", darkred: "#AA0000"};
+const CC = {
+  message: {attackMon: "cyan", attackMonMiss: "cyan", attacked: "magenta", attackedMiss: "magenta", connection: "darkgreen", startup: "darkgreen", menu: "yellow",
+    drop: "blue", useItem: "blue", skill: "green", selfSkill: "green", success: "green", system: "yellow", pm: "yellow", "pm/sent": "yellow", publicchat: "green",
+    guildchat: "darkgreen", partychat: "brown", selfchat: "green", schat: "yellow", list: "white", info: "white", equip: "grey", teleport: "yellow", plugin: "gray", route: "green"},
+  error: {default: "red"}, warning: {default: "yellow", info: "yellow"}, debug: {default: "gray"}};
 const log = $("log");
-function line(text, cls){
+function line(text, type, domain){
   const stick = log.scrollTop + log.clientHeight >= log.scrollHeight - 30;
   const d = document.createElement("div");
-  d.textContent = text.replace(/\n$/, "");
-  if (cls) d.className = cls;
+  d.textContent = String(text).replace(/\n$/, "");
+  if (type === "sys") d.className = "sys";
+  else if (type === "input") d.style.color = "#C8C8C8";
+  else { const t = CC[type], c = t && (t[domain] || t.default); if (c && FG[c]) d.style.color = FG[c]; if (type === "error") d.className = "b"; }
   log.append(d);
   while (log.childElementCount > 1000) log.firstElementChild.remove();
   if (stick) log.scrollTop = log.scrollHeight;
@@ -469,17 +705,17 @@ function line(text, cls){
 
 function connect(){
   ws = new WebSocket((location.protocol === "https:" ? "wss://" : "ws://") + location.host + "/kore/console");
-  ws.onopen = () => { backoff = 1000; $("conn").className = "on"; log.replaceChildren(); line("[console connected]", "sys"); };
+  ws.onopen = () => { backoff = 1000; wsOn = true; updSB(); log.replaceChildren(); line("[console connected]", "sys"); };
   ws.onmessage = e => {
     let m; try { m = JSON.parse(e.data); } catch { return; }
     if (!obj(m)) return;
-    if (m.ev === "output") { line(String(m.message ?? ""), String(m.type ?? "")); safe(chatIn, m); }
+    if (m.ev === "output") { line(String(m.message ?? ""), str(m.type), str(m.domain)); safe(chatIn, m); }
     else if (m.ev === "inputted") line("> " + (m.data ?? ""), "input");
     else if (m.ev === "title") document.title = m.title ? "Kore - " + m.title : "Kore Panel";
     else if (m.ev === "error") line("[" + (m.message ?? "error") + "]", "error");
   };
   ws.onclose = () => {
-    $("conn").className = ""; ws = null;
+    wsOn = false; updSB(); ws = null;
     if (!authed) return;
     line(`[disconnected, retrying in ${backoff / 1000}s]`, "sys");
     setTimeout(connect, backoff); backoff = Math.min(backoff * 2, 30000);
@@ -495,29 +731,63 @@ function send(cmd){
   else line("[not connected]", "error");
 }
 
+// ---------------------------------------------------------------- input row (target · command · send as)
 const CONFIRM = {respawn: "Respawn at the save point?", relog: "Disconnect and log in again?"};
-for (const c of ["ai on", "ai manual", "ai off", "s", "i", "sit", "stand", "tele", "respawn", "reload config"]){
-  const b = document.createElement("button"); b.type = "button"; b.textContent = c;
-  b.onclick = () => { if (!CONFIRM[c] || confirm(CONFIRM[c])) { send(c); toast("> " + c); } }; $("btns").append(b);
+const MODE_LABELS = {cmd: ["Command", "Cmd"], c: ["Public chat", "Public"], p: ["Party chat", "Party"], g: ["Guild chat", "Guild"], pm: ["PM", "PM…"]};
+function updMode(){
+  const m = $("mode").value;
+  $("inrow").classList.toggle("pm", m === "pm");
+  $("cmd").placeholder = m === "cmd" ? (isPhone() ? "ai off, move 120 150…" : "Type a command, e.g. ai off, move 120 150, talk 2")
+    : m === "pm" ? "Private message" : "Chat message (start with / for a command)";
+  store("kp-mode", m);
 }
-$("f").onsubmit = e => { e.preventDefault(); send($("cmd").value); $("cmd").value = ""; };
+$("mode").onchange = updMode;
+$("inrow").onsubmit = e => {
+  e.preventDefault();
+  const text = $("cmd").value.replace(/[\r\n]+/g, " ").trim(); if (!text) return;
+  const mode = $("mode").value;
+  if (mode === "cmd") { send(text); if (view !== "console") toast("> " + text); }
+  else if (/^\//.test(text)) { send(text.slice(1)); if (view !== "console") toast("> " + text.slice(1)); }
+  else {
+    const to = safeName($("pmto").value), toShown = $("pmto").offsetParent !== null;
+    if (mode === "pm" || (toShown && to)) {
+      if (!to) { toast("enter a name"); $("pmto").focus(); return; }
+      $("pmto").value = to;
+      send(`pm "${to}" ${text}`);
+    } else if (mode === "c" || mode === "p" || mode === "g") send(`${mode} ${text}`);
+  }
+  $("cmd").value = "";
+};
 $("cmd").onkeydown = e => {
   if (e.key === "ArrowUp" && hpos < hist.length - 1) { hpos++; $("cmd").value = hist[hpos]; e.preventDefault(); }
   else if (e.key === "ArrowDown") { hpos = Math.max(-1, hpos - 1); $("cmd").value = hpos < 0 ? "" : hist[hpos]; e.preventDefault(); }
 };
+// quick-command chips (phone)
+fill($("quick"), ["ai on", "ai manual", "ai off", "sit", "stand", "tele", "s", "i", "respawn", "reload config"].map(c =>
+  el("button", {type: "button", class: CONFIRM[c] ? "danger" : "", onclick: () => run(c, {confirm: CONFIRM[c]})}, c)));
+// PM target suggestions: people who whispered + nearby players
+const pmSeen = new Set(); let pmKey = "";
+function updPmNames(s){
+  const names = new Set(pmSeen);
+  for (const p of arr(s.players).filter(obj)) { const n = safeName(p.name); if (n) names.add(n); }
+  const key = [...names].sort().join("\n"); if (key === pmKey) return; pmKey = key;
+  fill($("pmNames"), [...names].sort().slice(0, 80).map(n => el("option", {value: n})));
+}
 
-// ---------------------------------------------------------------- action sheet
+// ---------------------------------------------------------------- dialogs (action sheet)
+function dlgHead(title, onX){ return el("div", {class: "dlg-h"}, el("b", null, title), el("button", {type: "button", class: "x", "aria-label": "Close", onclick: onX}, "×")); }
 function sheet(title, items, opt){
   opt = opt || {};
-  const box = $("sheet-box");
-  fill(box, el("div", {class: "ttl"}, title), opt.sub ? el("div", {class: "sub"}, opt.sub) : null);
+  const body = el("div", {class: "dlg-b"}, opt.sub ? el("div", {class: "sub"}, opt.sub) : null);
   for (const it of items.filter(Boolean)){
-    box.append(el("button", {type: "button", class: it.danger ? "danger" : (it.primary ? "primary" : ""), onclick: () => {
+    body.append(el("button", {type: "button", class: "sact " + (it.danger ? "danger" : (it.primary ? "primary" : "")), onclick: () => {
       closeSheet();
       if (it.fn) it.fn(); else run(it.cmd, {confirm: it.confirm, console: it.console});
     }}, it.label));
   }
-  box.append(el("button", {type: "button", onclick: closeSheet}, "Cancel"));
+  body.append(el("div", {class: "dlg-f"}, el("button", {type: "button", onclick: closeSheet}, "Cancel")));
+  fill($("sheet-box"), dlgHead(title, closeSheet), body);
+  $("sheet-box").setAttribute("aria-label", title);
   $("sheet").hidden = false;
 }
 function closeSheet(){ $("sheet").hidden = true; if (M.mark) { M.mark = null; drawSoon(); } }
@@ -540,41 +810,51 @@ function itemCmd(base, it, verb, conf){
   };
 }
 
-// ---------------------------------------------------------------- items
-const ITEM_SUBS = [["inv", "Inventory"], ["cart", "Cart"], ["storage", "Storage"]];
+// ---------------------------------------------------------------- inventory / cart / storage
 const ITEM_FILTERS = [["all", "All"], ["usable", "Usable"], ["equip", "Equip"], ["etc", "Etc"], ["card", "Card"], ["arrow", "Ammo"], ["other", "Other"]];
-let itemSub = store("kp-isub") || "inv", itemFilter = "all";
-$("i-sub").replaceChildren(...ITEM_SUBS.map(([k, t]) => el("button", {type: "button", id: "is-" + k, onclick: () => { itemSub = k; store("kp-isub", k); renderItems(); }}, t)));
-$("i-filter").replaceChildren(...ITEM_FILTERS.map(([k, t]) => el("button", {type: "button", id: "if-" + k, onclick: () => { itemFilter = k; renderItems(); }}, t)));
-
-function itemRow(it, onTap){
-  const tags = [];
-  if (it.equipped) tags.push(el("span", {class: "tag eq"}, str(it.equipped)));
-  if (it.identified === false) tags.push(el("span", {class: "tag unid"}, "unID"));
-  if (it.broken) tags.push(el("span", {class: "tag bad"}, "broken"));
-  return el("button", {type: "button", class: "li", onclick: onTap},
-    el("span", {class: "amt", style: "min-width:28px"}, int(it.idx) == null ? "" : "#" + it.idx),
-    el("div", {class: "grow"}, el("b", null, dash(it.name)), el("div", {class: "sub"}, str(it.type), tags)),
-    el("span", {class: "amt"}, int(it.amount) != null ? "x" + it.amount : ""));
-}
+let itemFilter = "all"; const itemSel = {inv: null, cart: null, storage: null};
 function idxRanges(list){
   const ns = [...new Set(list)].sort((a, b) => a - b), out = [];
   for (let i = 0; i < ns.length; i++){ let j = i; while (j + 1 < ns.length && ns[j + 1] === ns[j] + 1) j++; out.push(i === j ? `${ns[i]}` : `${ns[i]}-${ns[j]}`); i = j; }
   return out.join(",");
 }
+function itemActs(it, where){
+  const i = int(it.idx); if (i == null) return [];
+  const cart = obj(S.cart), sto = obj(S.storage), stOpen = !!(sto && sto.open);
+  const acts = [];
+  if (where === "inv"){
+    if (it.usable || it.type === "usable") acts.push({label: "Use", cmd: "is " + i, primary: true});
+    if (it.type === "equip" || it.type === "arrow" || it.equipped){
+      if (it.equipped) acts.push({label: "Unequip", cmd: "uneq " + i});
+      else acts.push({label: "Equip", cmd: "eq " + i, primary: true});
+    }
+    if (cart) acts.push({label: "To cart", fn: itemCmd("cart add", it, "Put in cart")});
+    if (stOpen) acts.push({label: "To storage", fn: itemCmd("storage add", it, "Put in storage")});
+    acts.push({label: "Sell…", fn: itemCmd("sell", it, "Add to sell list", true)});
+    if (!it.equipped) acts.push({label: "Drop…", danger: true, fn: itemCmd("drop", it, "Drop", true)});
+    acts.push({label: "Describe", cmd: "i desc " + i, console: true});
+  } else if (where === "cart"){
+    acts.push({label: "Get from cart", fn: itemCmd("cart get", it, "Get from cart"), primary: true});
+    if (stOpen) acts.push({label: "To storage", fn: itemCmd("storage addfromcart", it, "Put in storage")});
+    acts.push({label: "Describe", cmd: "cart desc " + i, console: true});
+  } else if (stOpen){
+    acts.push({label: "Get from storage", fn: itemCmd("storage get", it, "Get from storage"), primary: true});
+    if (cart) acts.push({label: "Get to cart", fn: itemCmd("storage gettocart", it, "Get to cart")});
+  }
+  return acts;
+}
+const doAct = a => a.fn ? a.fn() : run(a.cmd, {confirm: a.confirm, console: a.console});
+const typeName = t => ({usable: "Usable", etc: "Etc", equip: "Equipment", card: "Card", arrow: "Ammo", other: "Other"})[str(t)] || str(t);
 function renderItems(){
-  const s = S, cart = obj(s.cart), sto = obj(s.storage);
-  for (const [k] of ITEM_SUBS) $("is-" + k).className = itemSub === k ? "on" : "";
-  for (const [k] of ITEM_FILTERS) $("if-" + k).className = itemFilter === k ? "on" : "";
-  $("i-filter").hidden = itemSub !== "inv";
+  const s = S, where = view, cart = obj(s.cart), sto = obj(s.storage);
   let items = [], head = "", acts = [];
-  if (itemSub === "inv"){
+  if (where === "inv"){
     items = arr(s.inventory);
-    head = `${items.length} items · Weight ${s.weight == null ? "-" : `${fmt(s.weight)}/${fmt(s.weight_max)}`} · Zeny ${fmt(s.zeny)}`;
+    head = `${items.length} items · Weight ${s.weight == null ? "-" : `${fmt(s.weight)} / ${fmt(s.weight_max)}`} · Zeny ${fmt(s.zeny)}`;
     acts = [["sell list", () => run("sell list", {console: true})], ["sell done", () => run("sell done", {confirm: "Sell everything in the sell list?"}), "danger"], ["sell cancel", () => run("sell cancel")]];
-  } else if (itemSub === "cart"){
+  } else if (where === "cart"){
     items = cart ? arr(cart.items) : [];
-    head = cart ? `Cart ${dash(cart.count)}/${dash(cart.count_max)} · Weight ${fmt(cart.weight)}/${fmt(cart.weight_max)}` : "No cart";
+    head = cart ? `Cart ${dash(cart.count)}/${dash(cart.count_max)} · Weight ${fmt(cart.weight)} / ${fmt(cart.weight_max)}` : "No cart";
     if (cart) acts = [["cart (console)", () => run("cart", {console: true})]];
   } else {
     items = sto ? arr(sto.items) : [];
@@ -587,60 +867,68 @@ function renderItems(){
       }, "danger"], ["storage close", () => run("storage close")], ["storage (console)", () => run("storage", {console: true})]];
     }
   }
-  $("i-head").textContent = head;
-  $("i-acts").replaceChildren(...acts.map(([t, fn, cls]) => el("button", {type: "button", class: cls || "", onclick: fn}, t)));
+  pageNote = head; updSB();
   items = items.filter(obj);
-  if (itemSub === "inv" && itemFilter !== "all") items = items.filter(i => str(i.type) === itemFilter);
+  if (where === "inv" && itemFilter !== "all") items = items.filter(i => str(i.type) === itemFilter);
+  const selIt = items.find(i => int(i.idx) != null && int(i.idx) === itemSel[where]) || null;
+  if (!selIt) itemSel[where] = null;
+  const key = JSON.stringify([where, items, itemSel[where], itemFilter, !!cart, sto && sto.open, head]);
+  if (SECKEY.items === key) return; SECKEY.items = key;
+
+  // toolbar: selection actions | page actions | filter
+  const sa = selIt ? itemActs(selIt, where) : [];
+  const filt = where === "inv" ? el("select", {"aria-label": "Show", onchange: e => { itemFilter = e.target.value; renderItems(); }},
+    ITEM_FILTERS.map(([k, t]) => el("option", {value: k, selected: itemFilter === k}, t))) : null;
+  fill($("i-tb"),
+    el("span", {style: "font-weight:600"}, selIt ? `Selected: ${dash(selIt.name)}` : el("span", {class: "dim", style: "font-weight:400"}, "Select an item")),
+    sa.map(a => el("button", {type: "button", class: a.danger ? "danger" : "", onclick: () => doAct(a)}, a.label)),
+    selIt && where === "storage" && !(sto && sto.open) ? el("span", {class: "dim small"}, "open storage at a Kafra to move items") : null,
+    sa.length ? null : el("span", {class: "dim small"}, where === "inv" ? "Click a row to use, equip, move, sell or drop it" : ""));
+  fill($("i-pacts"), acts.map(([t, fn, cls]) => el("button", {type: "button", class: cls || "", onclick: fn}, t)), filt);
+  $("i-head").textContent = head;
+
   const box = $("i-list");
-  if (!items.length) { box.replaceChildren(el("div", {class: "empty"}, itemSub === "inv" && !Array.isArray(s.inventory) ? "Inventory not available yet" : "Nothing here")); return; }
-  box.replaceChildren(...items.map(it => itemRow(it, () => itemSheet(it, itemSub))));
-}
-function itemSheet(it, where){
-  const i = int(it.idx);
-  if (i == null) return toast("item has no index");
-  const cart = obj(S.cart), sto = obj(S.storage), stOpen = !!(sto && sto.open);
-  const acts = [];
-  if (where === "inv"){
-    if (it.usable || it.type === "usable") acts.push({label: "Use", cmd: "is " + i, primary: true});
-    if (it.type === "equip" || it.type === "arrow" || it.equipped){
-      if (it.equipped) acts.push({label: "Unequip", cmd: "uneq " + i});
-      else acts.push({label: "Equip", cmd: "eq " + i, primary: true});
-    }
-    if (cart) acts.push({label: "Put in cart", fn: itemCmd("cart add", it, "Put in cart")});
-    if (stOpen) acts.push({label: "Put in storage", fn: itemCmd("storage add", it, "Put in storage")});
-    acts.push({label: "Add to sell list", fn: itemCmd("sell", it, "Add to sell list", true)});
-    if (!it.equipped) acts.push({label: "Drop", danger: true, fn: itemCmd("drop", it, "Drop", true)});
-  } else if (where === "cart"){
-    acts.push({label: "Get from cart", fn: itemCmd("cart get", it, "Get from cart"), primary: true});
-    if (stOpen) acts.push({label: "Put in storage", fn: itemCmd("storage addfromcart", it, "Put in storage")});
-    acts.push({label: "Describe", cmd: "cart desc " + i, console: true});
-  } else {
-    if (stOpen){
-      acts.push({label: "Get from storage", fn: itemCmd("storage get", it, "Get from storage"), primary: true});
-      if (cart) acts.push({label: "Get to cart", fn: itemCmd("storage gettocart", it, "Get to cart")});
-    }
-  }
-  if (where !== "cart" && where !== "storage") acts.push({label: "Describe", cmd: "i desc " + i, console: true});
-  sheet(`${dash(it.name)}${int(it.amount) != null ? " x" + it.amount : ""}`, acts, {sub: `#${i} · ${str(it.type)}${it.equipped ? " · equipped: " + it.equipped : ""}${!stOpen && where === "storage" ? " · open storage at a Kafra to move items" : ""}`});
+  if (!items.length) { fill(box, el("div", {class: "empty"}, where === "inv" && !Array.isArray(s.inventory) ? "Inventory not available yet" : "Nothing here")); return; }
+  const row = it => {
+    const tags = [];
+    if (it.identified === false) tags.push(el("span", {class: "tag unid"}, "unID"));
+    if (it.broken) tags.push(el("span", {class: "tag bad"}, "broken"));
+    const i = int(it.idx), sel = i != null && i === itemSel[where];
+    return el("div", {class: "tr it-grid" + (sel ? " sel" : ""), role: "row", tabIndex: 0, "aria-selected": sel ? "true" : "false",
+      onclick: () => { itemSel[where] = sel ? null : i; renderItems(); },
+      onkeydown: e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); itemSel[where] = i; renderItems(); } }},
+      el("span", {class: "c2"}, i == null ? "" : String(i)),
+      el("span", null, dash(it.name), tags, el("span", {class: "sub"}, typeName(it.type), it.equipped ? el("span", {class: "tag eq"}, str(it.equipped)) : null)),
+      el("span", null, int(it.amount) != null ? fmt(it.amount) : ""),
+      el("span", {class: "c2 c4"}, typeName(it.type)),
+      el("span", {class: "c2 c5"}, it.equipped ? str(it.equipped) : ""));
+  };
+  fill(box, el("div", {class: "th it-grid"}, el("span", null, "#"), el("span", null, "Item"), el("span", null, "Amount"), el("span", {class: "c4"}, "Type"), el("span", {class: "c5"}, "Equipped")),
+    items.map(row));
 }
 
 // ---------------------------------------------------------------- skills
 function renderSkills(){
   const s = S, st = obj(s.stats), pts = int(st && st.skill_points_free);
-  $("k-points").textContent = `Skill points: ${pts ?? "-"} · SP ${fmt(s.sp)}/${fmt(s.sp_max)}`;
+  $("k-points").textContent = `Skill points: ${pts ?? "-"} · SP ${fmt(s.sp)} / ${fmt(s.sp_max)}`;
   const box = $("k-list-box"), list = arr(s.skills).filter(obj);
-  if (!list.length) { box.replaceChildren(el("div", {class: "empty"}, Array.isArray(s.skills) ? "No skills" : "Skills not available yet")); return; }
-  box.replaceChildren(...list.map(k => {
-    const h = handleOk(k.handle), lv = int(k.lv) ?? 0, max = int(k.max_lv);
-    const canUse = h && lv > 0 && k.target !== "passive";
-    const sid = int(k.id); // `skills add` takes the skill number, not the handle
-    const canUp = sid != null && (k.up === true || (k.up == null && pts > 0 && (max == null || lv < max)));
-    return el("div", {class: "li card", style: "padding:6px 8px"},
-      el("div", {class: "grow"}, el("b", null, dash(k.name)),
-        el("div", {class: "sub"}, `Lv ${lv}${max != null ? "/" + max : ""} · ${k.sp != null ? k.sp + " SP" : "-"} · ${str(k.target || "?")}`)),
-      canUp ? el("button", {type: "button", style: "min-width:44px", onclick: () => run("skills add " + sid, {confirm: `Add a skill point to ${str(k.name)}?`})}, "+") : null,
-      canUse ? el("button", {type: "button", class: "primary", style: "min-width:60px", onclick: () => useSkill(k)}, "Use") : null);
-  }));
+  sec("k-list-box", JSON.stringify([list, pts, Array.isArray(s.skills)]), () => {
+    if (!list.length) { fill(box, el("div", {class: "empty"}, Array.isArray(s.skills) ? "No skills" : "Skills not available yet")); return; }
+    fill(box, el("div", {class: "th sk-grid"}, el("span", null, "Skill"), el("span", {class: "c2"}, "Level"), el("span", {class: "c3"}, "SP"), el("span", {class: "c4"}, "Target"), el("span", null, "")),
+      list.map(k => {
+        const h = handleOk(k.handle), lv = int(k.lv) ?? 0, max = int(k.max_lv);
+        const canUse = h && lv > 0 && k.target !== "passive";
+        const sid = int(k.id); // `skills add` takes the skill number, not the handle
+        const canUp = sid != null && (k.up === true || (k.up == null && pts > 0 && (max == null || lv < max)));
+        const lvT = `${lv}${max != null ? " / " + max : ""}`;
+        return el("div", {class: "tr sk-grid"},
+          el("span", null, dash(k.name), el("span", {class: "sub"}, `Lv ${lvT} · ${k.sp != null ? k.sp + " SP" : "-"} · ${str(k.target || "?")}`)),
+          el("span", {class: "c2"}, lvT), el("span", {class: "c2 c3"}, k.sp != null ? str(k.sp) : "-"), el("span", {class: "c2 c4"}, str(k.target || "?")),
+          el("span", {class: "acts-cell"},
+            canUp ? el("button", {type: "button", "aria-label": "Add a skill point", onclick: () => run("skills add " + sid, {confirm: `Add a skill point to ${str(k.name)}?`})}, "+") : null,
+            canUse ? el("button", {type: "button", class: "primary", onclick: () => useSkill(k)}, "Use") : null));
+      }));
+  });
 }
 function chooseLevel(k, cb){
   const lv = int(k.lv) ?? 1;
@@ -658,7 +946,7 @@ function useSkill(k){
       const acts = [];
       if (int(S.x) != null) acts.push({label: `At my position (${S.x}, ${S.y})`, cmd: `sl ${h} ${S.x} ${S.y} ${lv}`, primary: true});
       for (const m of byDist(S.monsters).slice(0, 8)) if (int(m.x) != null && int(m.y) != null) acts.push({label: `At ${dash(m.name)} (${m.x}, ${m.y})`, cmd: `sl ${h} ${m.x} ${m.y} ${lv}`});
-      acts.push({label: "Pick on map...", fn: () => { M.pick = {h, lv, name: str(k.name)}; show("map"); updPick(); }});
+      acts.push({label: "Pick on map...", fn: () => { M.pick = {h, lv, name: str(k.name)}; showMap(); updPick(); }});
       return sheet(`${dash(k.name)} Lv ${lv}: where?`, acts);
     }
     // actor (or unknown): pick a target
@@ -670,59 +958,49 @@ function useSkill(k){
 }
 $("k-list").onclick = () => run("skills", {console: true});
 
-// ---------------------------------------------------------------- chat
+// ---------------------------------------------------------------- chat log
 const CHAT_DOMAINS = {publicchat: "pub", selfchat: "pub", schat: "pub", partychat: "party", guildchat: "guild", pm: "pm", "pm/sent": "pm"};
 const CHAT_SUBS = [["all", "All"], ["pub", "Public"], ["party", "Party"], ["guild", "Guild"], ["pm", "PM"]];
 const chatBuf = []; let chatSub = "all", unread = 0;
-$("ch-sub").replaceChildren(...CHAT_SUBS.map(([k, t]) => el("button", {type: "button", id: "cs-" + k, onclick: () => { chatSub = k; renderChat(); }}, t)));
+fill($("ch-sub"), CHAT_SUBS.map(([k, t]) => el("button", {type: "button", id: "cs-" + k, onclick: () => { chatSub = k; renderChat(); }}, t)));
 function chatNode(c){
   const d = el("div", {class: "d-" + c.domain.replace("/", "")}, el("time", null, c.t), c.text);
   const m = c.text.match(/^\((?:From|To): ([^)]+)\) :/);
-  if (m) { d.style.cursor = "pointer"; d.onclick = () => setPm(m[1]); }
+  if (m) { d.style.cursor = "pointer"; d.title = "Reply to " + m[1]; d.onclick = () => setPm(m[1]); }
   return d;
 }
 function chatIn(m){
   const dom = str(m.domain), sub = CHAT_DOMAINS[dom];
   if (!sub) return;
   const c = {t: new Date().toTimeString().slice(0, 5), text: str(m.message).replace(/\n$/, ""), domain: dom, sub};
+  const pm = c.text.match(/^\((?:From|To): ([^)]+)\) :/); if (pm && safeName(pm[1])) { pmSeen.add(safeName(pm[1])); pmKey = ""; }
   chatBuf.push(c); if (chatBuf.length > 500) chatBuf.shift();
   if (view === "chat"){
     if (chatSub === "all" || chatSub === sub){
       const box = $("chatlog"), stick = box.scrollTop + box.clientHeight >= box.scrollHeight - 30;
+      if (box.firstElementChild && box.firstElementChild.classList.contains("empty")) box.replaceChildren();
       box.append(chatNode(c)); while (box.childElementCount > 500) box.firstElementChild.remove();
       if (stick) box.scrollTop = box.scrollHeight;
     }
   } else if (dom !== "selfchat" && dom !== "pm/sent") { unread++; updBadge(); }
 }
+const SUB_MODE = {pub: "c", party: "p", guild: "g", pm: "pm"};
 function renderChat(){
   for (const [k] of CHAT_SUBS) $("cs-" + k).className = chatSub === k ? "on" : "";
   const box = $("chatlog");
   const list = chatBuf.filter(c => chatSub === "all" || c.sub === chatSub);
-  box.replaceChildren(...(list.length ? list.map(chatNode) : [el("div", {class: "empty", style: "border:0"}, "No messages yet (collected while this page is open)")]));
+  box.replaceChildren(...(list.length ? list.map(chatNode) : [el("div", {class: "empty"}, "No messages yet (collected while this page is open)")]));
   box.scrollTop = box.scrollHeight;
-  if (chatSub !== "all" && ({pub: "c", party: "p", guild: "g", pm: "pm"})[chatSub]) { $("ch-mode").value = ({pub: "c", party: "p", guild: "g", pm: "pm"})[chatSub]; updMode(); }
+  if (chatSub !== "all" && SUB_MODE[chatSub]) { $("mode").value = SUB_MODE[chatSub]; updMode(); }
 }
-function setPm(name){ $("ch-mode").value = "pm"; $("ch-to").value = safeName(name); updMode(); $("ch-text").focus(); }
-function updMode(){ $("ch-to").hidden = $("ch-mode").value !== "pm"; }
-$("ch-mode").onchange = updMode;
-$("ch-form").onsubmit = e => e.preventDefault();
-$("ch-form2").onsubmit = e => {
-  e.preventDefault();
-  const text = $("ch-text").value.replace(/[\r\n]+/g, " ").trim(); if (!text) return;
-  const mode = $("ch-mode").value;
-  if (mode === "pm"){
-    const to = safeName($("ch-to").value);
-    if (!to) { toast("enter a name"); $("ch-to").focus(); return; }
-    $("ch-to").value = to;
-    send(`pm "${to}" ${text}`);
-  } else if (mode === "c" || mode === "p" || mode === "g") send(`${mode} ${text}`);
-  $("ch-text").value = "";
-};
+function setPm(name){ $("mode").value = "pm"; $("pmto").value = safeName(name); updMode(); $("cmd").focus(); }
 
-// ---------------------------------------------------------------- map
+// ---------------------------------------------------------------- map dock (Wx MapViewer colours)
 const M = {img: null, field: null, tried: null, w: 0, h: 0, scale: 4, ox: 0, oy: 0, follow: true, ptrs: new Map(), pinch: null, drag: null, tap: null, mark: null, pick: null, raf: 0, cw: 0, ch: 0};
-const KIND = {me: ["#ffffff", "You"], monster: ["#ff5a5a", "Monster"], player: ["#5aa8ff", "Player"], party: ["#3fdf8f", "Party"], npc: ["#ffd84a", "NPC"], portal: ["#e070ff", "Portal"], item: ["#4ae0e0", "Item"]};
-$("m-legend").replaceChildren(...Object.values(KIND).map(([c, t]) => el("span", null, el("i", {style: "background:" + c}), t)));
+// kind: [dot colour, label, list text colour]
+const KIND = {me: ["#FFFF55", "You", "#111"], player: ["#00C800", "Player", "#007F00"], party: ["#3355FF", "Party", "#0000FF"], monster: ["#D70000", "Monster", "#7F0000"],
+  npc: ["#B400FF", "NPC", "#7F007F"], portal: ["#FF8040", "Portal", "#BF5F2F"], item: ["#00E0E0", "Item", "#0000C8"]};
+fill($("m-legend"), Object.values(KIND).map(([c, t]) => el("span", null, el("span", {style: "color:" + c}, t === "You" ? "● " : "■ "), t)));
 const cv = $("mapcv"), ctx = cv.getContext("2d");
 const H = () => M.h || 512;
 const toScreen = (x, y) => [M.ox + (x + 0.5) * M.scale, M.oy + (H() - 1 - y + 0.5) * M.scale];
@@ -756,7 +1034,7 @@ function loadImg2(key, f){ // fallback: field image missing, try map name
   img.onerror = () => { if (M.field !== key) return; M.img = null; M.w = M.h = 0; drawSoon(); };
   img.src = "/kore/map/" + encodeURIComponent(f) + ".png";
 }
-function mapUpdate(s){ mapSetField(s); drawSoon(); renderNear(); }
+function mapUpdate(s){ mapSetField(s); drawSoon(); renderActors(); }
 function resizeMap(){
   const r = $("mapwrap").getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
   if (!r.width || !r.height) return false;
@@ -764,7 +1042,7 @@ function resizeMap(){
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   return true;
 }
-function drawSoon(){ if (!M.raf && view === "map") M.raf = requestAnimationFrame(() => { M.raf = 0; safe(draw); }); }
+function drawSoon(){ if (!M.raf && mapVisible()) M.raf = requestAnimationFrame(() => { M.raf = 0; safe(draw); }); }
 function fitMap(){
   if (!M.w) return;
   M.scale = Math.max(0.25, Math.min(M.cw / M.w, M.ch / M.h));
@@ -774,17 +1052,16 @@ function draw(){
   if (!resizeMap()) return;
   const s = S, me = int(s.x) != null && int(s.y) != null ? [num(s.x), num(s.y)] : null;
   if (M.follow && me){ M.ox = M.cw / 2 - (me[0] + 0.5) * M.scale; M.oy = M.ch / 2 - (H() - 1 - me[1] + 0.5) * M.scale; }
-  ctx.fillStyle = "#0b0d10"; ctx.fillRect(0, 0, M.cw, M.ch);
+  ctx.fillStyle = "#000"; ctx.fillRect(0, 0, M.cw, M.ch);
   if (M.img){
     ctx.save(); ctx.imageSmoothingEnabled = false; ctx.translate(M.ox, M.oy); ctx.scale(M.scale, M.scale); ctx.drawImage(M.img, 0, 0); ctx.restore();
   }
-  const r = Math.max(2.5, Math.min(7, M.scale * 0.9));
+  const r = Math.max(2.5, Math.min(6, M.scale * 0.8));
   for (const a of actors()){
     const [sx, sy] = toScreen(a.x, a.y);
     if (sx < -10 || sy < -10 || sx > M.cw + 10 || sy > M.ch + 10) continue;
-    ctx.fillStyle = KIND[a.kind][0]; ctx.beginPath();
-    if (a.kind === "portal") ctx.rect(sx - r, sy - r, r * 2, r * 2); else ctx.arc(sx, sy, a.kind === "item" ? r * 0.75 : r, 0, 7);
-    ctx.fill();
+    const rr = a.kind === "item" ? r * 0.7 : a.kind === "portal" ? r * 1.15 : r;
+    ctx.fillStyle = KIND[a.kind][0]; ctx.fillRect(sx - rr, sy - rr, rr * 2, rr * 2);
   }
   if (me){
     const [sx, sy] = toScreen(me[0], me[1]);
@@ -793,9 +1070,10 @@ function draw(){
   }
   if (M.mark){
     const [sx, sy] = toScreen(M.mark[0], M.mark[1]);
-    ctx.strokeStyle = "#ffd84a"; ctx.lineWidth = 2; ctx.strokeRect(sx - Math.max(4, M.scale / 2) - 2, sy - Math.max(4, M.scale / 2) - 2, Math.max(8, M.scale) + 4, Math.max(8, M.scale) + 4);
+    ctx.strokeStyle = "#FF6EF5"; ctx.lineWidth = 2; ctx.strokeRect(sx - Math.max(4, M.scale / 2) - 2, sy - Math.max(4, M.scale / 2) - 2, Math.max(8, M.scale) + 4, Math.max(8, M.scale) + 4);
   }
-  $("mapinfo").textContent = `${M.field || "-"}${M.w ? ` ${M.w}x${M.h}` : M.field ? " (no map image)" : ""}${me ? ` · ${me[0]},${me[1]}` : ""} · x${M.scale.toFixed(1)}`;
+  $("m-title").textContent = `${M.field || s.map || "-"}${me ? ` (${me[0]}, ${me[1]})` : ""}`;
+  $("mapinfo").textContent = `${M.w ? `${M.w}x${M.h}` : M.field ? "no map image" : ""} · x${M.scale.toFixed(1)}`;
 }
 function zoomAt(sx, sy, f){
   const ns = Math.max(0.25, Math.min(40, M.scale * f));
@@ -892,25 +1170,67 @@ function actorSheet(A){
   M.mark = [x, y]; drawSoon();
   sheet(`${KIND[A.kind][1]}: ${dash(a.name)}`, acts, {sub});
 }
-function renderNear(){
-  if (!$("mapneard").open) { $("m-ncount").textContent = actors().length; return; }
-  const list = actors().map(A => ({...A, d: num(A.a.dist) ?? 1e9})).sort((a, b) => a.d - b.d).slice(0, 60);
-  $("m-ncount").textContent = list.length;
-  $("mapnear").replaceChildren(...list.map(A => el("button", {type: "button", class: "li", onclick: () => actorSheet(A)},
-    el("i", {style: `width:10px;height:10px;border-radius:50%;flex:none;background:${KIND[A.kind][0]}`}),
-    el("div", {class: "grow"}, el("b", null, dash(A.a.name)), el("div", {class: "sub"}, `${KIND[A.kind][1]} · (${A.x}, ${A.y})`)),
-    el("span", {class: "amt"}, A.a.dist != null ? "d " + A.a.dist : ""))));
+// quick verb for the phone list (same commands as the actor menu)
+function verbFor(A){
+  const a = A.a, i = int(a.idx);
+  if (A.kind === "monster" && i != null) return ["Attack", () => run("a " + i)];
+  if ((A.kind === "player" || A.kind === "party") && safeName(a.name)) return ["PM", () => { show("chat"); setPm(safeName(a.name)); }];
+  if (A.kind === "npc" && i != null) return ["Talk", () => run("talk " + i)];
+  if (A.kind === "item" && i != null) return ["Take", () => run("take " + i)];
+  if (A.kind === "portal") return ["Go", () => run(`move ${Math.round(A.x)} ${Math.round(A.y)}`)];
+  return null;
 }
-$("mapneard").ontoggle = () => safe(renderNear);
-function updPick(){ $("mappick").hidden = !M.pick; if (M.pick) $("mappick-t").textContent = `Tap a cell to cast ${M.pick.name} Lv ${M.pick.lv}`; }
+const KORDER = {party: 0, player: 1, monster: 2, item: 3, npc: 4, portal: 5};
+let listHeld = false;
+function renderActors(){
+  const list = actors().map(A => ({...A, d: num(A.a.dist) ?? 1e9}))
+    .sort((a, b) => KORDER[a.kind] - KORDER[b.kind] || (int(a.a.idx) ?? 1e9) - (int(b.a.idx) ?? 1e9) || a.d - b.d).slice(0, 80);
+  $("m-ncount").textContent = list.length;
+  if (listHeld) return;
+  const key = JSON.stringify(list.map(A => [A.kind, A.a.idx, A.a.name, A.a.dist, A.x, A.y]));
+  if (SECKEY.act === key) return; SECKEY.act = key;
+  const box = $("actlist");
+  if (!list.length) { fill(box, el("div", {class: "empty"}, S.state === "offline" ? "Bot offline" : "Nobody around")); return; }
+  fill(box, list.map(A => {
+    const v = verbFor(A);
+    return el("div", {class: "tr ac-grid", role: "row", tabIndex: 0, onclick: () => actorSheet(A), onkeydown: e => { if (e.key === "Enter") actorSheet(A); }},
+      el("span", {class: "c2"}, int(A.a.idx) != null ? String(A.a.idx) : ""),
+      el("span", {style: "color:" + KIND[A.kind][2], title: `${KIND[A.kind][1]} (${A.x}, ${A.y})`}, dash(A.a.name) + (A.kind === "portal" && A.a.dest ? " → " + A.a.dest : "")),
+      el("span", {class: "c2"}, A.a.dist != null ? str(A.a.dist) : ""),
+      el("span", {class: "verb"}, v ? el("button", {type: "button", onclick: e => { e.stopPropagation(); v[1](); }}, v[0]) : null));
+  }));
+}
+$("actlist").addEventListener("pointerdown", () => { listHeld = true; });
+for (const ev of ["pointerup", "pointercancel", "pointerleave"]) $("actlist").addEventListener(ev, () => { if (listHeld) { listHeld = false; setTimeout(() => safe(renderActors), 300); } });
+function updPick(){ $("mappick").hidden = !M.pick; if (M.pick) $("mappick-t").textContent = `Click a cell to cast ${M.pick.name} Lv ${M.pick.lv}`; }
 $("mappick-x").onclick = () => { M.pick = null; updPick(); };
 $("m-in").onclick = () => zoomAt(M.cw / 2, M.ch / 2, 1.5);
 $("m-out").onclick = () => zoomAt(M.cw / 2, M.ch / 2, 1 / 1.5);
 $("m-fit").onclick = () => { setFollow(false); fitMap(); drawSoon(); };
 $("m-follow").onclick = () => { if (M.scale < 2) M.scale = 4; setFollow(!M.follow); };
 window.addEventListener("resize", drawSoon);
+function showMap(){
+  if (isPhone()) return show("map");
+  if (mapHidden) { mapHidden = false; store("kp-nomap", "0"); applyLayout(); }
+}
 
-// ---------------------------------------------------------------- NPC talk + deal
+// splitter between the notebook and the right column
+(() => {
+  const sp = $("split"), main = $("main");
+  const rw = parseInt(store("kp-rw"), 10); if (rw >= 240) main.style.setProperty("--rw", rw + "px");
+  sp.addEventListener("pointerdown", e => {
+    try { sp.setPointerCapture(e.pointerId); } catch (_) {}
+    const move = ev => {
+      const r = main.getBoundingClientRect();
+      const w = Math.round(Math.max(240, Math.min(r.width - 380, r.right - ev.clientX - 4)));
+      main.style.setProperty("--rw", w + "px"); store("kp-rw", String(w)); drawSoon();
+    };
+    const up = () => { sp.removeEventListener("pointermove", move); sp.removeEventListener("pointerup", up); sp.removeEventListener("pointercancel", up); };
+    sp.addEventListener("pointermove", move); sp.addEventListener("pointerup", up); sp.addEventListener("pointercancel", up);
+  });
+})();
+
+// ---------------------------------------------------------------- NPC talk (Wx dialog) + deal
 let talkKey = null, talkHidden = null;
 function renderTalk(s){
   const t = obj(s.talk);
@@ -921,31 +1241,47 @@ function renderTalk(s){
   $("talk").hidden = false;
   if (key === talkKey) return; // don't rebuild while user types
   talkKey = key;
-  const st = str(t.state), box = $("talk-box"), msgs = el("div", {class: "msgs"}, arr(t.messages).map(m => el("div", null, str(m))));
-  const acts = [];
+  const st = str(t.state), box = $("talk-box"), msgs = el("div", {class: "tmsg"}, arr(t.messages).map(m => el("div", null, str(m))));
+  const body = [];
+  let ok = null, okLabel = "OK";
   if (st === "responses"){
-    arr(t.responses).forEach((r, n) => { if (r != null && str(r) !== "") acts.push(el("button", {type: "button", onclick: () => run("talk resp " + n)}, str(r))); });
+    let selN = null;
+    const opts = [];
+    const pick = (n, o) => { selN = n; for (const x of opts) { x.classList.toggle("sel", x === o); x.setAttribute("aria-selected", x === o ? "true" : "false"); } };
+    arr(t.responses).forEach((r, n) => {
+      if (r == null || str(r) === "") return;
+      const o = el("div", {class: "opt", role: "option", tabIndex: 0, "aria-selected": "false",
+        onclick: () => pick(n, o), ondblclick: () => run("talk resp " + n),
+        onkeydown: e => { if (e.key === "Enter") run("talk resp " + n); }}, str(r));
+      opts.push(o);
+    });
+    body.push(el("div", {class: "lbox", role: "listbox", "aria-label": "Responses"}, opts));
+    if (opts.length) pick(arr(t.responses).findIndex(r => r != null && str(r) !== ""), opts[0]);
+    ok = () => selN == null ? toast("choose a response") : run("talk resp " + selN);
   } else if (st === "number" || st === "text"){
-    const inp = el("input", {type: st === "number" ? "number" : "text", inputMode: st === "number" ? "numeric" : "text", placeholder: st === "number" ? "number" : "text", autocomplete: "off"});
-    const f = el("form", null, inp, el("button", {type: "submit", class: "primary", style: "padding:0 14px"}, "Send"));
-    f.onsubmit = e => {
-      e.preventDefault();
+    const inp = el("input", {type: st === "number" ? "number" : "text", inputMode: st === "number" ? "numeric" : "text", placeholder: st === "number" ? "number" : "text", autocomplete: "off", style: "width:100%"});
+    const f = el("form", null, inp);
+    const submit = () => {
       const v = inp.value.replace(/[\r\n]+/g, " ").trim(); if (v === "") return;
       if (st === "number"){ if (!/^-?\d+$/.test(v)) return toast("enter a whole number"); run("talk num " + v); }
       else run("talk text " + v);
     };
-    acts.push(f);
+    f.onsubmit = e => { e.preventDefault(); submit(); };
+    body.push(f); ok = submit; okLabel = "Send";
   } else if (st === "next"){
-    acts.push(el("button", {type: "button", class: "primary", onclick: () => run("talk cont")}, "Next"));
+    ok = () => run("talk cont"); okLabel = "Next";
   } else {
     // initiated, close, buy_or_sell, store and anything unknown: show messages + continue
-    acts.push(el("button", {type: "button", class: "primary", onclick: () => run("talk cont")}, st === "close" ? "Close" : "Continue"));
-    if (st === "buy_or_sell" || st === "store") acts.push(el("div", {class: "sub"}, "Shop dialog: use buy/sell/store commands in the console."));
+    ok = () => run("talk cont"); okLabel = st === "close" ? "Close" : "Continue";
+    if (st === "buy_or_sell" || st === "store") body.push(el("div", {class: "sub"}, "Shop dialog: use buy/sell/store commands in the console."));
   }
-  fill(box, el("div", {class: "ttl"}, "NPC: " + dash(t.npc)), msgs, ...acts,
-    el("div", {class: "btns c2"},
-      el("button", {type: "button", class: "danger", onclick: () => run("talk no")}, "End talk"),
-      el("button", {type: "button", onclick: () => { talkHidden = key; talkKey = null; $("talk").hidden = true; $("talkfab").hidden = false; }}, "Hide")));
+  const hide = () => { talkHidden = key; talkKey = null; $("talk").hidden = true; $("talkfab").hidden = false; };
+  fill(box, dlgHead("NPC: " + dash(t.npc), hide),
+    el("div", {class: "dlg-b"}, msgs, body,
+      el("div", {class: "dlg-f"},
+        el("button", {type: "button", onclick: () => run("talk no")}, "End talk"),
+        el("button", {type: "button", class: "primary", onclick: ok}, okLabel))));
+  box.setAttribute("aria-label", "Talking to " + dash(t.npc));
   msgs.scrollTop = msgs.scrollHeight;
 }
 $("talkfab").onclick = () => { talkHidden = null; safe(renderTalk, S); };
@@ -964,39 +1300,99 @@ function renderDeal(s){
     other_finalized: ["Finalize", "Finalize (lock) the deal with"], finalized: ["Trade", "Complete the trade with"]}[st]
     || (st === "you_finalized" || st === "outgoing" || st === "trading" ? null : ["Accept", "Accept / finalize the deal with"]);
   fill(box,
-    el("div", {class: "row"}, el("b", null, "Deal with " + dash(d.with)), el("span", {class: "badge"}, dash(d.state).replace(/_/g, " "))),
+    el("div", null, el("b", null, "Deal with " + dash(d.with)), " ", el("span", {class: "badge"}, dash(d.state).replace(/_/g, " "))),
     st === "incoming" ? null : el("div", {class: "cols"}, col("You give", d.you, d.zeny_you), col("They give", d.them, d.zeny_them)),
-    el("div", {class: "btns c3"},
+    el("div", {class: "acts"},
       ok ? el("button", {type: "button", class: "primary", onclick: () => run("deal", {confirm: `${ok[1]} ${str(d.with)}?`})}, ok[0])
          : el("button", {type: "button", disabled: true}, st === "you_finalized" ? "Waiting..." : "Pending"),
       el("button", {type: "button", class: "danger", onclick: () => run("deal no")}, st === "incoming" ? "Decline" : "Cancel"),
       el("button", {type: "button", onclick: () => run("dl", {console: true})}, "dl")));
 }
 
-// ---------------------------------------------------------------- more (Wx menus)
-const MENUS = [
-  ["Program", [["AI auto", "ai on"], ["AI manual", "ai manual"], ["AI off", "ai off"], ["Respawn", "respawn", CONFIRM.respawn], ["Relog", "relog", CONFIRM.relog], ["Char select", "charselect", "Go back to character select?"]]],
-  ["Command", [["Teleport", "tele"], ["Memo", "memo"], ["Sit", "sit"], ["Stand", "stand"], ["Auto storage", "autostorage"], ["Auto buy", "autobuy"], ["Auto sell", "autosell", "Run auto-sell now?"]]],
-  ["Info", [["Status s", "s"], ["Stats st", "st"], ["Inventory i", "i"], ["Skills", "skills"], ["Players pl", "pl"], ["Monsters ml", "ml"], ["NPCs nl", "nl"], ["Exp", "exp"], ["Exp items", "exp item"], ["Exp monsters", "exp monster"], ["Cart cl", "cl"], ["Cart items cil", "cil"], ["Shop al", "al"], ["Vendors vl", "vl"]], true],
-  ["Merchant", [["Open shop", "openshop"], ["Close shop", "closeshop"], ["Shop status", "al", null, true], ["Nearby shops", "vl", null, true], ["Test shop", "testshop", null, true], ["Reload shop", "reload shop"]]],
-  ["Deal", [["Accept deal", "deal", "Accept / finalize the current deal?"], ["Reject deal", "deal no"], ["Deal info", "dl", null, true], ["dealAuto 0 ignore", "conf dealAuto 0"], ["dealAuto 1 reject", "conf dealAuto 1"], ["dealAuto 2 accept", "conf dealAuto 2"]]],
-  ["Party", [["Party info", "party", null, true], ["Share off", "party share 0"], ["Share on", "party share 1"], ["partyAuto 0 ignore", "conf partyAuto 0"], ["partyAuto 1 reject", "conf partyAuto 1"], ["partyAuto 2 accept", "conf partyAuto 2"], ["Accept invite", "party join 1"], ["Reject invite", "party join 0"], ["Leave party", "party leave", "Leave the party?"]]],
-  ["Friend / Guild", [["Friends", "friend", null, true], ["Accept friend", "friend accept"], ["Reject friend", "friend reject"], ["Guild info", "guild info", null, true], ["Guild members", "guild member", null, true], ["Accept guild", "guild join 1"], ["Reject guild", "guild join 0"]]],
-  ["Settings", [["PM: ignore all", "conf ignoreAll 1"], ["PM: allow all", "conf ignoreAll 0"], ["Random walk 0", "conf route_randomWalk 0"], ["Random walk 1", "conf route_randomWalk 1"], ["Random walk 2", "conf route_randomWalk 2"], ["Attack 0 never", "conf attackAuto 0"], ["Attack 1 fight back", "conf attackAuto 1"], ["Attack 2 auto", "conf attackAuto 2"], ["Loot 0 off", "conf itemsTakeAuto 0"], ["Loot 1 after", "conf itemsTakeAuto 1"], ["Loot 2 during", "conf itemsTakeAuto 2"], ["Reload config", "reload config"], ["Reload all", "reload all"]]],
-];
-fill($("mo-menus"), ...MENUS.map(([title, items, toCon]) => el("div", {class: "card"}, el("h3", null, title),
-  el("div", {class: "btns c3"}, items.map(([label, cmd, conf, con]) => el("button", {type: "button", class: conf ? "danger" : "", title: cmd,
-    onclick: () => run(cmd, {confirm: conf, console: toCon || con})}, label))))));
-function moreSub(con){
-  $("mo-con").className = con ? "on" : ""; $("mo-menu").className = con ? "" : "on";
-  $("mo-console").style.display = con ? "flex" : "none"; $("mo-menus").hidden = con;
-  if (con) log.scrollTop = log.scrollHeight;
-  store("kp-more", con ? "con" : "menu");
+// ---------------------------------------------------------------- menu bar (Wx menus)
+const mi = (label, cmd, o) => Object.assign({label, cmd}, o || {});
+const SEP = {sep: true}, hd = t => ({head: t});
+const url = u => () => window.open(u, "_blank", "noopener");
+function copyLast(){
+  const t = [...log.children].slice(-100).map(d => d.textContent).join("\n");
+  if (!navigator.clipboard) return toast("clipboard not available");
+  navigator.clipboard.writeText(t).then(() => toast("copied the last 100 lines"), () => toast("copy failed"));
 }
-$("mo-con").onclick = () => moreSub(true); $("mo-menu").onclick = () => moreSub(false);
-$("h-con").onclick = () => { show("more"); moreSub(true); };
+const MENUS = [
+  ["Program", [
+    mi("Pause Botting", "ai off", {check: () => aiIs("off")}), mi("Manual Botting", "ai manual", {check: () => aiIs("manual")}), mi("Automatic Botting", "ai on", {check: () => aiIs("auto")}),
+    SEP, mi("Copy Last 100 Lines of Text", null, {fn: copyLast}),
+    SEP, mi("Respawn", "respawn", {confirm: CONFIRM.respawn}), mi("Relog", "relog", {confirm: CONFIRM.relog}), mi("Character Select", "charselect", {confirm: "Go back to character select?"})]],
+  ["Info", [
+    mi("Status", "s", {con: true}), mi("Statistics", "st", {con: true}), mi("Inventory", "i", {con: true}), mi("Skills", "skills", {con: true}),
+    SEP, mi("Players", "pl", {con: true}), mi("Monsters", "ml", {con: true}), mi("NPCs", "nl", {con: true}),
+    SEP, mi("Experience Report", "exp", {con: true}), mi("Item Change Report", "exp item", {con: true}), mi("Monster Kill Report", "exp monster", {con: true})]],
+  ["View", [
+    mi("Map", null, {fn: () => toggleMap(), check: () => isPhone() ? view === "map" : !mapHidden}), mi("Info Bar", null, {fn: () => toggleInfo(), check: () => !infoHidden}),
+    SEP, mi("Status", null, {fn: () => show("status")}), mi("Homunculus", "homun s", {con: true}), mi("Mercenary", "merc s", {con: true}), mi("Pet", "pet s", {con: true}),
+    SEP, mi("Inventory", null, {fn: () => show("inv")}), mi("Cart", null, {fn: () => show("cart")}), mi("Storage", null, {fn: () => show("storage")}), mi("Skills", null, {fn: () => show("skills")}), mi("Chat Log", null, {fn: () => show("chat")}),
+    SEP, mi("Experience Report", "exp", {con: true}),
+    SEP, mi("Clear Console", null, {fn: () => log.replaceChildren()}), mi("Clear Chat History", "cl"), mi("Clear Item History", "cil")]],
+  ["Merchant", [
+    mi("Accept deal", "deal", {confirm: "Accept / finalize the current deal?"}), mi("Reject deal", "deal no"), mi("Deal information", "dl", {con: true}),
+    SEP, mi("Ignore all deals (0)", "conf dealAuto 0"), mi("Reject all deals (1)", "conf dealAuto 1"), mi("Accept all deals (2)", "conf dealAuto 2"),
+    SEP, mi("Open shop", "openshop"), mi("Close shop", "closeshop"), mi("Current shop status", "al", {con: true}), mi("Nearby shop list", "vl", {con: true}),
+    SEP, mi("Reload shop.txt", "reload shop"), mi("Test your shop", "testshop", {con: true})]],
+  ["Command", [
+    mi("Teleport", "tele"), mi("Memo position", "memo"), SEP, mi("Sit down", "sit"), mi("Stand up", "stand"),
+    SEP, mi("Auto storage", "autostorage"), mi("Auto buying", "autobuy"), mi("Auto selling", "autosell", {confirm: "Run auto-sell now?"}),
+    hd("Party"), mi("Party information", "party", {con: true}), mi("Disable party share (0)", "party share 0"), mi("Enable party share (1)", "party share 1"),
+    mi("Auto ignore party request (0)", "conf partyAuto 0"), mi("Auto reject party request (1)", "conf partyAuto 1"), mi("Auto accept party request (2)", "conf partyAuto 2"),
+    mi("Accept party request", "party join 1"), mi("Reject party request", "party join 0"), mi("Leave party", "party leave", {confirm: "Leave the party?"}),
+    hd("Friend"), mi("Friend list", "friend", {con: true}), mi("Accept friend request", "friend accept"), mi("Reject friend request", "friend reject"),
+    hd("Guild"), mi("Guild information", "guild info", {con: true}), mi("Guild member", "guild member", {con: true}), mi("Accept guild request", "guild join 1"), mi("Reject guild request", "guild join 0")]],
+  ["Settings", [
+    mi("Close All PM", "conf ignoreAll 1"), mi("Open All PM", "conf ignoreAll 0"),
+    SEP, mi("Turn off random routing", "conf route_randomWalk 0"), mi("Turn on random routing (1)", "conf route_randomWalk 1"), mi("Turn on random routing (2)", "conf route_randomWalk 2"),
+    SEP, mi("Turn off auto attacking", "conf attackAuto 0"), mi("Turn on auto attacking (1)", "conf attackAuto 1"), mi("Turn on auto attacking (2)", "conf attackAuto 2"),
+    SEP, mi("Turn off item picking", "conf itemsTakeAuto 0"), mi("Turn on item picking (1)", "conf itemsTakeAuto 1"), mi("Turn on item picking (2)", "conf itemsTakeAuto 2"),
+    SEP, mi("Reload config.txt", "reload config"), mi("Reload All Configs", "reload all"),
+    SEP, mi("Advanced...", null, {fn: () => show("cfg")}), mi("Control files...", null, {fn: () => { setCat("files"); show("cfg"); }}), mi("Config backups...", null, {fn: () => { setCat("backups"); show("cfg"); }})]],
+  ["Help", [
+    mi("Manual", null, {fn: url("https://openkore.com/wiki/Manual")}), mi("Console commands", null, {fn: url("https://openkore.com/wiki/Category:Console_Command")}),
+    mi("Config options", null, {fn: url("https://openkore.com/wiki/Category:Config.txt")}), mi("Forum", null, {fn: url("https://forums.openkore.com/")})]],
+];
+let menuOpen = null;
+fill($("mb-menus"), MENUS.map(([title], n) => el("button", {type: "button", class: "mb", id: "mb-" + n, "aria-haspopup": "menu",
+  onclick: () => menuOpen === n ? closeMenu() : openMenu(n),
+  onpointerenter: e => { if (menuOpen != null && menuOpen !== n && e.pointerType === "mouse") openMenu(n); }}, title)));
+function openMenu(n){
+  const [, items] = MENUS[n], d = $("menudrop"), b = $("mb-" + n);
+  document.querySelectorAll("#menubar .mb").forEach(x => x.classList.toggle("open", x === b));
+  fill(d, items.map(it => {
+    if (it.sep) return el("div", {class: "msep", role: "separator"});
+    if (it.head) return el("div", {class: "mhd"}, it.head);
+    const chk = it.check ? !!safe(it.check) : false;
+    return el("button", {type: "button", role: it.check ? "menuitemcheckbox" : "menuitem", "aria-checked": it.check ? String(chk) : null, class: "mi" + (chk ? " chk" : ""), title: it.cmd || "",
+      onclick: () => { closeMenu(); if (it.fn) it.fn(); else run(it.cmd, {confirm: it.confirm, console: it.con}); }},
+      el("span", null, it.label + (it.confirm ? "…" : "")), it.cmd ? el("span", {class: "k"}, it.cmd) : null);
+  }));
+  d.hidden = false; menuOpen = n;
+  const r = b.getBoundingClientRect(), w = d.offsetWidth;
+  d.style.left = Math.max(4, Math.min(r.left, window.innerWidth - w - 4)) + "px";
+  d.style.top = r.bottom + "px";
+  d.style.maxHeight = (window.innerHeight - r.bottom - 8) + "px";
+}
+function closeMenu(){ $("menudrop").hidden = true; menuOpen = null; document.querySelectorAll("#menubar .mb.open").forEach(x => x.classList.remove("open")); }
+document.addEventListener("pointerdown", e => { if (menuOpen != null && !e.target.closest("#menudrop, #menubar .mb")) closeMenu(); });
+$("menubar").addEventListener("scroll", closeMenu, {passive: true});
+window.addEventListener("resize", closeMenu);
+document.addEventListener("keydown", e => {
+  if (e.key !== "Escape") return;
+  if (menuOpen != null) closeMenu(); else if (!$("sheet").hidden) closeSheet();
+});
+function toggleMap(){
+  if (isPhone()) return show(view === "map" ? "console" : "map");
+  mapHidden = !mapHidden; store("kp-nomap", mapHidden ? "1" : "0"); applyLayout();
+}
+function toggleInfo(){ infoHidden = !infoHidden; store("kp-noinfo", infoHidden ? "1" : "0"); $("infobar").hidden = infoHidden; drawSoon(); }
 
-// ---------------------------------------------------------------- config editor
+// ---------------------------------------------------------------- Advanced Configuration
 const COMMON = [
   ["lockMap", "Hunt map", "map name, empty = anywhere"],
   ["route_randomWalk", "Walk around", ["0 off", "1 on", "2 on, also in town"]],
@@ -1014,13 +1410,33 @@ const COMMON = [
   ["teleportAuto_idle", "Teleport when idle", ["0", "1"]],
   ["teleportAuto_search", "Teleport to search", ["0", "1"]],
 ];
-let cfg = null; const dirty = new Map();
+// categories from OpenKore's Wx Advanced Configuration (src/Interface/Wx.pm onAdvancedConfig)
+const WXCATS = [
+  ["server", ["master", "server", "username", "password", "char"]],
+  ["X-Kore", ["XKore", "XKore_silent", "XKore_bypassBotDetection", "XKore_exeName", "XKore_listenIp", "XKore_listenPort", "XKore_publicIp", "secureAdminPassword", "adminPassword", "callSign", "commandPrefix"]],
+  ["lockMap", ["lockMap", "lockMap_x", "lockMap_y", "lockMap_randX", "lockMap_randY"]],
+  ["attack", ["attackAuto", "attackAuto_routeToLock", "attackAuto_outOfLock", "attackAuto_party", "attackAuto_onlyWhenSafe", "attackAuto_followTarget", "attackAuto_inLockOnly", "attackDistance", "attackDistanceAuto", "attackMaxDistance", "attackRouteMaxPathDistance", "attackMaxRouteTime", "attackMinPlayerDistance", "attackMinPortalDistance", "attackUseWeapon", "attackNoGiveup", "attackCanSnipe", "attackCheckLOS", "attackLooters", "attackChangeTarget", "aggressiveAntiKS"]],
+  ["route", ["route_escape_reachedNoPortal", "route_escape_randomWalk", "route_escape_shout", "route_randomWalk", "route_randomWalk_inTown", "route_randomWalk_maxRouteTime", "route_maxWarpFee", "route_maxNpcTries", "route_teleport", "route_teleport_minDistance", "route_teleport_maxTries", "route_teleport_notInMaps", "route_step"]],
+  ["teleport", ["teleportAuto_hp", "teleportAuto_sp", "teleportAuto_idle", "teleportAuto_portal", "teleportAuto_search", "teleportAuto_minAggressives", "teleportAuto_minAggressivesInLock", "teleportAuto_onlyWhenSafe", "teleportAuto_maxDmg", "teleportAuto_maxDmgInLock", "teleportAuto_deadly", "teleportAuto_useSkill", "teleportAuto_useChatCommand", "teleportAuto_allPlayers", "teleportAuto_atkCount", "teleportAuto_atkMiss", "teleportAuto_unstuck", "teleportAuto_dropTarget", "teleportAuto_dropTargetKS", "teleportAuto_attackedWhenSitting", "teleportAuto_totalDmg", "teleportAuto_totalDmgInLock", "teleportAuto_equip_leftAccessory", "teleportAuto_equip_rightAccessory", "teleportAuto_lostHomunculus"]],
+  ["follow", ["follow", "followTarget", "followEmotion", "followEmotion_distance", "followFaceDirection", "followDistanceMax", "followDistanceMin", "followLostStep", "followSitAuto", "followBot"]],
+  ["items", ["itemsTakeAuto", "itemsTakeAuto_party", "itemsGatherAuto", "itemsMaxWeight", "itemsMaxWeight_sellOrStore", "itemsMaxNum_sellOrStore", "cartMaxWeight"]],
+  ["sellAuto", ["sellAuto", "sellAuto_npc", "sellAuto_standpoint", "sellAuto_distance"]],
+  ["storageAuto", ["storageAuto", "storageAuto_npc", "storageAuto_distance", "storageAuto_npc_type", "storageAuto_npc_steps", "storageAuto_password", "storageAuto_keepOpen", "storageAuto_useChatCommand", "relogAfterStorage"]],
+  ["disconnect", ["dcOnDeath", "dcOnDualLogin", "dcOnDisconnect", "dcOnEmptyArrow", "dcOnMute", "dcOnPM", "dcOnZeny", "dcOnStorageFull", "dcOnPlayer"]],
+];
+const CATKEYS = Object.fromEntries(WXCATS);
+const CATS = [["all", "All"], ["common", "Common"], ...WXCATS.map(([n]) => [n, n]), ["raw", "Raw config.txt"], ["files", "Control files…"], ["backups", "Backups…"]];
+const isGridCat = c => c === "all" || c === "common" || !!CATKEYS[c];
+let cfg = null, cfgCat = CATS.some(c => c[0] === store("kp-cat")) ? store("kp-cat") : "common", helpKey = null; const dirty = new Map();
 function msg(t, cls){ $("c-msg").textContent = t; $("c-msg").className = "msg " + (cls || ""); }
-function updSave(){ const n = dirty.size; $("c-save").disabled = !n; $("c-save").textContent = n ? `Save ${n} change${n > 1 ? "s" : ""}` : "No changes"; }
+function updSave(){
+  const n = dirty.size;
+  $("c-save").disabled = !n; $("c-revert").disabled = !n;
+  $("c-count").textContent = `${n ? `${n} change${n > 1 ? "s" : ""}` : "No changes"} · a backup of config.txt is saved first · passwords stay on the Mac`;
+}
 function field(key, value, locked, label, hint){
-  const row = document.createElement("div"); row.className = "set";
-  const lab = document.createElement("label"); lab.textContent = label || key;
-  if (label) { const sm = document.createElement("small"); sm.textContent = key; lab.append(sm); }
+  const row = el("div", {class: "tr cg set" + (dirty.has(key) ? " dirty" : "") + (helpKey === key ? " focus" : ""), role: "row", onclick: () => showHelp(key, label, hint)});
+  const lab = el("span", {class: "key" + (label ? " lbl" : ""), role: "gridcell"}, label || key, label ? el("small", null, key) : null);
   let inp;
   if (Array.isArray(hint)) {
     inp = document.createElement("select");
@@ -1028,34 +1444,76 @@ function field(key, value, locked, label, hint){
     if (!opts.some(o => o[0] === value)) opts.unshift([value, value || "(empty)"]);
     for (const [v, t] of opts) { const o = document.createElement("option"); o.value = v; o.textContent = t; inp.append(o); }
   } else {
-    inp = document.createElement("input"); inp.autocapitalize = "off"; inp.spellcheck = false;
+    inp = document.createElement("input"); inp.autocapitalize = "off"; inp.spellcheck = false; inp.autocomplete = "off";
     if (hint === "number") inp.inputMode = "numeric"; else if (hint) inp.placeholder = hint;
   }
-  inp.value = value; inp.disabled = locked; inp.dataset.key = key;
+  inp.value = value; inp.disabled = locked; inp.dataset.key = key; inp.setAttribute("aria-label", key);
+  if (locked) inp.title = "locked: change this on the Mac";
+  inp.onfocus = () => showHelp(key, label, hint);
   inp.oninput = inp.onchange = () => {
     const orig = cfg.settings.find(s => s.key === key).value;
     if (inp.value === orig) dirty.delete(key); else dirty.set(key, inp.value);
-    document.querySelectorAll(`[data-key="${CSS.escape(key)}"]`).forEach(o => { if (o !== inp) o.value = inp.value; o.parentElement.classList.toggle("dirty", dirty.has(key)); });
+    document.querySelectorAll(`[data-key="${CSS.escape(key)}"]`).forEach(o => { if (o !== inp) o.value = inp.value; const r = o.closest(".set"); if (r) r.classList.toggle("dirty", dirty.has(key)); });
     row.classList.toggle("dirty", dirty.has(key)); updSave();
+    if (helpKey === key) showHelp(key, label, hint);
   };
-  const help = el("a", {class: "help", href: "https://openkore.com/wiki/" + encodeURIComponent(key), target: "_blank", rel: "noopener", title: "OpenKore wiki: " + key}, "?");
-  row.append(lab, inp, help); return row;
+  const help = el("a", {class: "help", href: "https://openkore.com/wiki/" + encodeURIComponent(key), target: "_blank", rel: "noopener", title: "OpenKore wiki: " + key, "aria-label": "Help for " + key, onclick: e => e.stopPropagation()}, "?");
+  row.append(lab, el("span", {class: "val", role: "gridcell"}, inp), el("span", {role: "gridcell"}, help));
+  return row;
 }
-function renderAll(){
-  const q = $("c-q").value.trim().toLowerCase(), box = $("c-all"); box.replaceChildren();
-  if (!q) { box.append(Object.assign(document.createElement("div"), {className: "dim", textContent: `${cfg.settings.length} settings - type to search`})); return; }
-  for (const s of cfg.settings.filter(s => s.key.toLowerCase().includes(q)).slice(0, 60)) box.append(field(s.key, dirty.get(s.key) ?? s.value, s.locked));
+function showHelp(key, label, hint){
+  helpKey = key;
+  document.querySelectorAll("#c-grid .set").forEach(r => { const i = r.querySelector("[data-key]"); r.classList.toggle("focus", !!i && i.dataset.key === key); });
+  const s = cfg && cfg.settings.find(x => x.key === key);
+  fill($("c-help"),
+    el("div", {style: "font-weight:600", class: "mono"}, key, label ? el("span", {style: "font-weight:400;font-family:inherit"}, "  —  " + label) : null),
+    Array.isArray(hint) ? el("p", null, hint.join(" · ")) : null,
+    el("p", null, "Saved value: ", el("b", {class: "mono"}, s ? (s.value === "" ? "(empty)" : s.value) : "-"),
+      dirty.has(key) ? [" → changed to ", el("b", {class: "mono"}, dirty.get(key) === "" ? "(empty)" : dirty.get(key))] : null,
+      s && s.locked ? el("span", {class: "dim"}, " · locked (credentials stay on the Mac)") : null),
+    el("p", {style: "color:#444"}, "From the OpenKore manual · ", el("a", {href: "https://openkore.com/wiki/" + encodeURIComponent(key), target: "_blank", rel: "noopener"}, "open the wiki page for " + key)));
+}
+function setCat(c){ if (!CATS.some(x => x[0] === c)) c = "common"; cfgCat = c; store("kp-cat", c); renderCfg(); }
+function renderCats(){
+  const have = cfg ? new Set(cfg.settings.map(s => s.key)) : null;
+  const count = c => !have ? "" : c === "all" ? cfg.settings.length : c === "common" ? COMMON.filter(x => have.has(x[0])).length : CATKEYS[c] ? CATKEYS[c].filter(k => have.has(k)).length : "";
+  fill($("c-cats"), CATS.map(([k, t]) => el("div", {class: "cat" + (cfgCat === k ? " sel" : ""), role: "option", tabIndex: 0, "aria-selected": cfgCat === k ? "true" : "false",
+    onclick: () => setCat(k), onkeydown: e => { if (e.key === "Enter") setCat(k); }}, t, count(k) !== "" ? el("small", null, `(${count(k)})`) : null)));
+  const sel = $("c-cats").querySelector(".sel"); if (sel && isPhone()) sel.scrollIntoView({block: "nearest", inline: "nearest"});
+}
+function renderCfg(){
+  renderCats();
+  const c = cfgCat, grid = isGridCat(c);
+  $("c-gridpane").hidden = !grid; $("c-rawpane").hidden = c !== "raw"; $("c-bkpane").hidden = c !== "backups"; $("c-filespane").hidden = c !== "files";
+  $("c-bar").hidden = c === "files";
+  if (c === "files" && !CF.loaded) loadFiles();
+  if (!grid || !cfg) { if (grid) fill($("c-grid"), el("div", {class: "empty"}, "loading...")); return; }
+  const q = $("c-q").value.trim().toLowerCase(), byKey = Object.fromEntries(cfg.settings.map(s => [s.key, s]));
+  const head = el("div", {class: "th cg", role: "row"}, el("span", {role: "columnheader"}, "Option"), el("span", {role: "columnheader"}, "Value"), el("span", {role: "columnheader"}, "Help"));
+  let rows;
+  if (c === "common") rows = COMMON.filter(([k, l]) => byKey[k] && (!q || k.toLowerCase().includes(q) || l.toLowerCase().includes(q)))
+    .map(([k, label, hint]) => field(k, dirty.get(k) ?? byKey[k].value, byKey[k].locked, label, hint));
+  else {
+    const keys = c === "all" ? cfg.settings.map(s => s.key) : CATKEYS[c].filter(k => byKey[k]);
+    rows = keys.filter(k => !q || k.toLowerCase().includes(q)).map(k => field(k, dirty.get(k) ?? byKey[k].value, byKey[k].locked));
+  }
+  fill($("c-grid"), head, rows.length ? rows : el("div", {class: "empty"}, q ? "No option matches " + q : "None of these options are in config.txt"));
+  $("c-grid").setAttribute("aria-label", c + " options");
+  if (helpKey && byKey[helpKey]) { const cm = COMMON.find(x => x[0] === helpKey); showHelp(helpKey, c === "common" && cm ? cm[1] : null, c === "common" && cm ? cm[2] : null); }
+  else fill($("c-help"), el("div", {class: "dim"}, "Select an option to see its value and a link to its OpenKore wiki page."));
 }
 async function loadCfg(){
   msg("loading..."); dirty.clear(); updSave(); cfgStale = false;
   const r = await fetch("/kore/config", {credentials: "include", cache: "no-store"}).catch(() => null);
   if (!r || !r.ok) { msg("could not load config", "err"); return; }
   cfg = await r.json();
-  const byKey = Object.fromEntries(cfg.settings.map(s => [s.key, s]));
-  const c = $("c-common"); c.replaceChildren();
-  for (const [k, label, hint] of COMMON) if (byKey[k]) c.append(field(k, byKey[k].value, byKey[k].locked, label, hint));
-  renderAll(); $("c-raw").value = cfg.raw;
-  $("c-bk").replaceChildren(...(cfg.backups.length ? cfg.backups : ["(none yet)"]).map(b => Object.assign(document.createElement("option"), {value: b, textContent: b.replace(/^config-(\d{4})(\d\d)(\d\d)-(\d\d)(\d\d)(\d\d)\.txt$/, "$1-$2-$3 $4:$5:$6")})));
+  if (!obj(cfg) || !Array.isArray(cfg.settings)) { cfg = null; msg("could not load config", "err"); return; }
+  cfg.settings = cfg.settings.filter(s => obj(s) && typeof s.key === "string").map(s => ({key: s.key, value: str(s.value), locked: !!s.locked}));
+  $("c-raw").value = str(cfg.raw);
+  const bks = arr(cfg.backups).filter(b => typeof b === "string");
+  $("c-bk").replaceChildren(...(bks.length ? bks : ["(none yet)"]).map(b => Object.assign(document.createElement("option"), {value: b, textContent: b.replace(/^config-(\d{4})(\d\d)(\d\d)-(\d\d)(\d\d)(\d\d)\.txt$/, "$1-$2-$3 $4:$5:$6")})));
+  pageNote = `control/config.txt · ${cfg.settings.length} options`; updSB();
+  renderCfg();
   msg("");
 }
 async function saveCfg(body, what){
@@ -1066,11 +1524,12 @@ async function saveCfg(body, what){
   await loadCfg();
   msg(j.unchanged ? "nothing changed" : `${what} saved` + (j.reloaded ? ", bot reloaded config" : " - OpenKore not reachable, reload later"), j.reloaded || j.unchanged ? "ok" : "err");
 }
-$("c-q").oninput = renderAll;
+$("c-q").oninput = () => { if (!isGridCat(cfgCat)) { cfgCat = "all"; store("kp-cat", "all"); } renderCfg(); };
 $("c-save").onclick = () => saveCfg({changes: Object.fromEntries(dirty)}, `${dirty.size} setting(s)`);
+$("c-revert").onclick = () => { dirty.clear(); updSave(); renderCfg(); msg("changes reverted"); };
 $("c-saveraw").onclick = () => { if (confirm("Replace the whole config.txt with this text?")) saveCfg({raw: $("c-raw").value}, "config.txt"); };
 $("c-restore").onclick = () => { const b = $("c-bk").value; if (b.startsWith("config-") && confirm("Restore " + b + "?")) saveCfg({restore: b}, "backup"); };
-$("c-reload").onclick = loadCfg;
+$("c-reload").onclick = () => { if (!dirty.size || confirm(`Discard ${dirty.size} unsaved change(s) and reload config.txt?`)) loadCfg(); };
 
 // ---- control files (/kore/files, /kore/file/{name}) ----
 const CF = {loaded: false, name: null, orig: ""};
@@ -1082,7 +1541,7 @@ async function loadFiles(){
   const j = r && r.ok ? await r.json().catch(() => null) : null;
   if (!obj(j)) { cfmsg("control files not available", "err"); return; }
   const files = arr(j.files).filter(f => obj(f) && typeof f.name === "string");
-  $("cf-pick").replaceChildren(el("option", {value: ""}, files.length ? "choose a file..." : "(no files)"),
+  $("cf-pick").replaceChildren(el("option", {value: ""}, files.length ? "choose a control file..." : "(no files)"),
     ...files.map(f => el("option", {value: f.name}, f.name + (num(f.size) != null ? ` (${(num(f.size) / 1024).toFixed(1)} KB)` : ""))));
   if (CF.name) $("cf-pick").value = CF.name;
   cfmsg("");
@@ -1115,30 +1574,54 @@ $("cf-refresh").onclick = loadFiles;
 $("cf-save").onclick = () => { if (CF.name && confirm(`Save ${CF.name}? A backup is made first and the bot reloads the file.`)) postFile({text: $("cf-text").value}, CF.name); };
 $("cf-restore").onclick = () => { const b = $("cf-bk").value; if (CF.name && b && confirm(`Restore ${CF.name} from backup ${prettyBk(b)}?`)) postFile({restore: b}, "backup"); };
 
-// ---------------------------------------------------------------- tabs
-const TABS = [["status", "Status"], ["map", "Map"], ["items", "Items"], ["skills", "Skills"], ["chat", "Chat"], ["cfg", "Config"], ["more", "More"]];
-$("tabbar").replaceChildren(...TABS.map(([k, t]) => el("button", {type: "button", id: "tab-" + k, onclick: () => show(k)}, t)));
+// ---------------------------------------------------------------- notebook
+// [key, label, short label (phone), page id, phone only]
+const TABS = [["console", "Console", "Console", "p-console"], ["chat", "Chat Log", "Chat", "p-chat"], ["map", "Map", "Map", null, true],
+  ["status", "Status", "Status", "p-status"], ["inv", "Inventory", "Inventory", "p-items"], ["cart", "Cart", "Cart", "p-items"], ["storage", "Storage", "Storage", "p-items"],
+  ["skills", "Skills", "Skills", "p-skills"], ["cfg", "Advanced Configuration", "Config", "p-cfg"]];
+fill($("nb"), TABS.map(([k, t, sh, , ph]) => el("button", {type: "button", role: "tab", class: "tab" + (ph ? " phone" : ""), id: "tab-" + k, onclick: () => show(k)},
+  el("span", {class: "l"}, t), el("span", {class: "s"}, sh))));
 function updBadge(){
   const b = $("tab-chat"); let nb = b.querySelector(".nb");
   if (!unread) { if (nb) nb.remove(); return; }
   if (!nb) { nb = el("span", {class: "nb"}); b.append(nb); }
-  nb.textContent = unread > 99 ? "99+" : String(unread);
+  nb.textContent = unread > 99 ? "(99+)" : `(${unread})`;
 }
 function show(k){
-  if (!TABS.some(t => t[0] === k)) k = "status";
+  if (k === "items") k = "inv"; else if (k === "more") k = "console";
+  if (!TABS.some(t => t[0] === k)) k = "console";
+  if (k === "map" && !isPhone()) { showMap(); if (view !== "map" && document.querySelector(".page.on")) return; k = "console"; }
   view = k; store("kp-view", k);
-  for (const [t] of TABS){ $("tab-" + t).classList.toggle("on", t === k); $("v-" + t).classList.toggle("on", t === k); }
-  if (k === "status") safe(renderStatusExtra, S);
-  else if (k === "map") { safe(mapUpdate, S); }
-  else if (k === "items") safe(renderItems);
+  const page = (TABS.find(t => t[0] === k) || [])[3];
+  for (const [t] of TABS){ const b = $("tab-" + t), on = t === k; b.classList.toggle("on", on); b.setAttribute("aria-selected", on ? "true" : "false"); }
+  for (const p of document.querySelectorAll(".page")) p.classList.toggle("on", p.id === page);
+  $("main").classList.toggle("mapview", k === "map");
+  $("tab-" + k).scrollIntoView({block: "nearest", inline: "nearest"});
+  if (k !== "inv" && k !== "cart" && k !== "storage" && k !== "cfg") pageNote = "";
+  SECKEY.items = null;
+  if (k === "status") safe(renderStatus, S);
+  else if (k === "inv" || k === "cart" || k === "storage") safe(renderItems);
   else if (k === "skills") safe(renderSkills);
   else if (k === "chat") { unread = 0; updBadge(); safe(renderChat); }
-  else if (k === "cfg") { if (!cfg || (cfgStale && !dirty.size)) loadCfg(); if (!CF.loaded) loadFiles(); }
-  else if (k === "more") { if (!$("mo-menus").hidden) {} else log.scrollTop = log.scrollHeight; }
+  else if (k === "cfg") { pageNote = cfg ? `control/config.txt · ${cfg.settings.length} options` : ""; renderCfg(); if (!cfg || (cfgStale && !dirty.size)) loadCfg(); if (!CF.loaded && cfgCat === "files") loadFiles(); }
+  else if (k === "console") log.scrollTop = log.scrollHeight;
+  if (mapVisible()) { SECKEY.act = null; safe(mapUpdate, S); }
+  updSB();
 }
-moreSub(store("kp-more") !== "menu");
-updMode();
-show(store("kp-view") || "status");
+function applyLayout(){
+  const ph = isPhone();
+  $("main").classList.toggle("nomap", !ph && mapHidden);
+  for (const o of $("mode").options) if (MODE_LABELS[o.value]) o.textContent = MODE_LABELS[o.value][ph ? 1 : 0];
+  updMode();
+  if (!ph && view === "map") show("console");
+  if (mapVisible()) { SECKEY.act = null; safe(mapUpdate, S); }
+}
+PHONE.addEventListener("change", applyLayout);
+$("infobar").hidden = infoHidden;
+const savedMode = store("kp-mode"); if (savedMode && MODE_LABELS[savedMode] && savedMode !== "pm") $("mode").value = savedMode;
+applyLayout();
+updSave();
+show(store("kp-view") || "console");
 
 $("h-lang").value = NAMES.lang;
 $("h-lang").onchange = e => { NAMES.lang = e.target.value; store("lang", NAMES.lang); loadNames(); if (NAMES.lang === "raw") render(S.__raw || S); };
