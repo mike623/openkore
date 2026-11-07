@@ -321,6 +321,39 @@ a.help{display:inline-flex;align-items:center;justify-content:center;min-width:2
   #toast{bottom:calc(150px + env(safe-area-inset-bottom))}
 }
 @media (min-width:900px){ .tab.phone{display:none} }
+/* ---------------- RO skin: XP-style frames, striped section bars, green ground (View > Skin) ---------------- */
+/* ponytail: light palette only; setSkin("ro") forces Theme: Light */
+html[data-skin=ro]{--ro-t1:#F7F9FE;--ro-t2:#DBE4F5;--ro-t3:#BCCBE8;--ro-tt:#1D2D5A;--ro-edge:#B4C0DA;--ro-win:#7D8FBC;--ro-btn:#8394BD;--ro-sel:#D3E0FB;--ro-ink:#1D2D5A;
+  --gauge:#2FC42F;--gsp:#3D6CF0;--pri:#4F72C4;--pri2:#3A5AA8;--sel:#D3E0FB;--hot:#E8EEFB}
+html[data-skin=ro],html[data-skin=ro] body{background:linear-gradient(180deg,#7FB85A,#6AA548 60%,#8CC46A);font-family:"PMingLiU","新細明體","Microsoft JhengHei","微軟正黑體","PingFang TC",system-ui,sans-serif}
+html[data-skin=ro] #app{gap:6px;padding:4px 0}
+html[data-skin=ro] #menubar,html[data-skin=ro] #sb{margin:0 6px;border:1px solid var(--ro-win);border-radius:6px;background:linear-gradient(180deg,var(--ro-t1),var(--ro-t2) 55%,var(--ro-t3));color:var(--ro-tt);box-shadow:2px 3px 10px rgba(0,30,0,.35)}
+html[data-skin=ro] #menubar .mb{font-weight:700;color:var(--ro-tt)}
+html[data-skin=ro] #menubar .names{color:var(--ro-tt)}
+html[data-skin=ro] #infobar{margin:0 6px;border:1px solid var(--ro-win);border-radius:6px;background:#FFF}
+html[data-skin=ro] .gbar{border-color:var(--ro-edge);border-radius:3px;background:#E8ECF5}
+html[data-skin=ro] #main{padding:0 6px}
+html[data-skin=ro] #nb{gap:4px;padding:4px;align-items:center;background:linear-gradient(180deg,var(--ro-t1),var(--ro-t2));border:1px solid var(--ro-win);border-bottom:0;border-radius:6px 6px 0 0}
+html[data-skin=ro] .tab,html[data-skin=ro] .tab.on{height:30px;margin:0;border:1px solid var(--ro-btn);border-radius:6px;background:linear-gradient(180deg,#FFF,#DFE5F2 60%,#C4CEE4);color:#1B1B1B;font-weight:400}
+html[data-skin=ro] .tab.on{background:var(--ro-sel);color:var(--ro-ink);font-weight:700;box-shadow:inset 0 1px 2px rgba(0,0,0,.2)}
+html[data-skin=ro] #pages{border:1px solid var(--ro-win);border-radius:0 0 6px 6px;overflow:hidden;box-shadow:2px 3px 10px rgba(0,30,0,.35)}
+html[data-skin=ro] #actpane,html[data-skin=ro] #mapdock{border:1px solid var(--ro-win);border-radius:6px;overflow:hidden}
+html[data-skin=ro] .dockh,html[data-skin=ro] .th,html[data-skin=ro] .tb,html[data-skin=ro] .dlg-h{background:linear-gradient(180deg,#EEF2FB,#D9E2F3);border-bottom-color:var(--ro-edge);color:var(--ro-tt)}
+html[data-skin=ro] button{border-color:var(--ro-btn);border-radius:5px;background:linear-gradient(180deg,#FFF,#DFE5F2 60%,#C4CEE4)}
+html[data-skin=ro] button:hover{background:linear-gradient(180deg,#FFF,#E8EEFB 60%,#D3E0FB)}
+html[data-skin=ro] button.primary{background:linear-gradient(180deg,#7E9BE0,#4F72C4);border-color:#3A5AA8;color:#FFF}
+html[data-skin=ro] button.on{background:var(--ro-sel);box-shadow:inset 0 1px 2px rgba(0,0,0,.2)}
+html[data-skin=ro] button:disabled{background:#E6E9F0;opacity:.7}
+/* section box with striped title bar (目前職業 / 技能 look) */
+html[data-skin=ro] fieldset{padding:0 10px 10px;border:1px solid var(--ro-edge);border-radius:6px;background:#FFF;overflow:hidden}
+html[data-skin=ro] fieldset>legend{float:left;width:calc(100% + 20px);margin:0 -10px 8px;padding:5px 10px;font-weight:700;color:var(--ro-tt);
+  background:repeating-linear-gradient(180deg,rgba(255,255,255,.35) 0 1px,transparent 1px 3px),linear-gradient(180deg,#EEF2FB,#C9D5EE);border-bottom:2px solid #1B1B1B}
+html[data-skin=ro] fieldset>legend+*{clear:both}
+html[data-skin=ro] .kv>div{border-bottom-color:#C9D2E6}
+html[data-skin=ro] .tr:hover{background:#EEF3FC}
+html[data-skin=ro] #sb>span{border-right-color:var(--ro-edge)}
+html[data-skin=ro] #log{background:rgba(8,10,16,.86)}
+html[data-skin=ro] .dlg{border-color:var(--ro-win);background:#F4F6FB}
 </style>
 </head>
 <body>
@@ -516,6 +549,9 @@ let theme = store("kore-theme") || "";
 const isDark = () => theme ? theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
 function setTheme(t){ theme = t; store("kore-theme", t); if (t) document.documentElement.dataset.theme = t; else delete document.documentElement.dataset.theme; }
 setTheme(theme);
+let skin = store("kore-skin") || "";
+function setSkin(s){ skin = s; store("kore-skin", s); if (s) { document.documentElement.dataset.skin = s; setTheme("light"); } else delete document.documentElement.dataset.skin; }
+setSkin(skin);
 function toast(t){ const d = $("toast"); d.textContent = t; d.className = "on"; clearTimeout(toastT); toastT = setTimeout(() => d.className = "", 1800); }
 
 // run a console command, optionally after confirmation
@@ -1507,6 +1543,7 @@ const MENUS = [
     SEP, mi("Inventory", null, {fn: () => show("inv")}), mi("Cart", null, {fn: () => show("cart")}), mi("Storage", null, {fn: () => show("storage")}), mi("Skills", null, {fn: () => show("skills")}), mi("Chat Log", null, {fn: () => show("chat")}),
     SEP, mi("Experience Report", "exp", {con: true}),
     SEP, mi("Theme: System", null, {fn: () => setTheme(""), check: () => !theme}), mi("Theme: Light", null, {fn: () => setTheme("light"), check: () => theme === "light"}), mi("Theme: Dark", null, {fn: () => setTheme("dark"), check: () => theme === "dark"}),
+    SEP, mi("Skin: Wx", null, {fn: () => setSkin(""), check: () => !skin}), mi("Skin: RO", null, {fn: () => setSkin("ro"), check: () => skin === "ro"}),
     SEP, mi("Clear Console", null, {fn: () => log.replaceChildren()}), mi("Clear Chat History", "cl"), mi("Clear Item History", "cil")]],
   ["Merchant", [
     mi("Accept deal", "deal", {confirm: "Accept / finalize the current deal?"}), mi("Reject deal", "deal no"), mi("Deal information", "dl", {con: true}),
