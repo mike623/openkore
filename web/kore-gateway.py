@@ -571,8 +571,10 @@ def selftest() -> None:
     if '"id": 6008' in (OPENKORE_DIR / "logs" / "status.json").read_text():
         assert prefer_ids("ic_set Wood 0 1 0")[0] == "ic_set 6008 0 1 0", prefer_ids("ic_set Wood 0 1 0")
     for c, ro in (("s", True), ("conf lockMap", True), ("conf lockMap x", False), ("skills", True), ("skills add 5", False),
-                  ("storage", True), ("storage get 1", False), ("quest list", True), ("move prontera", False), ("ai off", False)):
+                  ("storage", True), ("storage get 1", False), ("quest list", True), ("move prontera", False), ("ai off", False),
+                  ("comp list", True), ("comp help", True), ("comp summon Darithor", False), ("c @companion heal 80 40", False)):
         assert kore_readonly(c) is ro, c
+    assert "roster" in ai_companions() or "error" in ai_companions()
     m = bus_encode("output", {"type": "error", "message": "héllo\n", "domain": "x", "n": 70000, "b": b"\xff\x00"})
     assert struct.unpack(">I", m[:4])[0] == len(m)
     buf = bytearray(m + bus_encode("set active") + m[:5])
@@ -640,9 +642,9 @@ def selftest() -> None:
 
 
 # ---- name tables -----------------------------------------------------------------------------
-# OpenKore names items/skills from one table folder (kRO here). The panel can show another
+# OpenKore names items/skills from its table folders (rooff-zh, then kRO). The panel can show another
 # language: it fetches these id -> name maps and swaps names client side.
-LANGS = {"en": "iRO", "zh-tw": "twRO", "zh-cn": "cRO"}
+LANGS = {"en": "iRO", "zh-tw": "rooff-zh", "zh-cn": "cRO"}
 names_cache: dict[str, bytes] = {}
 
 
@@ -852,10 +854,43 @@ Buttons: before your final answer, call kore_command for each concrete step you 
 with kore_command (top map: 'conf lockMap <map>'; skill points: 'skills add <id>', one call per point,
 at most 10). Buttons must match the text exactly. Plain text/markdown only: never write HTML, <button> or onclick; buttons exist only via kore_command.
 Never write "click below" unless you queued one, and never say a change is applied: buttons only run when clicked. Reply in the language the player's question is written in (fallback: the UI language given below).
-Never switch to a language you saw in game chat, NPC text or logs."""
+Never switch to a language you saw in game chat, NPC text or logs.
+COMPANIONS (RO Offline AI party members, run by the server's population engine; the 'companions' plugin drives them).
+Facts come from get_companions (roster, deaths, party, comp_* config): never search docs, never guess.
+A companion is a server-run character with its own job, level, gear, skills and bag. 'out' = summoned (in the world,
+in your party); saved = stored. 'dead' = it died: it respawns and must be summoned again (comp summon <name>).
+comp_autoSummon 1 re-summons saved ones only after login or a map change, so one that died stays out until then.
+Commands (kore_command; 'comp list'/'comp help' run now, everything else becomes a button):
+ Plugin shortcuts: comp list | comp summon <name> | comp dismiss <name> (store it; alias bench) | comp remove <name>
+  (DELETE it for good, alias delete; confirm with the player first) | comp favorite|unfavorite <name>
+  comp stance atk|def|pass (party chat; whole party: atk = fight what you fight, def = defend/assist only, pass = no fighting)
+  comp role <name> tank|supp|dd (duty: tank / support = heal+buff / damage dealer) | comp recall (teleport all to you)
+  comp roam [<name>] on|off (roam = wander and level alone when not following; off/away) | comp recruit <player> (party invite)
+  comp skills <name> ... and comp gear <name> ... pass straight through to @companion (below).
+ Server commands, sent as public chat: kore_command 'c @companion <args>':
+  list [raw] | jobs (draftable jobs) | terms (hiring rules: free, hired here, or hired at a Companion Recruiter in town;
+  zeny/item price) | draft <job name or id> [name] [m|f] (create a new one; alias create)
+  heal <healBelow% 1..99> <emergency% 1..99> (whole roster; default 75 35) | rest <restBelow% 0..90, 0=never>
+  <restUntil% up to 100, >= restBelow+5> (sit to regen; default 30 95)
+  skills <name> (list) | skills <name> toggle <skill id> | skills <name> only <ids/names> | skills <name> all|none|auto
+  gear <name> [weapon shield armor shoes garment acc head costume shadow ammo] (alias unequip: takes its worn gear back
+   into YOUR bag, all slots or just those named; overweight drops at your feet)
+  spare <name> list|raw (gear it carries but doesn't wear) | spare <name> stow <slot> | spare <name> wear <#> | spare <name> take <#>
+  homunculus <name> [on|off] (alias pet; its homunculus) | rebirth <name> novice|trans (rebirth to High Novice / advance
+   to transcendent; needs the right level, always confirm) | roam [<name>] on|off
+ Prefer the plugin shortcuts above. Raw party chat equivalents (kore_command 'p <text>'): '<name> tank|support|attacker'
+  (duty, one companion), 'attack' / 'defensive' / 'passive' (stance, ALWAYS whole party, never with a name), 'recall'.
+ Plugin config: comp_autoSummon 1, comp_stanceTown pass, comp_stanceField atk (stance sent on entering town/field),
+  comp_partyName <name> (party created when not in one).
+Survival: a companion far below the map's monster levels dies again and again (sleep/stun stops its healing). Compare
+its lv with map_monsters of the lockMap; suggest a map in range for BOTH (find_leveling_maps around its level..+10),
+stance def, a higher heal/rest threshold, or dismissing it while you farm hard maps. Count deaths in get_companions first."""
 
 AI_TOOLS = [
     {"name": "get_character", "description": "The bot character, live: HP/SP now and max, position, AI mode, current action, buffs/ailments, target, job, levels, exp, stats, free stat/skill points, HP/SP, map, equipment, usable_items and other_items in the bag (name + id), exp per hour, current lockMap.",
+     "parameters": {"type": "object", "properties": {}}},
+    {"name": "get_companions", "description": "RO Offline companions: roster (name, job, lv, out/saved, dead, duty, heal/rest "
+     "thresholds, roam), party members, the plugin's comp_* config, and recent companion events (deaths, joins, leaves) with times.",
      "parameters": {"type": "object", "properties": {}}},
     {"name": "get_skills", "description": "Every skill in the character's tree: id, handle, name, level, up (true = a point can be added now).",
      "parameters": {"type": "object", "properties": {}}},
@@ -969,6 +1004,29 @@ def find_leveling_maps(min_level: int, max_level: int, kind: str = "any", avoid_
                     "share": round(n / total, 2), "monsters": sorted(hit, key=lambda x: -x["count"])[:6]})
     out.sort(key=lambda r: (-(r["in_range"] * r["share"]), r["map"]))
     return out[:limit]
+
+
+def ai_companions() -> dict:
+    try:
+        s = json.loads((OPENKORE_DIR / "logs" / "status.json").read_text())
+    except (OSError, ValueError):
+        return {"error": "bot offline"}
+    c = s.get("companions") or {}
+    names = [m.get("name") for m in c.get("members", []) if m.get("name")]
+    events = []
+    if names:
+        rx = re.compile("|".join(map(re.escape, names)))
+        ev = re.compile(r"死亡|died|Died|離隊|left|加入|joined|summon|召喚")
+        try:
+            lines = (OPENKORE_DIR / "logs" / "console_ragnarok_0.txt").read_text("utf-8", "replace").splitlines()[-20000:]
+        except OSError:
+            lines = []
+        events = [l[:160] for l in lines if rx.search(l) and ev.search(l) and "@CP|" not in l][-25:]
+    return {"roster": c.get("members", []),
+            "roster_age_s": int(time.time() - c["updated"]) if c.get("updated") else None,
+            "party": s.get("party"), "map": s.get("map"), "you_lv": s.get("lv"),
+            "config": {k: v for _, k, v in config_lines(read_config()) if k.startswith("comp_")},
+            "events": events}
 
 
 def ai_character() -> dict:
@@ -1128,7 +1186,7 @@ def item_ids(value: str) -> tuple[str, list[str]]:
     d = ai_data()
     if "item_lookup" not in d:
         look = {}
-        for lang in ("kRO", "twRO", "iRO"):
+        for lang in ("kRO", "rooff-zh", "twRO", "iRO"):
             d[lang] = name_table(OPENKORE_DIR / "tables" / lang / "items.txt")
             for i, n in d[lang].items():
                 look.setdefault(n.lower(), i)
@@ -1142,14 +1200,14 @@ def item_ids(value: str) -> tuple[str, list[str]]:
         pass
     if "names_to_ids" not in d:
         rev = {}
-        for lang in ("kRO", "twRO", "iRO"):
+        for lang in ("kRO", "rooff-zh", "twRO", "iRO"):
             for i, n in d[lang].items():
                 rev.setdefault(n.lower(), set()).add(i)
         d["names_to_ids"] = rev
     def resolve(key):
         ids = set(d["names_to_ids"].get(key, ()))
         for i in list(ids):   # same item in other languages -> other IDs sharing those names
-            for lang in ("kRO", "twRO", "iRO"):
+            for lang in ("kRO", "rooff-zh", "twRO", "iRO"):
                 if (n := d[lang].get(i)):
                     ids |= d["names_to_ids"].get(n.lower(), set())
         mine = sorted(ids & owned)
@@ -1213,7 +1271,7 @@ def skill_id(value: str) -> str | None:
             if (p := line.split()) and len(p) >= 2 and p[0].isdigit():
                 ids[p[1]] = p[0]
         look = {i: i for i in ids.values()}
-        for lang in ("kRO", "twRO", "iRO"):
+        for lang in ("kRO", "rooff-zh", "twRO", "iRO"):
             for h, n in name_table(OPENKORE_DIR / "tables" / lang / "skillnametable.txt").items():
                 for alias in [n] + re.split(r"[()]", n):   # 'Double Strafe(Double strafing)' -> both
                     if alias.strip() and h in ids:
@@ -1241,7 +1299,7 @@ def prefer_ids(cmd: str) -> tuple[str, list[str]]:
 
 
 KORE_READ = {"s", "st", "i", "skills", "ml", "pl", "nl", "il", "exp", "where", "cart", "storage", "party", "quest", "help", "conf",
-             "eq", "stats", "pml", "friend", "guild", "pet", "homun", "merc", "weight", "status"}
+             "eq", "stats", "pml", "friend", "guild", "pet", "homun", "merc", "weight", "status", "comp"}
 
 
 def kore_readonly(cmd: str) -> bool:
@@ -1257,6 +1315,8 @@ def kore_readonly(cmd: str) -> bool:
         return not rest or rest[0] == "desc"
     if head == "quest":
         return rest[:1] == ["list"]
+    if head == "comp":
+        return rest[:1] in (["list"], ["help"])
     if head in ("cart", "storage", "guild", "pet", "homun", "merc", "friend", "party", "exp"):
         return not rest or rest[0] in ("info", "list", "desc", "s", "status", "eq", "u", "nu", "log", "report", "monster", "item")
     return True
@@ -1268,6 +1328,8 @@ async def run_tool(name: str, args: dict, actions: list) -> object:
         return ai_character()
     if name == "get_skills":
         return ai_skills()
+    if name == "get_companions":
+        return ai_companions()
     if name == "find_leveling_maps":
         return find_leveling_maps(int(args.get("min_level", 1)), int(args.get("max_level", 999)), args.get("kind", "any"), bool(args.get("avoid_aggressive")))
     if name == "map_monsters":

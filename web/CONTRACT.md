@@ -109,7 +109,7 @@ Bottom tab bar: **Status**, **Map**, **Items**, **Skills**, **Chat**, **Config**
   skills, pl, ml, nl, exp, cl, cil, al, vl), Merchant (openshop, closeshop, reload shop),
   Deal (deal, deal no, dealAuto 0/1/2), Party (party, share 0/1, partyAuto 0/1/2, join 1/0, leave),
   Friend/Guild, Settings (ignoreAll, randomWalk, attackAuto, itemsTakeAuto quick toggles,
-  reload all), plus Console (existing log + command box).
+  reload all), plus Console (existing log + command box); console filter bar: Combat/Items/Nearby/Chat/Move/Other toggles grouped by `domain` (hidden via CSS, never dropped; errors/warnings always shown; choice in localStorage `kore-cf-hide`) and a text search box.
 - NPC talk: when `status.talk` is set, show a modal over any tab with messages and buttons.
 - Deal: when `status.deal` is set, show a banner with accept (`deal`) / cancel (`deal no`).
 

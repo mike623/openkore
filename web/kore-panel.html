@@ -87,6 +87,9 @@ textarea{width:100%;padding:6px;font:12px/1.4 var(--mono);resize:vertical}
 #log{flex:1;min-height:0;overflow-y:auto;background:#000;color:#FFF;padding:6px 8px;font:13px/1.45 var(--mono);white-space:pre-wrap;word-break:break-word;-webkit-overflow-scrolling:touch}
 #log .sys{color:var(--k888888);font-style:italic}
 #log .b{font-weight:700}
+#log .nq{display:none}
+#cf .seg button:not(.on){opacity:.55;text-decoration:line-through}
+#cf input{flex:1;min-width:120px}
 .tb{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:6px 8px;border-bottom:1px solid var(--bd3);background:var(--kFAFAFA);flex:none}
 .seg{display:flex;gap:0}
 .seg button{border-radius:0;margin-left:-1px}
@@ -368,7 +371,7 @@ html[data-skin=ro] .dlg{border-color:var(--ro-win);background:#F4F6FB}
   <nav id="menubar" aria-label="Menu bar">
     <span id="mb-menus" style="display:contents"></span>
     <label class="names">Names
-      <select id="h-lang" title="Item and skill names"><option value="en">English</option><option value="zh-tw">繁體中文</option><option value="zh-cn">简体中文</option><option value="raw">Bot (kRO)</option></select>
+      <select id="h-lang" title="Item and skill names"><option value="en">English</option><option value="zh-tw">繁體中文</option><option value="zh-cn">简体中文</option><option value="raw">Bot</option></select>
     </label>
   </nav>
   <div id="menudrop" role="menu" hidden></div>
@@ -387,7 +390,7 @@ html[data-skin=ro] .dlg{border-color:var(--ro-win);background:#F4F6FB}
     <div id="nb" role="tablist" aria-label="Notebook"></div>
     <div id="pages">
       <!-- CONSOLE -->
-      <section class="page" id="p-console" role="tabpanel"><div id="log" role="log" aria-label="Console output"></div></section>
+      <section class="page" id="p-console" role="tabpanel"><div class="tb" id="cf" aria-label="Console filter"></div><div id="log" role="log" aria-label="Console output"></div></section>
 
       <!-- CHAT LOG -->
       <section class="page" id="p-chat" role="tabpanel">
@@ -574,7 +577,7 @@ function run(cmd, opt){
 // ---------------------------------------------------------------- names (EN / 繁中 / 简中 / Bot)
 // Item/skill names: OpenKore uses its kRO (Korean) tables; swap by id/handle to the chosen
 // language. Slot "[n]" and refine "+n " parts of the bot's name are kept.
-const NAMES = {lang: store("lang") || "en", t: null, loading: null};
+const NAMES = {lang: store("lang") || "zh-tw", t: null, loading: null};
 async function loadNames(){
   NAMES.t = null;
   if (NAMES.lang === "raw") return;
@@ -770,10 +773,39 @@ function line(text, type, domain){
   if (type === "sys") d.className = "sys";
   else if (type === "input") d.style.color = "#C8C8C8";
   else { const t = CC[type], c = t && (t[domain] || t.default); if (c && FG[c]) d.style.color = FG[c]; if (type === "error") d.className = "b"; }
+  if (type === "message" || type === "debug") d.classList.add("c-" + conCat(domain)); // errors/warnings: never filtered
+  if (cfQuery && !d.textContent.toLowerCase().includes(cfQuery)) d.classList.add("nq");
   log.append(d);
   while (log.childElementCount > 1000) log.firstElementChild.remove();
   if (stick) log.scrollTop = log.scrollHeight;
 }
+
+// ---------------------------------------------------------------- console filter
+// Lines are hidden with CSS, never dropped: re-enabling a group brings back the whole 1000-line buffer.
+const CONF = [["combat", "Combat"], ["items", "Items"], ["nearby", "Nearby"], ["chat", "Chat"], ["move", "Move"], ["other", "Other"]];
+function conCat(dom){
+  if (/chat$|^pm/.test(dom)) return "chat"; // publicchat partychat guildchat selfchat schat npcchat pm pm/sent
+  if (/^(attack|skill|selfSkill|parseMsg_statuslook|exp)/.test(dom)) return "combat";
+  if (/^(useItem|inventory|drop|cart|storage|sold|pickup|equip)/.test(dom)) return "items";
+  if (dom === "parseMsg_presence" || dom === "portals") return "nearby";
+  if (/^(route|teleport|follow|map)/.test(dom)) return "move";
+  return "other";
+}
+let cfQuery = "";
+const cfHidden = new Set(String(store("kore-cf-hide") || "").split(",").filter(k => CONF.some(c => c[0] === k)));
+document.head.append(el("style", null, CONF.map(([k]) => `#log.h-${k} .c-${k}{display:none}`).join("\n")));
+function renderCf(){
+  for (const [k] of CONF) { log.classList.toggle("h-" + k, cfHidden.has(k)); $("cf-" + k).className = cfHidden.has(k) ? "" : "on"; $("cf-" + k).setAttribute("aria-pressed", !cfHidden.has(k)); }
+  store("kore-cf-hide", [...cfHidden].join(","));
+}
+fill($("cf"), el("div", {class: "seg"}, CONF.map(([k, t]) => el("button", {type: "button", id: "cf-" + k, title: `Show/hide ${t} lines (errors and warnings always show)`,
+    onclick: () => { cfHidden.has(k) ? cfHidden.delete(k) : cfHidden.add(k); renderCf(); log.scrollTop = log.scrollHeight; }}, t))),
+  el("input", {type: "search", placeholder: "Filter text", "aria-label": "Show only lines containing", oninput: e => {
+    cfQuery = e.target.value.trim().toLowerCase();
+    for (const d of log.children) d.classList.toggle("nq", !!cfQuery && !d.textContent.toLowerCase().includes(cfQuery));
+    log.scrollTop = log.scrollHeight;
+  }}));
+renderCf();
 
 function connect(){
   ws = new WebSocket((location.protocol === "https:" ? "wss://" : "ws://") + location.host + "/kore/console");
@@ -1932,7 +1964,7 @@ updSave();
 show(store("kp-view") || "console");
 
 $("h-lang").value = NAMES.lang;
-$("h-lang").onchange = e => { NAMES.lang = e.target.value; store("lang", NAMES.lang); loadNames(); if (NAMES.lang === "raw") render(S.__raw || S); };
+$("h-lang").onchange = e => { const ui = (NAMES.lang === "zh-tw") !== (e.target.value === "zh-tw"); NAMES.lang = e.target.value; store("lang", NAMES.lang); if (ui) return location.reload(); loadNames(); if (NAMES.lang === "raw") render(S.__raw || S); };
 (async () => {
   const m = location.hash.match(/invite=([^&]+)/);
   if (m) {
@@ -1947,6 +1979,94 @@ $("h-lang").onchange = e => { NAMES.lang = e.target.value; store("lang", NAMES.l
   render(await r.json().catch(() => ({state: "offline"})));
   setTimeout(poll, 2000);
   connect(); loadNames();
+})();
+</script>
+<script>
+// ---------------------------------------------------------------- UI language (繁體中文)
+// Panel chrome follows the names selector: 繁體中文 shows the panel itself in Chinese. Exact text
+// nodes / title / placeholder / aria-label / confirm() text; keys ending in a space or ": " are
+// prefixes ("Talking to " + name). Console and chat logs are left alone (OpenKore's zhTW plugin
+// already translates game text). ponytail: template-literal messages with numbers stay English.
+(() => {
+  if (NAMES.lang !== "zh-tw") return;
+  const Z = {
+"A backup is made before every save. Passwords stay on the Mac and can't be changed here.":"每次儲存前都會備份。密碼只存在 Mac 上，這裡無法修改。",
+"AI: -":"AI：-","Ask":"詢問","Bot":"機器人","Cancel":"取消","Clear":"清除","Collected while this page is open · click a PM line to reply":"此頁開啟期間收集 · 點選密語回覆",
+"Command":"指令","Copy ID":"複製 ID","Dist":"距離","Exp:":"經驗：","Find option":"尋找選項","Fit":"適配","Follow":"跟隨","Guild chat":"公會頻道","HP:":"HP：","Job:":"職業：",
+"Kore Panel":"Kore 面板","Map —":"地圖 —","NPC talk":"NPC 對話","Names":"名稱","Open the invitation link to use this panel.":"請開啟邀請連結以使用此面板。","PM":"密語","Party chat":"隊伍頻道",
+"Players, Monsters & Items (":"玩家、魔物與物品 (","Players, Monsters & Items":"玩家、魔物與物品","Public chat":"公開頻道",
+"Raw config.txt — skill blocks, everything. Passwords show as ******** and are kept.":"原始 config.txt — 技能區塊與所有設定。密碼顯示為 ******** 並會保留。",
+"Refresh":"重新整理","Reload":"重新載入","Restore":"還原","Revert":"復原","SP:":"SP：","Save & reload":"儲存並重新載入","Save raw file":"儲存原始檔","Send":"送出",
+"Spend my skill points?":"幫我分配技能點？","Weight:":"負重：","Where should I level?":"該去哪裡練等？","config.txt backups":"config.txt 備份","skills (console)":"技能 (主控台)",
+"AI advisor":"AI 顧問","AI model (via CLIProxyAPI)":"AI 模型 (經 CLIProxyAPI)","Ask about maps, skills, stats, gear…":"詢問地圖、技能、素質、裝備…","Base experience":"基本經驗","Categories":"分類",
+"Click to walk · wheel or pinch to zoom · drag to pan":"點擊移動 · 滾輪或雙指縮放 · 拖曳平移","Console filter":"主控台篩選","Console output":"主控台輸出","Copy session ID (full log in logs/ai-sessions/)":"複製工作階段 ID (完整紀錄在 logs/ai-sessions/)",
+"Drag to resize":"拖曳調整大小","Info bar":"資訊列","Input":"輸入","Item and skill names":"物品與技能名稱 / 介面語言","Job experience":"職業經驗","Map":"地圖","Menu bar":"選單列","Notebook":"分頁",
+"PM target":"密語對象","Send as":"傳送方式","Type a command, e.g. ai off, move 120 150, talk 2":"輸入指令，例如 ai off、move 120 150、talk 2","Weight":"負重","Zoom in":"放大","Zoom out":"縮小","e.g. sitAuto":"例如 sitAuto",
+"Accept":"接受","Accept / finalize the current deal?":"接受/確定目前的交易？","Accept / finalize the deal with ":"接受/確定交易：","Accept all deals (2)":"接受所有交易 (2)","Accept deal":"接受交易",
+"Accept friend request":"接受好友邀請","Accept guild request":"接受公會邀請","Accept party request":"接受組隊邀請","Accept the deal request from ":"接受交易邀請：","Action":"動作","Add a skill point":"加一技能點",
+"Add to sell list":"加入販賣清單","Advanced Configuration":"進階設定","Advanced...":"進階...","All":"全部","Always sell":"總是販賣","Always sell (auto-sell)":"總是販賣 (自動販賣)","Always store":"總是存倉",
+"Always store (auto-storage)":"總是存倉 (自動存倉)","Ammo":"彈藥","Amount":"數量","Amount of ":"數量：","Apply all":"全部套用","Aspd":"攻速","Atk":"攻擊","Attack":"攻擊",
+"Auto accept party request (2)":"自動接受組隊邀請 (2)","Auto attack distance":"自動攻擊距離","Auto buying":"自動購買","Auto ignore party request (0)":"自動忽略組隊邀請 (0)","Auto reject party request (1)":"自動拒絕組隊邀請 (1)",
+"Auto selling":"自動販賣","Auto storage":"自動存倉","Automatic Botting":"自動練功","Backups…":"備份…","Base":"基本","Base/h":"基本/時","Battle":"戰鬥","Bot offline":"機器人離線","Buy":"購買","Buy from ":"購買自 ",
+"Card":"卡片","Cart":"手推車","Cast here":"在此施放","Character Select":"選擇角色","Chat":"聊天","Chat Log":"聊天紀錄","Chat message (start with / for a command)":"聊天訊息 (以 / 開頭為指令)",
+"Clear Chat History":"清除聊天紀錄","Clear Console":"清除主控台","Clear Item History":"清除物品紀錄","Click a row to use, equip, move, sell or drop it":"點選一列以使用、裝備、移動、販賣或丟棄",
+"Close":"關閉","Close All PM":"關閉所有密語","Close shop":"關閉商店","Cmd":"指令","Combat":"戰鬥","Common":"一般","Complete the trade with ":"完成交易：","Config":"設定","Config backups...":"設定備份...",
+"Config options":"設定選項","Console":"主控台","Console commands":"主控台指令","Continue":"繼續","Control files...":"控制檔...","Control files…":"控制檔…","Copy Last 100 Lines of Text":"複製最後 100 行",
+"Copy:":"複製：","Critical":"爆擊","Current shop status":"目前商店狀態","Deal information":"交易資訊","Deal request":"交易邀請","Deal with ":"交易對象：","Decline":"拒絕","Def":"防禦","Describe":"說明",
+"Disable party share (0)":"關閉隊伍經驗分配 (0)","Disconnect and log in again?":"中斷連線並重新登入？","Drop":"丟棄","Drop…":"丟棄…","Enable party share (1)":"開啟隊伍經驗分配 (1)","End talk":"結束對話",
+"Equip":"裝備","Equipment":"裝備","Equipped":"已裝備","Etc":"其他","Experience Report":"經驗報告","Experience report":"經驗報告","Filter text":"篩選文字","Finalize":"確定",
+"Finalize (lock) the deal with ":"確定(鎖定)交易：","Flee":"迴避","Forum":"論壇","Friend":"好友","Friend list":"好友名單","From the OpenKore manual · ":"出自 OpenKore 手冊 · ","Get all":"全部取出",
+"Get from cart":"從手推車取出","Get from storage":"從倉庫取出","Get to cart":"放入手推車","Go back to character select?":"回到角色選擇？","Guild":"公會","Guild information":"公會資訊","Guild member":"公會成員",
+"Guild: ":"公會：","Help":"說明","Help for ":"說明：","Help party":"支援隊伍","Hit":"命中","Homunculus":"生命體","How should I spend my free skill and stat points?":"我的技能點與素質點該怎麼分配？",
+"Hunger":"飢餓度","Hunt map":"練功地圖","Identify":"鑑定","Ignore all deals (0)":"忽略所有交易 (0)","In the sell list: sold on the next sell done":"已在販賣清單：下次販賣時賣出","Info":"資訊",
+"Info Bar":"資訊列","Intimacy":"親密度","Inventory":"物品欄","Inventory not available yet":"物品欄尚未載入","Invite to party":"邀請組隊","Item":"物品","Item Change Report":"物品變動報告","Item changes":"物品變動",
+"Items":"物品","Job":"職業","Job/h":"職業/時","Leave party":"離開隊伍","Leave the party?":"離開隊伍？","Level":"等級","Look at":"看向","Loot other drops":"撿取他人掉落","Loot own kills":"撿取自己擊殺的掉落",
+"Manual":"手冊","Manual Botting":"手動模式","Matk":"魔攻","Mdef":"魔防","Memo position":"記錄位置","Mercenary":"傭兵","Merchant":"商人","Monster":"魔物","Monster Kill Report":"魔物擊殺報告","Monsters":"魔物",
+"Monsters killed":"擊殺魔物","Move":"移動","Move here":"移動到此","Myself":"自己","Nearby":"附近","Nearby shop list":"附近商店清單","Next":"下一步","No cart":"沒有手推車","No changes":"沒有變更",
+"No messages yet (collected while this page is open)":"尚無訊息 (此頁開啟期間收集)","No option matches ":"沒有符合的選項：","No report yet.":"尚無報告。","No skills":"沒有技能","Nobody around":"附近沒有人",
+"None of these options are in config.txt":"config.txt 中沒有這些選項","Not identified":"未鑑定","Not identified: can't be equipped until identified (Magnifier)":"未鑑定：需先鑑定才能裝備 (放大鏡)",
+"Nothing here":"這裡沒有東西","Nothing to sell.":"沒有可販賣的物品。","Open All PM":"開啟所有密語","Open shop":"開啟商店","OpenKore wiki: ":"OpenKore 維基：","Option":"選項","Other":"其他","Party":"隊伍",
+"Party information":"隊伍資訊","Party: ":"隊伍：","Pause Botting":"暫停機器人","Pending":"等待中","Pet":"寵物","Pick on map...":"在地圖上選擇...","Player":"玩家","Players":"玩家","Portal":"傳送點",
+"Private message":"密語","Program":"程式","Public":"公開","Put in cart":"放入手推車","Put in storage":"放入倉庫","Raw config.txt":"原始 config.txt","Reject all deals (1)":"拒絕所有交易 (1)","Reject deal":"拒絕交易",
+"Reject friend request":"拒絕好友邀請","Reject guild request":"拒絕公會邀請","Reject party request":"拒絕組隊邀請","Reload All Configs":"重新載入所有設定","Reload config.txt":"重新載入 config.txt",
+"Reload shop.txt":"重新載入 shop.txt","Relog":"重新登入","Replace the whole config.txt with this text?":"用這段文字取代整個 config.txt？","Reply to ":"回覆 ","Reset the experience report?":"重設經驗報告？",
+"Respawn":"重生","Respawn at the save point?":"在儲存點重生？","Responses":"選項","Restore ":"還原 ","Run all of these?\n\n":"全部執行？\n\n","Run auto-sell now?":"現在執行自動販賣？","Saved value: ":"已存值：",
+"Select an item":"選擇物品","Sell":"販賣","Sell everything in the sell list?":"賣出販賣清單中的所有物品？","Sell to NPC":"賣給 NPC","Sell…":"販賣…","Session":"工作階段","Settings":"設定","Shop":"商店",
+"Show":"顯示","Show only lines containing":"只顯示包含以下文字的行","Sit down":"坐下","Sit when HP below %":"HP 低於 % 時坐下","Sit when SP below %":"SP 低於 % 時坐下","Skill":"技能","Skill points":"技能點",
+"Skills":"技能","Skills not available yet":"技能尚未載入","Stand up":"站起","Stand when HP above %":"HP 高於 % 時站起","Stand when SP above %":"SP 高於 % 時站起","State":"狀態","Statistics":"統計",
+"Status":"狀態","Status effects":"狀態效果","Stop auto-sell":"停止自動販賣","Stop auto-store":"停止自動存倉","Storage":"倉庫","Storage never opened this session":"本次尚未開啟倉庫","Store next trip":"下次回城存倉",
+"Take":"取出","Talk":"對話","Talking to ":"對話中：","Target":"目標","Teleport":"瞬間移動","Teleport to search":"瞬移搜尋","Teleport when HP below %":"HP 低於 % 時瞬移","Teleport when idle":"閒置時瞬移",
+"Teleport when this many mobs attack":"被這麼多魔物攻擊時瞬移","Test your shop":"測試你的商店","Theme: Dark":"主題：深色","Theme: Light":"主題：淺色","Theme: System":"主題：系統","They give":"對方給予",
+"This shop has nothing listed.":"這間商店沒有上架物品。","Time":"時間","To cart":"到手推車","To storage":"到倉庫","Trade":"交易","Turn off auto attacking":"關閉自動攻擊","Turn off item picking":"關閉自動撿物",
+"Turn off random routing":"關閉隨機走動","Turn on auto attacking (1)":"開啟自動攻擊 (1)","Turn on auto attacking (2)":"開啟自動攻擊 (2)","Turn on item picking (1)":"開啟自動撿物 (1)","Turn on item picking (2)":"開啟自動撿物 (2)",
+"Turn on random routing (1)":"開啟隨機走動 (1)","Turn on random routing (2)":"開啟隨機走動 (2)","Type":"類型","Unequip":"卸下","Unstore next trip":"取消下次存倉","Usable":"消耗品","Use":"使用","Current: ":"目前：","Next level: ":"下一級：","Requires ":"需要先學會 ","Novice":"初學者","Swordman":"劍士","Mage":"魔法師","Archer":"弓箭手","Acolyte":"服事","Merchant":"商人","Thief":"盜賊","Knight":"騎士","Priest":"祭司","Wizard":"巫師","Blacksmith":"鐵匠","Hunter":"獵人","Assassin":"刺客","Crusader":"十字軍","Monk":"武僧","Sage":"賢者","Rogue":"流氓","Alchemist":"鍊金術師","Bard":"詩人","Dancer":"舞孃","Use skill...":"使用技能...",
+"Value":"值","View":"檢視","Waiting...":"等待中...","Walk around":"四處走動","Where should I level next? Rank 3 maps for my character.":"我接下來該去哪裡練等？幫我的角色推薦 3 張地圖。","You":"你","You give":"你給予",
+"Zeny":"金錢","Zeny/h":"金錢/時","Kore - ":"Kore - ","ID":"ID","HP":"HP","SP":"SP"};
+  const PRE = Object.keys(Z).filter(k => / $|: $/.test(k)).sort((a, b) => b.length - a.length);
+  const zh = s => {
+    const t = s.trim(); if (!t) return null;
+    if (Z[t] != null) return s.replace(t, Z[t]);
+    for (const k of PRE) if (s.startsWith(k)) return Z[k] + s.slice(k.length);
+    return null;
+  };
+  const skip = n => n.parentElement && n.parentElement.closest("#log, #chatlog, script, style, textarea");
+  const ATTR = ["title", "placeholder", "aria-label"];
+  const doEl = e => { for (const a of ATTR) { const v = e.getAttribute(a); const z = v && zh(v); if (z && z !== v) e.setAttribute(a, z); } };
+  const walk = root => {
+    if (root.nodeType === 3) { if (!skip(root)) { const z = zh(root.data); if (z && z !== root.data) root.data = z; } return; }
+    if (root.nodeType !== 1 || root.closest("#log, #chatlog")) return;
+    doEl(root);
+    for (const c of root.childNodes) walk(c);
+  };
+  document.documentElement.lang = "zh-Hant";
+  walk(document.body); document.title = zh(document.title) || document.title;
+  new MutationObserver(ms => { for (const m of ms) {
+    if (m.type === "characterData") walk(m.target);
+    else if (m.type === "attributes") doEl(m.target);
+    else m.addedNodes.forEach(walk);
+  } }).observe(document.body, {subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTR});
+  const conf = window.confirm.bind(window);
+  window.confirm = m => conf(zh(String(m)) || m);
 })();
 </script>
 </body>
