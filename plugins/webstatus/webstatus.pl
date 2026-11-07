@@ -9,8 +9,9 @@ use Time::HiRes qw(time);
 use Globals qw($char $field $net $monstersList $playersList $npcsList $portalsList $itemsList
 	%jobs_lut %equipTypes_lut %statusName @skillsID @partyUsersID $accountID %guild %pet %talk %ai_v
 	%currentDeal %incomingDeal %outgoingDeal %items_lut $startTime_EXP $startingzeny
-	@monsters_Killed $totalBaseExp $totalJobExp %itemChange);
+	@monsters_Killed $totalBaseExp $totalJobExp %itemChange $storeList %itemTypes_lut);
 use Log qw(warning);
+use Commands;
 use Utils qw(timeOut calcPosition distance);
 use Plugins;
 use Settings;
@@ -19,14 +20,139 @@ use AI;
 use Skill;
 use Scalar::Util ();
 
+our $sellOpen = 0;
 Plugins::register('webstatus', 'JSON status file for web panel', \&unload);
-my $hooks = Plugins::addHooks(['mainLoop_post', \&tick]);
+my $hooks = Plugins::addHooks(['mainLoop_post', \&tick], ['packet/identify_list', \&onIdentifyList],
+	['postloadfiles', \&storeNextApply], ['AI_storage_auto_completed', \&storeNextDone],
+	# NPC sell window: OpenKore drops %talk once the sell list arrives, so track it for the panel's shop.
+	['packet/npc_sell_list', sub { $sellOpen = 1 }], ['packet/sell_result', sub { $sellOpen = 0 }],
+	['Network::Receive::map_changed', sub { $sellOpen = 0 }]);
+my $commands = Commands::register(
+	['identify_item', 'Use a Magnifier and identify inventory item <#>', \&cmdIdentifyItem],
+	['ic_set', 'Set an items_control.txt rule: ic_set <item id> <keep> <storage 0|1> <sell 0|1>', \&cmdIcSet],
+	['shop_close', 'Close an NPC buy/sell window on the server too (canceltransaction/sell cancel can leave it open)', \&cmdShopClose],
+	['store_next', 'Store an item on the next Kafra trip only: store_next <inventory #> | list | cancel [<inventory #>]', \&cmdStoreNext],
+);
 my $json = JSON::PP->new->canonical->utf8;
 my %timer = (time => 0, timeout => 1);
 my $start = time;
 my (%gain, %last, %warned); # cumulative base/job/zeny gain since load
 
-sub unload { Plugins::delHooks($hooks) }
+# An empty sell list is the one close the server always accepts ("Sell failed" is the expected reply);
+# without it the server keeps the shop open and refuses walking and other NPCs.
+sub cmdShopClose {
+	@Globals::sellList = ();
+	$sellOpen = 0;
+	Misc::cancelNpcBuySell();
+	$Globals::messageSender->sendSellBulk([]) if $Globals::messageSender;
+	Log::message("Shop window closed.\n");
+}
+
+sub unload { Plugins::delHooks($hooks); Commands::unregister($commands) }
+
+# store_next: like the sell list, but for Kafra storage. The item is made store-only in memory
+# (%items_control, never the file), so OpenKore's own storage trip stores it and does not sell it
+# first; the rules go back once a storage trip completes. Survives "reload items_control".
+my %storeNext; # nameID => item name
+sub storeNextApply {
+	for my $id (keys %storeNext) {
+		my $rule = {%{ Misc::items_control($storeNext{$id}, $id) }, storage => 1, sell => 0, keep => 0};
+		$Globals::items_control{$id} = $rule;
+		$Globals::items_control{lc $storeNext{$id}} = $rule if exists $Globals::items_control{lc $storeNext{$id}};
+	}
+}
+sub storeNextDone {
+	return unless %storeNext;
+	Log::message("Store list done: " . join(', ', values %storeNext) . "\n");
+	%storeNext = ();
+	Commands::run('reload items_control'); # put the file's rules back
+}
+sub cmdStoreNext {
+	my (undef, $arg) = @_;
+	$arg = defined $arg ? $arg : '';
+	if ($arg eq '' || $arg eq 'list') {
+		return Log::message(%storeNext ? "Store list (next Kafra trip): " . join(', ', map { "$storeNext{$_} ($_)" } sort keys %storeNext) . "\n"
+			: "Store list is empty\n");
+	}
+	if ($arg =~ /^cancel(?:\s+(\d+))?$/) {
+		if (defined $1) {
+			my $item = $char && $char->inventory->get($1) or return Log::error("No inventory item $1\n");
+			delete $storeNext{$item->{nameID}};
+		} else { %storeNext = () }
+		Commands::run('reload items_control');
+		return Log::message("Store list " . (defined $1 ? "updated" : "cleared") . "\n");
+	}
+	return Log::error("Usage: store_next <inventory #> | list | cancel [<inventory #>]\n") unless $arg =~ /^\d+$/;
+	my $item = $char && $char->inventory->get($arg) or return Log::error("No inventory item $arg\n");
+	return Log::error("$item->{name} is equipped\n") if $item->{equipped};
+	$storeNext{$item->{nameID}} = $item->{name};
+	storeNextApply();
+	Log::message("Added to store list: $item->{name} ($arg); stored on the next Kafra trip\n");
+}
+
+# ic_set <item id> <keep> <storage> <sell>: replace (or append) that item's line in
+# control/items_control.txt, keep a backup next to it, reload. Used by the panel's AI buttons.
+sub cmdIcSet {
+	my (undef, $arg) = @_;
+	my ($id, $keep, $storage, $sell) = ($arg // '') =~ /^\s*(\d+)\s+(\d+)\s+([01])\s+([01])\s*$/
+		or return Log::error("Usage: ic_set <item id> <keep> <storage 0|1> <sell 0|1>\n");
+	my $file = Settings::getControlFilename('items_control.txt') or return Log::error("items_control.txt not found\n");
+	open(my $in, '<:raw', $file) or return Log::error("Cannot read $file: $!\n");
+	my @lines = <$in>; close $in;
+	my $name = $itemsList ? '' : '';
+	my $item = $char && $char->inventory ? $char->inventory->getByNameID($id) : undef;
+	$name = $item->{name} if $item;
+	my $new = "$id $keep $storage $sell" . ($name ne '' ? " # $name" : '') . "\n";
+	my $done = 0;
+	for (@lines) {
+		if (!$done && /^\s*$id\s+\d/) {
+			my ($old_comment) = /(#.*)$/;
+			$_ = $name eq '' && $old_comment ? "$id $keep $storage $sell $old_comment\n" : $new;
+			$done = 1;
+		}
+	}
+	push @lines, ($lines[-1] =~ /\n\z/ ? '' : "\n") . $new unless $done;
+	require File::Copy;
+	File::Copy::copy($file, "$file.bak") or return Log::error("Backup failed: $!\n");
+	open(my $out, '>:raw', $file) or return Log::error("Cannot write $file: $!\n");
+	print $out @lines; close $out;
+	Commands::run('reload items_control');
+	my $c = Misc::items_control('', $id);
+	Log::message("items_control: $id keep=$c->{keep} storage=$c->{storage} sell=$c->{sell}" . ($done ? " (updated)" : " (added)") . "\n");
+}
+
+# identify_item <inventory #>: one step instead of "is <magnifier>", "identify", "identify <n>".
+# The Magnifier opens the server's identify list; when it arrives we pick the requested item.
+my $identifyPending; # binID asked for, until the list arrives
+sub cmdIdentifyItem {
+	my (undef, $arg) = @_;
+	return Log::error("Usage: identify_item <inventory #>\n") unless defined $arg && $arg =~ /^\d+$/;
+	return Log::error("Not in game\n") unless $char && $char->inventory && $char->inventory->isReady;
+	my $item = $char->inventory->get($arg);
+	return Log::error("No inventory item $arg\n") unless $item;
+	return Log::message("$item->{name} is already identified\n") if $item->{identified};
+	# A list already open (a Magnifier used earlier, nothing picked): the server ignores new
+	# Magnifiers until it is answered, so pick from it instead of using another one.
+	if (grep { defined $_ && $_ eq $item->{binID} } @Globals::identifyID) {
+		Log::message("Identifying $item->{name} ($arg) from the open identify list...\n");
+		return $Globals::messageSender->sendIdentify($item->{ID});
+	}
+	my $magnifier = $char->inventory->getByNameID(611);
+	return Log::error("No Magnifier in inventory\n") unless $magnifier;
+	$identifyPending = $item->{binID};
+	Log::message("Identifying $item->{name} ($arg) with a Magnifier...\n");
+	$magnifier->use;
+}
+sub onIdentifyList {
+	return unless defined $identifyPending;
+	my $want = $identifyPending;
+	undef $identifyPending;
+	if (grep { defined $_ && $_ eq $want } @Globals::identifyID) {
+		$Globals::messageSender->sendIdentify($char->inventory->get($want)->{ID});
+	} else {
+		Log::warning("Item $want is not in the identify list; type 'identify' to pick one\n");
+	}
+}
 
 # OpenKore normally stores names already decoded (I18N::bytesToString); only decode raw high bytes.
 sub str {
@@ -124,7 +250,7 @@ sub tick {
 		my %s = (time => int(time), state => $state);
 		$s{$_} = undef for qw(name lv job_lv job hp hp_max sp sp_max exp exp_max job_exp job_exp_max zeny
 			weight weight_max map x y action target base_exp_hour job_exp_hour zeny_hour
-			field stats cart storage party guild homun merc pet talk deal exp_report);
+			field stats cart storage party companions guild homun merc pet talk deal exp_report);
 		$s{$_} = [] for qw(monsters statuses inventory skills players npcs portals items_ground);
 		my $ai = AI::state();
 		$s{ai} = $ai == AI::AUTO ? 'auto' : $ai == AI::MANUAL ? 'manual' : 'off';
@@ -164,6 +290,8 @@ sub tick {
 				\%st;
 			});
 			section(\%s, statuses => sub { [sort map { str($statusName{$_} || $_) } keys %{$char->{statuses} || {}}] });
+			section(\%s, store_list => sub { [map { +{id => num($_), name => str($storeNext{$_})} } sort keys %storeNext] });
+			section(\%s, sell_list => sub { [map { +{idx => num($_->{binID}), name => str($_->{name}), amount => num($_->{amount})} } @Globals::sellList] });
 			section(\%s, inventory => sub { $char->inventory && $char->inventory->isReady ? items_of($char->inventory) : [] });
 			section(\%s, cart => sub {
 				my $c = $char->cart;
@@ -213,6 +341,7 @@ sub tick {
 				}
 				return {name => str($p->{name}), members => \@m};
 			});
+			section(\%s, companions => sub { $companions::updated ? {updated => int($companions::updated), members => $companions::roster} : undef });
 			section(\%s, guild => sub {
 				my $n = $guild{name} // ($char->{guild} ? $char->{guild}{name} : undef);
 				defined $n && $n ne '' ? {name => str($n), lv => num($guild{lv}), members_online => num($guild{conMember})} : undef;
@@ -231,6 +360,15 @@ sub tick {
 				return {npc => str($npc ? $npc->name : 'Unknown #' . unpack('V', $talk{ID})),
 					messages => [map { str($_) } @msg], state => $sm{$st} // ($st eq '' ? undef : $st),
 					responses => [map { str($_) } @{$talk{responses} || []}]};
+			});
+			section(\%s, shop => sub {
+				my $st = $ai_v{npc_talk}{talk} // '';
+				return {mode => 'buy', npc => str($storeList->{npcName}), items => [map { +{idx => num($_->{binID}),
+					id => num($_->{nameID}), name => str($_->{name}), price => num($_->{price}), type => str($itemTypes_lut{$_->{type}})} }
+					grep { $_ } @$storeList]} if $st eq 'store' && $storeList && $storeList->size;
+				return {mode => 'choose'} if $st eq 'buy_or_sell';
+				return {mode => 'sell'} if $sellOpen;
+				undef;
 			});
 			section(\%s, deal => sub {
 				if (%currentDeal) {

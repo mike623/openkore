@@ -6,58 +6,63 @@
 <meta name="theme-color" content="#FFFFFF">
 <title>Kore Panel</title>
 <style>
-:root{--win:#F0F0F0;--pane:#FFFFFF;--bd:#ADADAD;--bd2:#D4D4D4;--bd3:#E0E0E0;--fg:#111;--dim:#555;--sel:#CCE4F7;--pri:#0067C0;--pri2:#005FB8;--hot:#E5F1FB;--gauge:#06B025;--gsp:#2F7FE0;--err:#A61B0F;--ok:#0F7B0F;--rw:360px;--mono:Consolas,Menlo,ui-monospace,monospace}
+/* theme: every colour is a --kRRGGBB token; dark values are the light ones with lightness flipped */
+:root{--k003D99:#003D99;--k0055CC:#0055CC;--k005FB8:#005FB8;--k0067C0:#0067C0;--k0078D4:#0078D4;--k009400:#009400;--k00B16C:#00B16C;--k06B025:#06B025;--k0F4C9C:#0F4C9C;--k0F7B0F:#0F7B0F;--k111111:#111111;--k13A10E:#13A10E;--k1975C5:#1975C5;--k2F7FE0:#2F7FE0;--k333333:#333333;--k3A7BD5:#3A7BD5;--k444444:#444444;--k555555:#555555;--k666666:#666666;--k6A6A6A:#6A6A6A;--k767676:#767676;--k7A5D00:#7A5D00;--k888888:#888888;--k8A8A8A:#8A8A8A;--k8E7800:#8E7800;--kA0005F:#A0005F;--kA4008F:#A4008F;--kA61B0F:#A61B0F;--kADADAD:#ADADAD;--kBCBCBC:#BCBCBC;--kC42B1C:#C42B1C;--kC8C8C8:#C8C8C8;--kC9A227:#C9A227;--kCCCCCC:#CCCCCC;--kCCE4F7:#CCE4F7;--kD0D0D0:#D0D0D0;--kD4D4D4:#D4D4D4;--kD65D00:#D65D00;--kDADADA:#DADADA;--kDCDCDC:#DCDCDC;--kDDDDDD:#DDDDDD;--kE0C870:#E0C870;--kE0E0E0:#E0E0E0;--kE4E4E4:#E4E4E4;--kE5F1FB:#E5F1FB;--kE6E6E6:#E6E6E6;--kE8E8E8:#E8E8E8;--kEDEDED:#EDEDED;--kF0F0F0:#F0F0F0;--kF2F8FD:#F2F8FD;--kF3F3F3:#F3F3F3;--kF4F4F4:#F4F4F4;--kF5F5F5:#F5F5F5;--kF9F9F9:#F9F9F9;--kFAFAFA:#FAFAFA;--kFFEFB0:#FFEFB0;--kFFF4CC:#FFF4CC;--kFFFFE1:#FFFFE1;--kFFFFF4:#FFFFF4;--kFFFFFF:#FFFFFF}
+@media (prefers-color-scheme: dark){:root:not([data-theme=light]){color-scheme:dark;--k003D99:#72A2EB;--k0055CC:#4D8DE6;--k005FB8:#5CA4E8;--k0067C0:#56A4E7;--k0078D4:#48A1E5;--k009400:#76EB76;--k00B16C:#61E8B4;--k06B025:#5DE876;--k0F4C9C:#659EE9;--k0F7B0F:#7DEC7D;--k111111:#DFDFDF;--k13A10E:#67E962;--k1975C5:#4098E4;--k2F7FE0:#2175DB;--k333333:#C3C3C3;--k3A7BD5:#2C71D0;--k444444:#B5B5B5;--k555555:#A7A7A7;--k666666:#9A9A9A;--k6A6A6A:#969696;--k767676:#8C8C8C;--k7A5D00:#EED688;--k888888:#7E7E7E;--k8A8A8A:#7C7C7C;--k8E7800:#ECDA7A;--kA0005F:#EA6DB7;--kA4008F:#EA6AD9;--kA61B0F:#E8695E;--kADADAD:#5F5F5F;--kBCBCBC:#535353;--kC42B1C:#E44E3F;--kC8C8C8:#494949;--kC9A227:#D9B33C;--kCCCCCC:#464646;--kCCE4F7:#0E395A;--kD0D0D0:#434343;--kD4D4D4:#3F3F3F;--kD65D00:#E58B46;--kDADADA:#3A3A3A;--kDCDCDC:#393939;--kDDDDDD:#383838;--kE0C870:#A38823;--kE0E0E0:#353535;--kE4E4E4:#323232;--kE5F1FB:#0B2B46;--kE6E6E6:#313131;--kE8E8E8:#2F2F2F;--kEDEDED:#2B2B2B;--kF0F0F0:#282828;--kF2F8FD:#09243B;--kF3F3F3:#262626;--kF4F4F4:#252525;--kF5F5F5:#242424;--kF9F9F9:#212121;--kFAFAFA:#202020;--kFFEFB0:#6A570F;--kFFF4CC:#56460C;--kFFFFE1:#47470A;--kFFFFF4:#393908;--kFFFFFF:#1C1C1C}}
+:root[data-theme=dark]{color-scheme:dark;--k003D99:#72A2EB;--k0055CC:#4D8DE6;--k005FB8:#5CA4E8;--k0067C0:#56A4E7;--k0078D4:#48A1E5;--k009400:#76EB76;--k00B16C:#61E8B4;--k06B025:#5DE876;--k0F4C9C:#659EE9;--k0F7B0F:#7DEC7D;--k111111:#DFDFDF;--k13A10E:#67E962;--k1975C5:#4098E4;--k2F7FE0:#2175DB;--k333333:#C3C3C3;--k3A7BD5:#2C71D0;--k444444:#B5B5B5;--k555555:#A7A7A7;--k666666:#9A9A9A;--k6A6A6A:#969696;--k767676:#8C8C8C;--k7A5D00:#EED688;--k888888:#7E7E7E;--k8A8A8A:#7C7C7C;--k8E7800:#ECDA7A;--kA0005F:#EA6DB7;--kA4008F:#EA6AD9;--kA61B0F:#E8695E;--kADADAD:#5F5F5F;--kBCBCBC:#535353;--kC42B1C:#E44E3F;--kC8C8C8:#494949;--kC9A227:#D9B33C;--kCCCCCC:#464646;--kCCE4F7:#0E395A;--kD0D0D0:#434343;--kD4D4D4:#3F3F3F;--kD65D00:#E58B46;--kDADADA:#3A3A3A;--kDCDCDC:#393939;--kDDDDDD:#383838;--kE0C870:#A38823;--kE0E0E0:#353535;--kE4E4E4:#323232;--kE5F1FB:#0B2B46;--kE6E6E6:#313131;--kE8E8E8:#2F2F2F;--kEDEDED:#2B2B2B;--kF0F0F0:#282828;--kF2F8FD:#09243B;--kF3F3F3:#262626;--kF4F4F4:#252525;--kF5F5F5:#242424;--kF9F9F9:#212121;--kFAFAFA:#202020;--kFFEFB0:#6A570F;--kFFF4CC:#56460C;--kFFFFE1:#47470A;--kFFFFF4:#393908;--kFFFFFF:#1C1C1C}
+
+:root{--win:var(--kF0F0F0);--pane:var(--kFFFFFF);--bd:var(--kADADAD);--bd2:var(--kD4D4D4);--bd3:var(--kE0E0E0);--fg:var(--k111111);--dim:var(--k555555);--sel:var(--kCCE4F7);--pri:var(--k0067C0);--pri2:var(--k005FB8);--hot:var(--kE5F1FB);--gauge:var(--k06B025);--gsp:var(--k2F7FE0);--err:var(--kA61B0F);--ok:var(--k0F7B0F);--rw:360px;--mono:Consolas,Menlo,ui-monospace,monospace}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html,body{margin:0;background:var(--win);color:var(--fg);font:13px/1.35 "Segoe UI",system-ui,-apple-system,sans-serif}
 body{height:100dvh;overflow:hidden;display:flex;flex-direction:column}
 #app{flex:1;min-height:0;display:flex;flex-direction:column}
-a{color:#0055CC}a:hover{color:#003D99}
+a{color:var(--k0055CC)}a:hover{color:var(--k003D99)}
 .dim{color:var(--dim)}.small{font-size:12px}.mono{font-family:var(--mono)}
 .grow{flex:1;min-width:0}
 
 /* Wx buttons / inputs */
-button{height:28px;padding:0 12px;border:1px solid var(--bd);border-radius:3px;background:#FFF;color:var(--fg);font:inherit;cursor:pointer;touch-action:manipulation;white-space:nowrap}
-button:hover{background:var(--hot);border-color:#0078D4}
+button{height:28px;padding:0 12px;border:1px solid var(--bd);border-radius:3px;background:var(--kFFFFFF);color:var(--fg);font:inherit;cursor:pointer;touch-action:manipulation;white-space:nowrap}
+button:hover{background:var(--hot);border-color:var(--k0078D4)}
 button:active{background:var(--sel)}
-button:disabled{background:#F4F4F4;border-color:#D0D0D0;color:#767676;cursor:default}
-button.primary{background:var(--pri);border-color:var(--pri2);color:#FFF;font-weight:600}
-button.primary:hover{background:#1975C5}
-button.danger{border-color:#C42B1C;color:var(--err)}
-button.on{background:var(--sel);border-color:#0078D4}
-input,select,textarea{font:inherit;color:var(--fg);background:#FFF;border:1px solid var(--bd);border-radius:2px;min-width:0}
+button:disabled{background:var(--kF4F4F4);border-color:var(--kD0D0D0);color:var(--k767676);cursor:default}
+button.primary{background:var(--pri);border-color:var(--pri2);color:var(--kFFFFFF);font-weight:600}
+button.primary:hover{background:var(--k1975C5)}
+button.danger{border-color:var(--kC42B1C);color:var(--err)}
+button.on{background:var(--sel);border-color:var(--k0078D4)}
+input,select,textarea{font:inherit;color:var(--fg);background:var(--kFFFFFF);border:1px solid var(--bd);border-radius:2px;min-width:0}
 input,select{height:28px;padding:0 6px}
-input:focus,select:focus,textarea:focus{outline:none;border-color:#3A7BD5;box-shadow:0 0 0 1px #3A7BD5 inset}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--k3A7BD5);box-shadow:0 0 0 1px var(--k3A7BD5) inset}
 textarea{width:100%;padding:6px;font:12px/1.4 var(--mono);resize:vertical}
 
 /* menu bar */
-#menubar{display:flex;align-items:center;gap:2px;padding:2px max(6px,env(safe-area-inset-right)) 2px max(6px,env(safe-area-inset-left));padding-top:calc(2px + env(safe-area-inset-top));background:#FFF;border-bottom:1px solid var(--bd2);flex:none}
+#menubar{display:flex;align-items:center;gap:2px;padding:2px max(6px,env(safe-area-inset-right)) 2px max(6px,env(safe-area-inset-left));padding-top:calc(2px + env(safe-area-inset-top));background:var(--kFFFFFF);border-bottom:1px solid var(--bd2);flex:none}
 #menubar .mb{height:30px;padding:0 10px;border:0;border-radius:3px;background:transparent}
 #menubar .mb:hover,#menubar .mb.open{background:var(--sel)}
-#menubar .names{display:flex;align-items:center;gap:6px;font-size:12px;color:#444;margin-left:auto;white-space:nowrap}
+#menubar .names{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--k444444);margin-left:auto;white-space:nowrap}
 #menubar .names select{height:26px;border-radius:3px}
-#menudrop{position:fixed;z-index:40;min-width:240px;max-width:calc(100vw - 8px);overflow-y:auto;background:#F9F9F9;border:1px solid #CCC;border-radius:4px;box-shadow:0 8px 24px rgba(0,0,0,.18);padding:4px 0}
+#menudrop{position:fixed;z-index:40;min-width:240px;max-width:calc(100vw - 8px);overflow-y:auto;background:var(--kF9F9F9);border:1px solid var(--kCCCCCC);border-radius:4px;box-shadow:0 8px 24px rgba(0,0,0,.18);padding:4px 0}
 #menudrop .mi{display:flex;align-items:center;gap:24px;width:100%;height:28px;padding:0 14px 0 28px;border:0;border-radius:0;background:transparent;text-align:left;position:relative}
 #menudrop .mi:hover{background:var(--sel)}
-#menudrop .mi .k{margin-left:auto;color:#6A6A6A;font:11px var(--mono)}
+#menudrop .mi .k{margin-left:auto;color:var(--k6A6A6A);font:11px var(--mono)}
 #menudrop .mi.chk::before{content:"\2713";position:absolute;left:10px}
-#menudrop .msep{height:1px;background:#DCDCDC;margin:4px 8px}
-#menudrop .mhd{padding:6px 14px 2px 28px;color:#6A6A6A;font-size:11px;font-weight:600}
+#menudrop .msep{height:1px;background:var(--kDCDCDC);margin:4px 8px}
+#menudrop .mhd{padding:6px 14px 2px 28px;color:var(--k6A6A6A);font-size:11px;font-weight:600}
 
 /* info bar */
 #infobar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;padding:6px 8px;border-bottom:1px solid var(--bd2);flex:none}
 .gauge{display:flex;align-items:center;gap:6px;flex:1 1 150px;min-width:0}
 .gauge>span{min-width:44px;white-space:nowrap}
-.gbar{position:relative;flex:1;min-width:0;height:18px;background:#E6E6E6;border:1px solid #BCBCBC;border-radius:2px;overflow:hidden}
+.gbar{position:relative;flex:1;min-width:0;height:18px;background:var(--kE6E6E6);border:1px solid var(--kBCBCBC);border-radius:2px;overflow:hidden}
 .gbar>i{position:absolute;inset:0 auto 0 0;width:0;background:var(--gauge);transition:width .4s}
 .gbar>b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:400;white-space:nowrap;overflow:hidden}
 
 /* deal bar */
-#deal{display:flex;flex-wrap:wrap;align-items:flex-start;gap:6px 14px;padding:6px 8px;background:#FFF4CC;border-bottom:1px solid #E0C870;flex:none}
+#deal{display:flex;flex-wrap:wrap;align-items:flex-start;gap:6px 14px;padding:6px 8px;background:var(--kFFF4CC);border-bottom:1px solid var(--kE0C870);flex:none}
 #deal .cols{display:flex;gap:20px;font-size:12px}
 #deal ul{margin:2px 0 0;padding-left:16px}
 #deal .acts{display:flex;gap:6px;margin-left:auto}
-.badge{font-size:11px;padding:1px 6px;border:1px solid var(--bd);border-radius:2px;background:#FFF;text-transform:uppercase}
+.badge{font-size:11px;padding:1px 6px;border:1px solid var(--bd);border-radius:2px;background:var(--kFFFFFF);text-transform:uppercase}
 
 /* main splitter window */
 #main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 6px var(--rw);grid-template-rows:auto minmax(0,1fr);padding:4px max(4px,env(safe-area-inset-right)) 0 max(4px,env(safe-area-inset-left))}
@@ -65,14 +70,14 @@ textarea{width:100%;padding:6px;font:12px/1.4 var(--mono);resize:vertical}
 #main.nomap #split,#main.nomap #right{display:none}
 #nb{grid-column:1;grid-row:1;display:flex;align-items:flex-end;gap:2px;padding-left:4px;overflow-x:auto;scrollbar-width:none}
 #nb::-webkit-scrollbar{display:none}
-.tab{flex:none;height:28px;margin-top:2px;padding:0 14px;border:1px solid #C8C8C8;border-bottom:0;border-radius:4px 4px 0 0;background:#E4E4E4}
-.tab:hover{background:#EDEDED;border-color:#C8C8C8}
-.tab.on{height:30px;margin-top:0;border-color:var(--bd);background:#FFF;font-weight:600;position:relative;z-index:1;margin-bottom:-1px}
-.tab .nb{color:#A0005F;font-weight:600;margin-left:4px}
+.tab{flex:none;height:28px;margin-top:2px;padding:0 14px;border:1px solid var(--kC8C8C8);border-bottom:0;border-radius:4px 4px 0 0;background:var(--kE4E4E4)}
+.tab:hover{background:var(--kEDEDED);border-color:var(--kC8C8C8)}
+.tab.on{height:30px;margin-top:0;border-color:var(--bd);background:var(--kFFFFFF);font-weight:600;position:relative;z-index:1;margin-bottom:-1px}
+.tab .nb{color:var(--kA0005F);font-weight:600;margin-left:4px}
 .tab .s{display:none}
-#pages{grid-column:1;grid-row:2;min-height:0;position:relative;background:#FFF;border:1px solid var(--bd)}
+#pages{grid-column:1;grid-row:2;min-height:0;position:relative;background:var(--kFFFFFF);border:1px solid var(--bd)}
 #split{grid-column:2;grid-row:1/3;cursor:col-resize;touch-action:none}
-#split:hover{background:#DADADA}
+#split:hover{background:var(--kDADADA)}
 #right{grid-column:3;grid-row:1/3;min-height:0;display:flex;flex-direction:column;gap:4px}
 .page{position:absolute;inset:0;display:none;flex-direction:column;min-height:0}
 .page.on{display:flex}
@@ -80,33 +85,46 @@ textarea{width:100%;padding:6px;font:12px/1.4 var(--mono);resize:vertical}
 
 /* console + chat */
 #log{flex:1;min-height:0;overflow-y:auto;background:#000;color:#FFF;padding:6px 8px;font:13px/1.45 var(--mono);white-space:pre-wrap;word-break:break-word;-webkit-overflow-scrolling:touch}
-#log .sys{color:#888;font-style:italic}
+#log .sys{color:var(--k888888);font-style:italic}
 #log .b{font-weight:700}
-.tb{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:6px 8px;border-bottom:1px solid var(--bd3);background:#FAFAFA;flex:none}
+.tb{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:6px 8px;border-bottom:1px solid var(--bd3);background:var(--kFAFAFA);flex:none}
 .seg{display:flex;gap:0}
 .seg button{border-radius:0;margin-left:-1px}
 .seg button:first-child{border-radius:3px 0 0 3px;margin-left:0}.seg button:last-child{border-radius:0 3px 3px 0}
+#ailog{flex:1;min-height:0;overflow-y:auto;padding:6px 8px;font-size:13px;word-break:break-word}
+#ailog .m{margin:4px 0 8px;white-space:pre-wrap}
+#ailog .m.a{white-space:normal}
+#ailog .m .h{font-weight:600;margin-top:6px}
+#ailog .m .li{padding-left:12px;text-indent:-10px}
+#ailog code{font-family:var(--mono);font-size:12px;background:var(--kF0F0F0);padding:0 3px;border-radius:2px}
+#ailog .m.u{color:var(--dim)}
+#ailog .m.u::before{content:"You: ";font-weight:600}
+#ailog .acts{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0 8px}
+#ailog .err{color:var(--err)}
+#ailog .tools{color:var(--dim);font-size:11px}
 #chatlog{flex:1;min-height:0;overflow-y:auto;padding:4px 8px;font-size:13px;word-break:break-word}
-#chatlog>div{padding:2px 0;border-bottom:1px solid #F3F3F3}
-#chatlog time{color:#888;font-size:11px;margin-right:6px;font-variant-numeric:tabular-nums}
-.d-pm,.d-pmsent{color:#8E7800}.d-partychat{color:#A4008F}.d-guildchat{color:#00B16C}.d-selfchat{color:#009400}.d-schat{color:#D65D00}
-.empty{color:#767676;text-align:center;padding:16px 8px;font-size:13px}
+#chatlog>div{padding:2px 0;border-bottom:1px solid var(--kF3F3F3)}
+#chatlog time{color:var(--k888888);font-size:11px;margin-right:6px;font-variant-numeric:tabular-nums}
+.d-pm,.d-pmsent{color:var(--k8E7800)}.d-partychat{color:var(--kA4008F)}.d-guildchat{color:var(--k00B16C)}.d-selfchat{color:var(--k009400)}.d-schat{color:var(--kD65D00)}
+.empty{color:var(--k767676);text-align:center;padding:16px 8px;font-size:13px}
 
 /* Wx list tables */
 .th,.tr{display:grid;align-items:center}
 #i-pacts button,#i-pacts select{flex:none}
-.th{background:#F5F5F5;border-bottom:1px solid var(--bd2);font-size:12px;position:sticky;top:0;z-index:1}
+.th{background:var(--kF5F5F5);border-bottom:1px solid var(--bd2);font-size:12px;position:sticky;top:0;z-index:1}
 .th>span{padding:4px 8px;border-right:1px solid var(--bd3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .th>span:last-child{border-right:0}
-.tr{min-height:28px;border-bottom:1px solid #F0F0F0;cursor:default}
+.tr{min-height:28px;border-bottom:1px solid var(--kF0F0F0);cursor:default}
 .tr>span{padding:0 8px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.tr:hover{background:#F2F8FD}
+.tr:hover{background:var(--kF2F8FD)}
 .tr.sel{background:var(--sel)}
 .tr .c2{color:var(--dim)}
 .it-grid{grid-template-columns:52px minmax(0,1fr) 80px 110px 150px}
 .sk-grid{grid-template-columns:minmax(0,1fr) 70px 70px 90px 120px}
-.tag{font-size:10px;padding:0 5px;border:1px solid #C8C8C8;border-radius:2px;margin-left:6px;color:#444;background:#FFF}
-.tag.unid{border-color:#C9A227;color:#7A5D00}.tag.bad{border-color:#C42B1C;color:var(--err)}.tag.eq{border-color:#3A7BD5;color:#0F4C9C}
+.tag.sell{color:var(--kC42B1C);border-color:var(--kC42B1C);font-weight:600}
+.tag.store{color:var(--k0067C0);border-color:var(--k0067C0);font-weight:600}
+.tag{font-size:10px;padding:0 5px;border:1px solid var(--kC8C8C8);border-radius:2px;margin-left:6px;color:var(--k444444);background:var(--kFFFFFF)}
+.tag.unid{border-color:var(--kC9A227);color:var(--k7A5D00)}.tag.bad{border-color:var(--kC42B1C);color:var(--err)}.tag.eq{border-color:var(--k3A7BD5);color:var(--k0F4C9C)}
 .tr .sub{display:none}
 .acts-cell{display:flex;gap:4px;justify-content:flex-end}
 .acts-cell button{height:24px;padding:0 10px}
@@ -119,80 +137,80 @@ textarea{width:100%;padding:6px;font:12px/1.4 var(--mono);resize:vertical}
 .st-gauges .gr{display:grid;grid-template-columns:72px minmax(0,1fr);align-items:center;gap:6px}
 .st-gauges .gbar{height:20px}.st-gauges .gbar>b{font-size:12px}
 .stgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;align-items:start}
-fieldset{margin:0;padding:8px 10px 10px;border:1px solid #C8C8C8;border-radius:3px;min-width:0}
+fieldset{margin:0;padding:8px 10px 10px;border:1px solid var(--kC8C8C8);border-radius:3px;min-width:0}
 legend{padding:0 4px;font-weight:600}
 .kv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 12px;font-size:13px}
-.kv>div{display:flex;justify-content:space-between;gap:6px;border-bottom:1px dotted #DDD;padding:2px 0;min-width:0}
-.kv>div>span:first-child{color:#444}.kv>div>span:last-child{font-weight:600;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.kv>div{display:flex;justify-content:space-between;gap:6px;border-bottom:1px dotted var(--kDDDDDD);padding:2px 0;min-width:0}
+.kv>div>span:first-child{color:var(--k444444)}.kv>div>span:last-child{font-weight:600;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .kv.one{grid-template-columns:1fr}
 .stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 12px}
 .stat{display:flex;align-items:center;gap:8px;min-height:28px}
 .stat b{width:34px}.stat span{flex:1}
 .stat button{width:36px;padding:0;font-weight:600}
 .chipl{display:flex;flex-wrap:wrap;gap:4px}
-.chipl span{font-size:12px;border:1px solid #C8C8C8;border-radius:2px;padding:1px 6px;background:#FAFAFA}
+.chipl span{font-size:12px;border:1px solid var(--kC8C8C8);border-radius:2px;padding:1px 6px;background:var(--kFAFAFA)}
 .btnrow{display:flex;flex-wrap:wrap;gap:6px}
-details summary{cursor:pointer;padding:3px 0;color:#333}
+details summary{cursor:pointer;padding:3px 0;color:var(--k333333)}
 details ul{margin:4px 0 0;padding-left:18px;font-size:13px}
 
 /* right column: list + map */
-#actpane{flex:1 1 40%;min-height:150px;display:flex;flex-direction:column;background:#FFF;border:1px solid var(--bd);overflow:hidden}
+#actpane{flex:1 1 40%;min-height:150px;display:flex;flex-direction:column;background:var(--kFFFFFF);border:1px solid var(--bd);overflow:hidden}
 .ac-grid{grid-template-columns:48px minmax(0,1fr) 56px}
 #actpane .tr{min-height:26px}
 #actpane .tr>span{padding:0 6px}
 #actpane .th>span{padding:4px 6px}
 #actpane .tr>span.verb{padding:0 4px 0 0}
 .verb{display:none}
-#mapdock{flex:1 1 60%;min-height:200px;display:flex;flex-direction:column;border:1px solid var(--bd);background:#FFF}
-.dockh{display:flex;align-items:center;gap:6px;padding:3px 6px 3px 8px;background:#F5F5F5;border-bottom:1px solid var(--bd2);font-size:12px;flex:none}
+#mapdock{flex:1 1 60%;min-height:200px;display:flex;flex-direction:column;border:1px solid var(--bd);background:var(--kFFFFFF)}
+.dockh{display:flex;align-items:center;gap:6px;padding:3px 6px 3px 8px;background:var(--kF5F5F5);border-bottom:1px solid var(--bd2);font-size:12px;flex:none}
 .dockh b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dockh button{height:24px;padding:0 8px;font-size:12px}
 #mapwrap{flex:1;min-height:0;position:relative;background:#000;overflow:hidden}
 #mapcv{position:absolute;inset:0;width:100%;height:100%;touch-action:none;display:block}
-#mapinfo{color:#666;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px}
-.legend{position:absolute;left:6px;bottom:6px;display:flex;flex-wrap:wrap;gap:2px 8px;padding:2px 6px;background:rgba(0,0,0,.75);color:#DDD;font-size:11px;pointer-events:none;max-width:calc(100% - 12px)}
-#mappick{position:absolute;left:6px;right:6px;top:6px;font-size:12px;background:#FFFFE1;border:1px solid #767676;padding:4px 6px 4px 8px;display:flex;align-items:center;gap:6px}
+#mapinfo{color:var(--k666666);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px}
+.legend{position:absolute;left:6px;bottom:6px;display:flex;flex-wrap:wrap;gap:2px 8px;padding:2px 6px;background:rgba(0,0,0,.75);color:#DDDDDD;font-size:11px;pointer-events:none;max-width:calc(100% - 12px)}
+#mappick{position:absolute;left:6px;right:6px;top:6px;font-size:12px;background:var(--kFFFFE1);border:1px solid var(--k767676);padding:4px 6px 4px 8px;display:flex;align-items:center;gap:6px}
 #mappick span{flex:1}
 
 /* input row + status bar */
 #inrow{display:flex;gap:4px;padding:4px max(4px,env(safe-area-inset-right)) 4px max(4px,env(safe-area-inset-left));flex:none}
 #pmto{flex:0 1 150px}
-#cmd{flex:999 1 300px;border-color:#3A7BD5;font-family:var(--mono)}
+#cmd{flex:999 1 300px;border-color:var(--k3A7BD5);font-family:var(--mono)}
 #mode{flex:0 0 auto}
 #sendbtn,#quick{display:none}
 #quick{gap:6px;padding:6px max(4px,env(safe-area-inset-right)) 0 max(4px,env(safe-area-inset-left));overflow-x:auto;white-space:nowrap;flex:none;scrollbar-width:none}
 #quick::-webkit-scrollbar{display:none}
 #quick button{flex:none}
-#sb{display:grid;grid-template-columns:minmax(0,1fr) 120px 200px;border-top:1px solid var(--bd2);background:var(--win);font-size:12px;color:#333;padding:0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);flex:none}
+#sb{display:grid;grid-template-columns:minmax(0,1fr) 120px 200px;border-top:1px solid var(--bd2);background:var(--win);font-size:12px;color:var(--k333333);padding:0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);flex:none}
 #sb>span{padding:4px 8px;border-right:1px solid var(--bd2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #sb>span:last-child{border-right:0}
-#conn{display:inline-block;width:8px;height:8px;border-radius:50%;background:#C42B1C;margin-right:6px;vertical-align:0}
-#conn.on{background:#13A10E}
+#conn{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--kC42B1C);margin-right:6px;vertical-align:0}
+#conn.on{background:var(--k13A10E)}
 
 /* config page */
 .cfgwrap{flex:1;min-height:0;display:flex;gap:8px;padding:8px}
 .cfgside{flex:0 1 210px;min-width:160px;display:flex;flex-direction:column;gap:6px}
-.cfgside label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:#444}
+.cfgside label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--k444444)}
 #c-cats{flex:1;overflow:auto;border:1px solid var(--bd)}
 #c-cats .cat{padding:6px 10px;cursor:pointer;white-space:nowrap}
-#c-cats .cat:hover{background:#F2F8FD}
-#c-cats .cat.sel{background:var(--pri);color:#FFF}
+#c-cats .cat:hover{background:var(--kF2F8FD)}
+#c-cats .cat.sel{background:var(--pri);color:var(--kFFFFFF)}
 #c-cats .cat small{opacity:.7;margin-left:4px}
 .cfgmain{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
 #c-grid{flex:1;min-height:0;overflow:auto;border:1px solid var(--bd)}
 .cg{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 46px}
 .set{min-height:32px}
-.set.dirty{background:#FFF4CC}
-.set.focus{background:#F2F8FD}.set.dirty.focus{background:#FFEFB0}
+.set.dirty{background:var(--kFFF4CC)}
+.set.focus{background:var(--kF2F8FD)}.set.dirty.focus{background:var(--kFFEFB0)}
 .set>span{white-space:normal!important}
 .set .key{font:12px var(--mono);word-break:break-all}
 .set .key small{display:block;font:11px var(--mono);color:var(--dim)}
 .set .key.lbl{font:13px "Segoe UI",system-ui,-apple-system,sans-serif}
-.set .val{padding:2px 4px!important;border-left:1px solid #E8E8E8;border-right:1px solid #E8E8E8;align-self:stretch;display:flex;align-items:center}
-.set .val input,.set .val select{width:100%;height:26px;border-color:#D0D0D0;font:13px var(--mono)}
-.set.dirty .val input,.set.dirty .val select{border-color:#C9A227}
+.set .val{padding:2px 4px!important;border-left:1px solid var(--kE8E8E8);border-right:1px solid var(--kE8E8E8);align-self:stretch;display:flex;align-items:center}
+.set .val input,.set .val select{width:100%;height:26px;border-color:var(--kD0D0D0);font:13px var(--mono)}
+.set.dirty .val input,.set.dirty .val select{border-color:var(--kC9A227)}
 a.help{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;font-weight:700;text-decoration:none}
-#c-help{height:130px;overflow:auto;padding:8px 10px;border:1px solid var(--bd);background:#FFFFF4;font-size:13px;flex:none}
+#c-help{height:130px;overflow:auto;padding:8px 10px;border:1px solid var(--bd);background:var(--kFFFFF4);font-size:13px;flex:none}
 #c-help p{margin:6px 0 0}
 .cfgbar{display:flex;flex-wrap:wrap;align-items:center;gap:6px;flex:none}
 #c-count{flex:1 1 200px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -205,25 +223,25 @@ a.help{display:inline-flex;align-items:center;justify-content:center;min-width:2
 
 /* dialogs */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.28);z-index:30;display:flex;align-items:center;justify-content:center;padding:16px}
-.dlg{width:440px;max-width:100%;max-height:85dvh;display:flex;flex-direction:column;background:var(--win);border:1px solid #8A8A8A;border-radius:6px;box-shadow:0 12px 40px rgba(0,0,0,.35);overflow:hidden}
-.dlg-h{display:flex;align-items:center;gap:8px;padding:6px 6px 6px 12px;background:#FFF;border-bottom:1px solid var(--bd2);flex:none}
+.dlg{width:440px;max-width:100%;max-height:85dvh;display:flex;flex-direction:column;background:var(--win);border:1px solid var(--k8A8A8A);border-radius:6px;box-shadow:0 12px 40px rgba(0,0,0,.35);overflow:hidden}
+.dlg-h{display:flex;align-items:center;gap:8px;padding:6px 6px 6px 12px;background:var(--kFFFFFF);border-bottom:1px solid var(--bd2);flex:none}
 .dlg-h b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.dlg-h .x{width:30px;height:30px;padding:0;border:0;background:transparent;font:600 16px sans-serif;color:#333}
+.dlg-h .x{width:30px;height:30px;padding:0;border:0;background:transparent;font:600 16px sans-serif;color:var(--k333333)}
 .dlg-b{padding:12px;display:flex;flex-direction:column;gap:8px;overflow-y:auto}
 .dlg-b .sub{font-size:12px;color:var(--dim)}
 .dlg-f{display:flex;justify-content:flex-end;gap:6px;flex-wrap:wrap}
 .dlg-f button{height:32px;padding:0 16px}
 .sact{width:100%;height:34px;text-align:left;padding:0 12px}
-.tmsg{min-height:96px;max-height:40dvh;overflow-y:auto;padding:8px 10px;background:#FFF;border:1px solid var(--bd);white-space:pre-wrap;font-size:13px}
-.lbox{background:#FFF;border:1px solid var(--bd);max-height:36dvh;overflow-y:auto}
+.tmsg{min-height:96px;max-height:40dvh;overflow-y:auto;padding:8px 10px;background:var(--kFFFFFF);border:1px solid var(--bd);white-space:pre-wrap;font-size:13px}
+.lbox{background:var(--kFFFFFF);border:1px solid var(--bd);max-height:36dvh;overflow-y:auto}
 .lbox .opt{padding:7px 10px;cursor:pointer}
-.lbox .opt:hover{background:#F2F8FD}
+.lbox .opt:hover{background:var(--kF2F8FD)}
 .lbox .opt.sel{background:var(--sel)}
 #talk{z-index:25}
-#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(64px + env(safe-area-inset-bottom));background:#FFFFE1;color:#111;border:1px solid #767676;padding:4px 10px;font:12px var(--mono);z-index:50;max-width:90vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none;opacity:0;transition:opacity .2s;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(64px + env(safe-area-inset-bottom));background:var(--kFFFFE1);color:var(--k111111);border:1px solid var(--k767676);padding:4px 10px;font:12px var(--mono);z-index:50;max-width:90vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none;opacity:0;transition:opacity .2s;box-shadow:0 2px 6px rgba(0,0,0,.2)}
 #toast.on{opacity:1}
 #talkfab{position:fixed;right:12px;bottom:calc(72px + env(safe-area-inset-bottom));z-index:24;height:36px}
-#gate{display:none;text-align:center;padding:40px 12px;margin:12px;background:#FFF;border:1px solid var(--bd)}
+#gate{display:none;text-align:center;padding:40px 12px;margin:12px;background:var(--kFFFFFF);border:1px solid var(--bd)}
 
 /* ---------------- phone: same window, panes become tabs ---------------- */
 @media (max-width:899px){
@@ -336,6 +354,13 @@ a.help{display:inline-flex;align-items:center;justify-content:center;min-width:2
       <section class="page" id="p-chat" role="tabpanel">
         <div class="tb"><div class="seg" id="ch-sub"></div><span class="grow"></span><span class="dim small">Collected while this page is open · click a PM line to reply</span></div>
         <div id="chatlog"></div>
+      </section>
+
+      <!-- AI ADVISOR -->
+      <section class="page" id="p-ai" role="tabpanel">
+        <div class="tb"><button type="button" id="ai-q1">Where should I level?</button><button type="button" id="ai-q2">Spend my skill points?</button><span class="grow"></span><select id="ai-model" title="AI model (via CLIProxyAPI)"><option value="gemini-3-flash">Gemini 3 Flash</option><option value="claude-sonnet-5">Claude Sonnet 5</option><option value="claude-haiku-4-5-20251001">Claude Haiku 4.5</option></select><button type="button" id="ai-sid" title="Copy session ID (full log in logs/ai-sessions/)">Copy ID</button><button type="button" id="ai-clear">Clear</button></div>
+        <div id="ailog" role="log" aria-label="AI advisor"></div>
+        <form id="ai-form" class="tb"><input id="ai-in" autocomplete="off" placeholder="Ask about maps, skills, stats, gear…" style="flex:1"><button id="ai-send">Ask</button></form>
       </section>
 
       <!-- STATUS -->
@@ -486,6 +511,11 @@ const mapVisible = () => isPhone() ? view === "map" : !mapHidden;
 function gate(){ $("gate").style.display = "block"; $("app").style.display = "none"; }
 
 let toastT = 0;
+// theme: "" follows the system (prefers-color-scheme), else forced light/dark
+let theme = store("kore-theme") || "";
+const isDark = () => theme ? theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+function setTheme(t){ theme = t; store("kore-theme", t); if (t) document.documentElement.dataset.theme = t; else delete document.documentElement.dataset.theme; }
+setTheme(theme);
 function toast(t){ const d = $("toast"); d.textContent = t; d.className = "on"; clearTimeout(toastT); toastT = setTimeout(() => d.className = "", 1800); }
 
 // run a console command, optionally after confirmation
@@ -519,7 +549,7 @@ function tr(s){
     const pre = (it.name.match(/^\+\d+\s+/) || [""])[0], slot = (it.name.match(/\s*\[\d+\]$/) || [""])[0];
     it.name = pre + n + slot;
   };
-  for (const list of [s.inventory, s.cart && s.cart.items, s.storage && s.storage.items]) if (Array.isArray(list)) list.forEach(item);
+  for (const list of [s.inventory, s.cart && s.cart.items, s.storage && s.storage.items, s.shop && s.shop.items]) if (Array.isArray(list)) list.forEach(item);
   if (Array.isArray(s.skills)) for (const k of s.skills) { const n = obj(k) && t.skills && t.skills[k.handle]; if (n) k.name = n; }
   return s;
 }
@@ -588,7 +618,7 @@ function renderStatus(s){
   const pctTxt = (c, m) => num(c) == null ? "-" : `${fmt(c)} / ${fmt(m)} · ${pct(num(c), num(m)).toFixed(2)}%`;
   fill($("st-head"), el("div", {class: "st-head"},
     el("b", null, s.name ? str(s.name) : (s.state === "offline" ? "Bot offline" : "-")),
-    el("span", {style: "color:#444"}, [dash(s.job), st && st.sex != null ? str(st.sex) : null].filter(Boolean).join(" · "))));
+    el("span", {style: "color:var(--k444444)"}, [dash(s.job), st && st.sex != null ? str(st.sex) : null].filter(Boolean).join(" · "))));
   fill($("st-gauges"),
     mkGauge("HP", s.hp, s.hp_max, num(s.hp) == null ? "-" : `${fmt(s.hp)} / ${fmt(s.hp_max)}`, hpColor(s.hp, s.hp_max)),
     mkGauge("SP", s.sp, s.sp_max, num(s.sp) == null ? "-" : `${fmt(s.sp)} / ${fmt(s.sp_max)}`, "var(--gsp)"),
@@ -794,21 +824,88 @@ function closeSheet(){ $("sheet").hidden = true; if (M.mark) { M.mark = null; dr
 $("sheet").onclick = e => { if (e.target === $("sheet")) closeSheet(); };
 
 // ask for an amount; returns "" (all/one), " n", or null (cancelled)
-function askAmount(it, verb){
+// In-page amount box: window.prompt() does not exist in the app's Electron window.
+function askNumber(text, max){
+  return new Promise(done => {
+    const input = el("input", {type: "number", min: "1", max: String(max), value: String(max), style: "width:8em"});
+    const d = el("dialog", {style: "padding:14px"},
+      el("form", {method: "dialog"},
+        el("div", {style: "margin-bottom:8px"}, text), input, " ",
+        el("button", {value: "ok"}, "OK"), " ", el("button", {value: "cancel", formnovalidate: true}, "Cancel")));
+    d.onclose = () => { d.remove(); done(d.returnValue === "ok" ? input.value : null); };
+    document.body.append(d); d.showModal(); input.select();
+  });
+}
+async function askAmount(it, verb){
   const max = int(it.amount) ?? 1;
   if (max <= 1) return "";
-  const a = prompt(`${verb} how many ${str(it.name)}? (1-${max})`, String(max));
+  const a = await askNumber(`${verb} how many ${str(it.name)}? (1-${max})`, max);
   if (a == null) return null;
   const n = parseInt(a, 10);
   if (!(n >= 1 && n <= max)) { toast("invalid amount"); return null; }
   return " " + n;
 }
 function itemCmd(base, it, verb, conf){
-  return () => {
-    const a = askAmount(it, verb); if (a == null) return;
+  return async () => {
+    const a = await askAmount(it, verb); if (a == null) return;
     run(`${base} ${int(it.idx)}${a}`, {confirm: conf ? `${verb} ${a ? a.trim() + " x " : ""}${str(it.name)}?` : null});
   };
 }
+
+// ---------------------------------------------------------------- auto-sell (items_control.txt)
+// Lines are "<item> <keep> <storage> <sell> ...". Only lines naming the item by ID are matched;
+// name lines (e.g. "Boots 0 0 1") still work in OpenKore but get no tag here.
+const IC_FILE = "items_control.txt", IC_LINE = /^\s*(\d+)\s+(\d+)\s+(\d+)\s+(\d+)(.*)$/;
+let IC = {text: null, sell: new Set(), store: new Set(), rule: new Map()};
+async function loadIC(){
+  const r = await fetch("/kore/file/" + IC_FILE, {credentials: "include", cache: "no-store"}).catch(() => null);
+  const j = r && r.ok ? await r.json().catch(() => null) : null;
+  if (!obj(j) || typeof j.text !== "string") return;
+  const sell = new Set(), store = new Set(), rule = new Map();
+  for (const line of j.text.split("\n")) {
+    const m = line.match(IC_LINE); if (!m) continue;
+    rule.set(+m[1], {keep: +m[2], storage: +m[3], sell: +m[4]});
+    if (m[4] === "1") sell.add(+m[1]);
+    if (m[3] === "1") store.add(+m[1]);
+  }
+  IC = {text: j.text, sell, store, rule}; SECKEY.items = null; safe(renderItems);
+}
+// items_control.txt text with item `id` set to always-sell (on) or not (off)
+function icToggle(text, id, name, on){
+  const lines = text.replace(/\n$/, "").split("\n");
+  const at = lines.findIndex(l => { const m = l.match(IC_LINE); return m && +m[1] === id; });
+  if (at < 0) { if (on) lines.push(`${id} 0 0 1 # ${name}`); }
+  else {
+    const m = lines[at].match(IC_LINE);
+    // a line that only ever sold the item goes away; anything else just flips the sell column
+    if (!on && m[2] === "0" && m[3] === "0" && !/^\s*\d/.test(m[5])) lines.splice(at, 1);
+    else lines[at] = `${m[1]} ${m[2]} ${m[3]} ${on ? 1 : 0}${m[5]}`;
+  }
+  return lines.join("\n") + "\n";
+}
+const autoSells = it => IC.sell.has(int(it.id));
+async function toggleAutoSell(it){
+  await loadIC(); if (IC.text == null) return toast("could not read " + IC_FILE);
+  const id = int(it.id); if (id == null) return toast("item has no ID");
+  const on = !IC.sell.has(id);
+  const r = await fetch("/kore/file/" + IC_FILE, {method: "POST", credentials: "include", headers: {"Content-Type": "application/json"}, body: JSON.stringify({text: icToggle(IC.text, id, str(it.name), on)})}).catch(() => null);
+  const j = r ? await r.json().catch(() => ({})) : {};
+  if (!r || !r.ok || j.error) return toast(str(j.error || "save failed"));
+  toast(`${str(it.name)}: ${on ? "always sold" : "no longer auto-sold"}` + (j.reloaded ? "" : " (reload OpenKore later)"));
+  await loadIC();
+}
+// Always store: the plugin's ic_set edits items_control.txt (backup + reload). Storing turns selling off.
+const autoStores = it => IC.store.has(int(it.id));
+const storeNext = it => arr(S.store_list).some(x => obj(x) && int(x.id) === int(it.id));
+async function toggleAutoStore(it){
+  await loadIC();
+  const id = int(it.id); if (id == null) return toast("item has no ID");
+  const r = IC.rule.get(id) || {keep: 0, storage: 0, sell: 0}, on = !IC.store.has(id);
+  send(`ic_set ${id} ${r.keep} ${on ? 1 : 0} ${on ? 0 : r.sell}`);
+  toast(`${str(it.name)}: ${on ? "always stored at the Kafra (needs storageAuto 1)" : "no longer auto-stored"}`);
+  setTimeout(loadIC, 1200);
+}
+loadIC();
 
 // ---------------------------------------------------------------- inventory / cart / storage
 const ITEM_FILTERS = [["all", "All"], ["usable", "Usable"], ["equip", "Equip"], ["etc", "Etc"], ["card", "Card"], ["arrow", "Ammo"], ["other", "Other"]];
@@ -824,13 +921,23 @@ function itemActs(it, where){
   const acts = [];
   if (where === "inv"){
     if (it.usable || it.type === "usable") acts.push({label: "Use", cmd: "is " + i, primary: true});
-    if (it.type === "equip" || it.type === "arrow" || it.equipped){
+    if (it.identified === false){
+      const mags = arr(S.inventory).filter(x => obj(x) && int(x.id) === 611).reduce((n, x) => n + (int(x.amount) || 0), 0);
+      acts.push(mags ? {label: `Identify (${mags} Magnifier${mags === 1 ? "" : "s"})`, cmd: "identify_item " + i, primary: true}
+                     : {label: "Identify", fn: () => toast("No Magnifier: buy one at a Tool Dealer or use the Item Appraiser in Prontera")});
+    }
+    if ((it.type === "equip" || it.type === "arrow" || it.equipped) && it.identified !== false){
       if (it.equipped) acts.push({label: "Unequip", cmd: "uneq " + i});
       else acts.push({label: "Equip", cmd: "eq " + i, primary: true});
     }
     if (cart) acts.push({label: "To cart", fn: itemCmd("cart add", it, "Put in cart")});
     if (stOpen) acts.push({label: "To storage", fn: itemCmd("storage add", it, "Put in storage")});
-    acts.push({label: "Sell…", fn: itemCmd("sell", it, "Add to sell list", true)});
+    // already listed: OpenKore has no per-item remove, "sell cancel" clears the list
+    if (!arr(S.sell_list).some(x => obj(x) && int(x.idx) === i)) acts.push({label: "Sell…", fn: itemCmd("sell", it, "Add to sell list", true)});
+    acts.push({label: autoSells(it) ? "Stop auto-sell" : "Always sell", fn: () => toggleAutoSell(it)});
+    if (!it.equipped) acts.push(storeNext(it) ? {label: "Unstore next trip", cmd: "store_next cancel " + i}
+                                              : {label: "Store next trip", cmd: "store_next " + i});
+    acts.push({label: autoStores(it) ? "Stop auto-store" : "Always store", fn: () => toggleAutoStore(it)});
     if (!it.equipped) acts.push({label: "Drop…", danger: true, fn: itemCmd("drop", it, "Drop", true)});
     acts.push({label: "Describe", cmd: "i desc " + i, console: true});
   } else if (where === "cart"){
@@ -851,7 +958,9 @@ function renderItems(){
   if (where === "inv"){
     items = arr(s.inventory);
     head = `${items.length} items · Weight ${s.weight == null ? "-" : `${fmt(s.weight)} / ${fmt(s.weight_max)}`} · Zeny ${fmt(s.zeny)}`;
-    acts = [["sell list", () => run("sell list", {console: true})], ["sell done", () => run("sell done", {confirm: "Sell everything in the sell list?"}), "danger"], ["sell cancel", () => run("sell cancel")]];
+    const nSell = arr(s.sell_list).length, nStore = arr(s.store_list).length;
+    acts = [[nSell ? `sell list (${nSell})` : "sell list", () => run("sell list", {console: true})], ["sell done", () => run("sell done", {confirm: "Sell everything in the sell list?"}), "danger"], ["sell cancel", () => run("sell cancel")],
+      [nStore ? `store list (${nStore})` : "store list", () => run("store_next list", {console: true})], ...(nStore ? [["store cancel", () => run("store_next cancel")]] : [])];
   } else if (where === "cart"){
     items = cart ? arr(cart.items) : [];
     head = cart ? `Cart ${dash(cart.count)}/${dash(cart.count_max)} · Weight ${fmt(cart.weight)} / ${fmt(cart.weight_max)}` : "No cart";
@@ -872,7 +981,7 @@ function renderItems(){
   if (where === "inv" && itemFilter !== "all") items = items.filter(i => str(i.type) === itemFilter);
   const selIt = items.find(i => int(i.idx) != null && int(i.idx) === itemSel[where]) || null;
   if (!selIt) itemSel[where] = null;
-  const key = JSON.stringify([where, items, itemSel[where], itemFilter, !!cart, sto && sto.open, head]);
+  const key = JSON.stringify([where, items, itemSel[where], itemFilter, !!cart, sto && sto.open, head, s.sell_list, s.store_list]);
   if (SECKEY.items === key) return; SECKEY.items = key;
 
   // toolbar: selection actions | page actions | filter
@@ -891,11 +1000,25 @@ function renderItems(){
   if (!items.length) { fill(box, el("div", {class: "empty"}, where === "inv" && !Array.isArray(s.inventory) ? "Inventory not available yet" : "Nothing here")); return; }
   const row = it => {
     const tags = [];
-    if (it.identified === false) tags.push(el("span", {class: "tag unid"}, "unID"));
+    if (it.identified === false) tags.push(el("span", {class: "tag unid", title: "Not identified: can't be equipped until identified (Magnifier)"}, "Not identified"));
     if (it.broken) tags.push(el("span", {class: "tag bad"}, "broken"));
+    const sold = where === "inv" ? arr(s.sell_list).find(x => obj(x) && int(x.idx) === int(it.idx)) : null;
+    if (where === "inv" && autoSells(it)) tags.push(el("span", {class: "tag sell", title: "items_control.txt: sold whenever the bot auto-sells"}, "auto-sell"));
+    if (where === "inv" && storeNext(it)) tags.push(el("span", {class: "tag store", title: "Store list: put in Kafra storage on the next storage trip, then forgotten"}, "store next"));
+    if (where === "inv" && autoStores(it)) tags.push(el("span", {class: "tag store", title: "items_control.txt: put in Kafra storage on every storage trip"}, "auto-store"));
+    if (sold) tags.push(el("span", {class: "tag sell", title: "In the sell list: sold on the next sell done"}, `sell ×${fmt(sold.amount)}`));
     const i = int(it.idx), sel = i != null && i === itemSel[where];
     return el("div", {class: "tr it-grid" + (sel ? " sel" : ""), role: "row", tabIndex: 0, "aria-selected": sel ? "true" : "false",
       onclick: () => { itemSel[where] = sel ? null : i; renderItems(); },
+      oncontextmenu: e => {
+        const acts = itemActs(it, where); if (!acts.length) return;
+        e.preventDefault(); itemSel[where] = i; renderItems();
+        openCtx([{head: str(it.name)}, ...acts.map(a => a.label === "Always sell" || a.label === "Stop auto-sell"
+          ? {label: "Always sell (auto-sell)", fn: a.fn, check: () => autoSells(it)}
+          : a.label === "Always store" || a.label === "Stop auto-store"
+          ? {label: "Always store (auto-storage)", fn: a.fn, check: () => autoStores(it)}
+          : {label: a.label.replace(/…$/, ""), fn: () => doAct(a), confirm: null})], e.clientX, e.clientY);
+      },
       onkeydown: e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); itemSel[where] = i; renderItems(); } }},
       el("span", {class: "c2"}, i == null ? "" : String(i)),
       el("span", null, dash(it.name), tags, el("span", {class: "sub"}, typeName(it.type), it.equipped ? el("span", {class: "tag eq"}, str(it.equipped)) : null)),
@@ -1195,7 +1318,7 @@ function renderActors(){
     const v = verbFor(A);
     return el("div", {class: "tr ac-grid", role: "row", tabIndex: 0, onclick: () => actorSheet(A), onkeydown: e => { if (e.key === "Enter") actorSheet(A); }},
       el("span", {class: "c2"}, int(A.a.idx) != null ? String(A.a.idx) : ""),
-      el("span", {style: "color:" + KIND[A.kind][2], title: `${KIND[A.kind][1]} (${A.x}, ${A.y})`}, dash(A.a.name) + (A.kind === "portal" && A.a.dest ? " → " + A.a.dest : "")),
+      el("span", {style: "color:" + KIND[A.kind][isDark() ? 0 : 2], title: `${KIND[A.kind][1]} (${A.x}, ${A.y})`}, dash(A.a.name) + (A.kind === "portal" && A.a.dest ? " → " + A.a.dest : "")),
       el("span", {class: "c2"}, A.a.dist != null ? str(A.a.dist) : ""),
       el("span", {class: "verb"}, v ? el("button", {type: "button", onclick: e => { e.stopPropagation(); v[1](); }}, v[0]) : null));
   }));
@@ -1232,7 +1355,54 @@ function showMap(){
 
 // ---------------------------------------------------------------- NPC talk (Wx dialog) + deal
 let talkKey = null, talkHidden = null;
+// NPC shop window: buy list with a cart, or the sell window over your inventory. One command per checkout.
+let shopKey = null, shopHidden = null;
+function renderShop(s, sh){
+  const box = $("talk-box"), buy = sh.mode === "buy";
+  const goods = buy ? arr(sh.items).filter(obj) : arr(s.inventory).filter(it => obj(it) && !it.equipped);
+  const key = JSON.stringify([sh, buy ? null : goods.map(it => [it.idx, it.amount])]);
+  $("talkfab").hidden = true;
+  if (shopHidden === key) { $("talk").hidden = true; return; }
+  $("talk").hidden = false;
+  if (key === shopKey) return; // keep typed amounts
+  shopKey = key;
+  const qty = new Map(), total = el("b"), zeny = num(s.zeny);
+  const upd = () => {
+    let z = 0, n = 0; for (const [it, q] of qty) { n += q; if (buy) z += q * (num(it.price) || 0); }
+    total.textContent = buy ? `${fmt(n)} items · ${fmt(z)} z` + (zeny != null && z > zeny ? " (not enough zeny)" : "") : `${fmt(n)} items`;
+    total.style.color = buy && zeny != null && z > zeny ? "var(--err, #c00)" : "";
+  };
+  const rows = goods.map(it => {
+    const max = buy ? 30000 : int(it.amount) || 1;
+    const inp = el("input", {type: "number", min: 0, max, value: "", placeholder: "0", inputMode: "numeric", style: "width:64px", "aria-label": "Amount of " + str(it.name),
+      oninput: () => { const q = Math.min(max, Math.max(0, int(inp.value) || 0)); if (q) qty.set(it, q); else qty.delete(it); upd(); }});
+    const add = n => { inp.value = String(Math.min(max, (int(inp.value) || 0) + n)); inp.oninput(); };
+    return el("div", {class: "opt", style: "display:flex;align-items:center;gap:8px;cursor:default"},
+      el("span", {style: "flex:1;min-width:0"}, str(it.name), el("span", {class: "sub"}, buy ? `  ${fmt(num(it.price))} z` : `  x${fmt(num(it.amount))}`)),
+      el("button", {type: "button", onclick: () => add(1)}, "+1"), buy ? el("button", {type: "button", onclick: () => add(10)}, "+10") : el("button", {type: "button", onclick: () => { inp.value = String(max); inp.oninput(); }}, "All"), inp);
+  });
+  const checkout = () => {
+    const pick = [...qty].filter(([, q]) => q > 0);
+    if (!pick.length) return toast("choose an amount");
+    const what = pick.map(([it, q]) => `${q} x ${str(it.name)}`).join("\n");
+    if (buy) run("buy " + pick.map(([it, q]) => `${int(it.idx)} ${q}`).join(", "), {confirm: `Buy?\n\n${what}\n\nTotal: ${total.textContent}`});
+    else run(pick.map(([it, q]) => `sell ${int(it.idx)} ${q}`).concat("sell done").join(";;"), {confirm: `Sell?\n\n${what}`});
+  };
+  // Closing must tell the server, or it keeps the shop open and blocks walking and other NPCs.
+  const hide = () => { run("shop_close"); shopHidden = key; shopKey = null; $("talk").hidden = true; };
+  upd();
+  fill(box, dlgHead((buy ? "Buy from " + dash(sh.npc) : "Sell to NPC") + (zeny != null ? ` · ${fmt(zeny)} z` : ""), hide),
+    el("div", {class: "dlg-b"},
+      rows.length ? el("div", {class: "lbox", role: "list"}, rows) : el("div", {class: "sub"}, buy ? "This shop has nothing listed." : "Nothing to sell."),
+      el("div", {class: "dlg-f"}, total, el("span", {class: "grow"}),
+        el("button", {type: "button", onclick: hide}, "Cancel"),
+        el("button", {type: "button", class: "primary", onclick: checkout}, buy ? "Buy" : "Sell"))));
+  box.setAttribute("aria-label", buy ? "Shop" : "Sell");
+}
 function renderTalk(s){
+  const sh = obj(s.shop);
+  if (sh && sh.mode !== "choose") return renderShop(s, sh);
+  shopKey = shopHidden = null;
   const t = obj(s.talk);
   if (!t){ $("talk").hidden = true; $("talkfab").hidden = true; talkKey = talkHidden = null; return; }
   const key = JSON.stringify(t);
@@ -1273,7 +1443,11 @@ function renderTalk(s){
   } else {
     // initiated, close, buy_or_sell, store and anything unknown: show messages + continue
     ok = () => run("talk cont"); okLabel = st === "close" ? "Close" : "Continue";
-    if (st === "buy_or_sell" || st === "store") body.push(el("div", {class: "sub"}, "Shop dialog: use buy/sell/store commands in the console."));
+    if (st === "buy_or_sell") {
+      body.push(el("div", {class: "tb"}, el("button", {type: "button", class: "primary", onclick: () => run("store")}, "Buy"),
+        el("button", {type: "button", onclick: () => run("sell")}, "Sell")));
+      ok = () => run("store"); okLabel = "Buy";
+    }
   }
   const hide = () => { talkHidden = key; talkKey = null; $("talk").hidden = true; $("talkfab").hidden = false; };
   fill(box, dlgHead("NPC: " + dash(t.npc), hide),
@@ -1332,6 +1506,7 @@ const MENUS = [
     SEP, mi("Status", null, {fn: () => show("status")}), mi("Homunculus", "homun s", {con: true}), mi("Mercenary", "merc s", {con: true}), mi("Pet", "pet s", {con: true}),
     SEP, mi("Inventory", null, {fn: () => show("inv")}), mi("Cart", null, {fn: () => show("cart")}), mi("Storage", null, {fn: () => show("storage")}), mi("Skills", null, {fn: () => show("skills")}), mi("Chat Log", null, {fn: () => show("chat")}),
     SEP, mi("Experience Report", "exp", {con: true}),
+    SEP, mi("Theme: System", null, {fn: () => setTheme(""), check: () => !theme}), mi("Theme: Light", null, {fn: () => setTheme("light"), check: () => theme === "light"}), mi("Theme: Dark", null, {fn: () => setTheme("dark"), check: () => theme === "dark"}),
     SEP, mi("Clear Console", null, {fn: () => log.replaceChildren()}), mi("Clear Chat History", "cl"), mi("Clear Item History", "cil")]],
   ["Merchant", [
     mi("Accept deal", "deal", {confirm: "Accept / finalize the current deal?"}), mi("Reject deal", "deal no"), mi("Deal information", "dl", {con: true}),
@@ -1364,6 +1539,14 @@ fill($("mb-menus"), MENUS.map(([title], n) => el("button", {type: "button", clas
 function openMenu(n){
   const [, items] = MENUS[n], d = $("menudrop"), b = $("mb-" + n);
   document.querySelectorAll("#menubar .mb").forEach(x => x.classList.toggle("open", x === b));
+  fillMenu(d, items);
+  d.hidden = false; menuOpen = n;
+  const r = b.getBoundingClientRect(), w = d.offsetWidth;
+  d.style.left = Math.max(4, Math.min(r.left, window.innerWidth - w - 4)) + "px";
+  d.style.top = r.bottom + "px";
+  d.style.maxHeight = (window.innerHeight - r.bottom - 8) + "px";
+}
+function fillMenu(d, items){
   fill(d, items.map(it => {
     if (it.sep) return el("div", {class: "msep", role: "separator"});
     if (it.head) return el("div", {class: "mhd"}, it.head);
@@ -1372,11 +1555,14 @@ function openMenu(n){
       onclick: () => { closeMenu(); if (it.fn) it.fn(); else run(it.cmd, {confirm: it.confirm, console: it.con}); }},
       el("span", null, it.label + (it.confirm ? "…" : "")), it.cmd ? el("span", {class: "k"}, it.cmd) : null);
   }));
-  d.hidden = false; menuOpen = n;
-  const r = b.getBoundingClientRect(), w = d.offsetWidth;
-  d.style.left = Math.max(4, Math.min(r.left, window.innerWidth - w - 4)) + "px";
-  d.style.top = r.bottom + "px";
-  d.style.maxHeight = (window.innerHeight - r.bottom - 8) + "px";
+}
+// right-click menu at the pointer, same look and closing rules as the menubar
+function openCtx(items, x, y){
+  closeMenu();
+  const d = $("menudrop"); fillMenu(d, items); d.hidden = false; menuOpen = "ctx";
+  d.style.maxHeight = (window.innerHeight - 8) + "px";
+  d.style.left = Math.max(4, Math.min(x, window.innerWidth - d.offsetWidth - 4)) + "px";
+  d.style.top = Math.max(4, Math.min(y, window.innerHeight - d.offsetHeight - 4)) + "px";
 }
 function closeMenu(){ $("menudrop").hidden = true; menuOpen = null; document.querySelectorAll("#menubar .mb.open").forEach(x => x.classList.remove("open")); }
 document.addEventListener("pointerdown", e => { if (menuOpen != null && !e.target.closest("#menudrop, #menubar .mb")) closeMenu(); });
@@ -1471,7 +1657,7 @@ function showHelp(key, label, hint){
     el("p", null, "Saved value: ", el("b", {class: "mono"}, s ? (s.value === "" ? "(empty)" : s.value) : "-"),
       dirty.has(key) ? [" → changed to ", el("b", {class: "mono"}, dirty.get(key) === "" ? "(empty)" : dirty.get(key))] : null,
       s && s.locked ? el("span", {class: "dim"}, " · locked (credentials stay on the Mac)") : null),
-    el("p", {style: "color:#444"}, "From the OpenKore manual · ", el("a", {href: "https://openkore.com/wiki/" + encodeURIComponent(key), target: "_blank", rel: "noopener"}, "open the wiki page for " + key)));
+    el("p", {style: "color:var(--k444444)"}, "From the OpenKore manual · ", el("a", {href: "https://openkore.com/wiki/" + encodeURIComponent(key), target: "_blank", rel: "noopener"}, "open the wiki page for " + key)));
 }
 function setCat(c){ if (!CATS.some(x => x[0] === c)) c = "common"; cfgCat = c; store("kp-cat", c); renderCfg(); }
 function renderCats(){
@@ -1574,9 +1760,61 @@ $("cf-refresh").onclick = loadFiles;
 $("cf-save").onclick = () => { if (CF.name && confirm(`Save ${CF.name}? A backup is made first and the bot reloads the file.`)) postFile({text: $("cf-text").value}, CF.name); };
 $("cf-restore").onclick = () => { const b = $("cf-bk").value; if (CF.name && b && confirm(`Restore ${CF.name} from backup ${prettyBk(b)}?`)) postFile({restore: b}, "backup"); };
 
+// ---------------------------------------------------------------- AI advisor
+// Gateway POST /kore/chat runs the model with read-only tools; commands it suggests come back as
+// buttons and only run after confirm().
+const newSid = () => Math.random().toString(36).slice(2, 10).padEnd(8, "0");
+const AI = {msgs: [], busy: false, sid: newSid()};
+function aiLine(cls, text){ const d = el("div", {class: "m " + cls}); if (cls === "a") d.append(...aiMd(text)); else d.textContent = text; $("ailog").append(d); $("ailog").scrollTop = 1e9; return d; }
+// Minimal markdown for model replies, built as DOM (never innerHTML): **bold**, `code`, # headings, - lists.
+function aiMd(text){
+  const inline = s => s.split(/(\*\*[^*]+\*\*|`[^`]+`)/).filter(Boolean).map(p =>
+    p.startsWith("**") ? el("b", {}, p.slice(2, -2)) : p.startsWith("`") ? el("code", {}, p.slice(1, -1)) : document.createTextNode(p));
+  return str(text).split("\n").map(line => {
+    const h = line.match(/^#{1,4}\s+(.*)$/), li = line.match(/^\s*(?:[-*]|\d+\.)\s+(.*)$/);
+    if (h) return el("div", {class: "h"}, ...inline(h[1]));
+    if (li) return el("div", {class: "li"}, "• ", ...inline(li[1]));
+    return el("div", {}, ...inline(line || "\u00a0"));
+  });
+}
+async function aiAsk(q){
+  q = q.trim(); if (!q || AI.busy) return;
+  AI.busy = true; $("ai-send").disabled = true;
+  AI.msgs.push({role: "user", content: q}); aiLine("u", q);
+  const wait = aiLine("dim", "thinking…");
+  try {
+    const r = await fetch("/kore/chat", {method: "POST", credentials: "include", headers: {"Content-Type": "application/json"}, body: JSON.stringify({messages: AI.msgs, session: AI.sid, model: $("ai-model").value, lang: navigator.language || "en"})});
+    const j = await r.json().catch(() => ({error: `HTTP ${r.status}`}));
+    wait.remove();
+    if (j.error) { aiLine("err", "AI error: " + j.error); AI.msgs.pop(); return; }
+    AI.msgs.push({role: "assistant", content: j.reply});
+    aiLine("a", j.reply);
+    if (j.actions && j.actions.length) {
+      const btns = j.actions.map(a => el("button", {type: "button", title: a.command, onclick: () => { if (confirm(`Run "${a.command}"?`)) { send(a.command); toast("sent: " + a.command); } }}, a.label));
+      if (j.actions.length > 1) btns.push(el("button", {type: "button", class: "primary", onclick: () => {
+        const cmds = j.actions.map(a => a.command);
+        if (confirm("Run all of these?\n\n" + cmds.join("\n"))) { cmds.forEach(send); toast(`sent ${cmds.length} commands`); }
+      }}, "Apply all"));
+      $("ailog").append(fill(el("div", {class: "acts"}), btns));
+    }
+    if (j.tools && j.tools.length) aiLine("tools", "looked at: " + [...new Set(j.tools)].join(", "));
+  } catch (e) { wait.remove(); aiLine("err", "AI error: " + e); AI.msgs.pop(); }
+  finally { AI.busy = false; $("ai-send").disabled = false; $("ailog").scrollTop = 1e9; }
+}
+$("ai-form").onsubmit = e => { e.preventDefault(); const v = $("ai-in").value; $("ai-in").value = ""; aiAsk(v); };
+$("ai-q1").onclick = () => aiAsk("Where should I level next? Rank 3 maps for my character.");
+$("ai-q2").onclick = () => aiAsk("How should I spend my free skill and stat points?");
+$("ai-model").value = store("kp-ai-model") || "gemini-3-flash";
+$("ai-model").onchange = e => store("kp-ai-model", e.target.value);
+$("ai-clear").onclick = () => { AI.msgs = []; AI.sid = newSid(); $("ailog").replaceChildren(); };
+$("ai-sid").onclick = async () => {
+  const t = "kore AI session " + AI.sid;
+  try { await navigator.clipboard.writeText(t); toast("copied: " + t); } catch { prompt("Copy:", t); }
+};
+
 // ---------------------------------------------------------------- notebook
 // [key, label, short label (phone), page id, phone only]
-const TABS = [["console", "Console", "Console", "p-console"], ["chat", "Chat Log", "Chat", "p-chat"], ["map", "Map", "Map", null, true],
+const TABS = [["console", "Console", "Console", "p-console"], ["chat", "Chat Log", "Chat", "p-chat"], ["ai", "AI Advisor", "AI", "p-ai"], ["map", "Map", "Map", null, true],
   ["status", "Status", "Status", "p-status"], ["inv", "Inventory", "Inventory", "p-items"], ["cart", "Cart", "Cart", "p-items"], ["storage", "Storage", "Storage", "p-items"],
   ["skills", "Skills", "Skills", "p-skills"], ["cfg", "Advanced Configuration", "Config", "p-cfg"]];
 fill($("nb"), TABS.map(([k, t, sh, , ph]) => el("button", {type: "button", role: "tab", class: "tab" + (ph ? " phone" : ""), id: "tab-" + k, onclick: () => show(k)},

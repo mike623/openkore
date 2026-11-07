@@ -59,6 +59,8 @@ New keys (null / [] when unknown):
   sex}`
 - `statuses` — `["Blessing", …]`
 - `inventory` — `[{"idx","id","name","amount","type","equipped","identified","broken","usable"}]`
+- console command `identify_item <inventory idx>` (webstatus plugin): uses a Magnifier (611) and identifies exactly that item
+- `sell_list` — `[{"idx","name","amount"}]`: the items `sell <idx>` queued for the next `sell done` (`idx` = inventory idx)
   `idx` is what console commands take (`eq <idx>`, `uneq <idx>`, `is <idx>`, `drop <idx> [n]`).
   `type`: `usable|etc|equip|card|arrow|other`. `equipped`: slot name string or null.
 - `cart` — null or `{"items":[same shape],"count","count_max","weight","weight_max"}`.
@@ -70,6 +72,7 @@ New keys (null / [] when unknown):
 - `items_ground` — `[{"name","x","y","dist","amount","idx"}]` (`take <idx>`).
 - `monsters` gains `"idx"` (what `a <idx>` takes) and `"hp_pct"` when known.
 - `party` — null or `{"name","members":[{"name","map","x","y","hp","hp_max","online","leader"}]}`.
+- `companions` — null until the first roster arrives (plugins/companions), then `{"updated","members":[{"name","job","lv","out","active","favorite","dead","duty","roam","heal_at","emergency_at","rest_below","rest_until"}]}`. `duty` tank|support|attacker|null; `roam` null when roaming is off in RO Offline settings. Commands: `comp list|summon|dismiss|remove <name>|stance atk|def|pass|role <name> tank|supp|dd|roam [<name>] on|off|recall|recruit <player>`.
 - `guild` — null or `{"name","lv","members_online"}`.
 - `homun`, `merc`, `pet` — null or `{"name","lv","hp","hp_max","sp","sp_max","hunger","intimacy",
   "exp","exp_max"}` (fields that don't apply = null).
@@ -103,3 +106,12 @@ Bottom tab bar: **Status**, **Map**, **Items**, **Skills**, **Chat**, **Config**
   reload all), plus Console (existing log + command box).
 - NPC talk: when `status.talk` is set, show a modal over any tab with messages and buttons.
 - Deal: when `status.deal` is set, show a banner with accept (`deal`) / cancel (`deal no`).
+
+## AI advisor (`POST /kore/chat`)
+Body `{messages:[{role:"user"|"assistant", content}], model?}` -> `{reply, actions:[{label, command}], tools:[names]}` or `{error}`.
+Gateway calls an OpenAI-compatible endpoint (`KORE_AI_URL`, default CLIProxyAPI `http://127.0.0.1:8317/v1`; `KORE_AI_MODEL`, default `gemini-3-flash`; key in `openkore-probe/kore-ai.key`).
+Body may carry `model` (proxy model id; panel picker). Tools: `get_character`, `get_skills`, `read_log`, `get_config` (masked), `read_control_file`, `server_npcs` (shops/warps/Kafras from the Renewal script load order), `find_leveling_maps` / `map_monsters` / `monster_info` (rAthena `npc/re/mobs` spawns + `monsters_table.txt`), `kore_command` (read-only console commands run and return output; anything else becomes an action button the player confirms).
+CLI test: `uv run kore-gateway.py ask "<question>"`.
+
+## Store list
+`store_list`: `[{id, name}]` items marked with `store_next <inv#>` (plugin webstatus): store-only in memory until the next `AI_storage_auto_completed`. Commands: `store_next <inv#> | list | cancel [<inv#>]`, `ic_set <id> <keep> <storage> <sell>` (edits items_control.txt with .bak, reloads).
