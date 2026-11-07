@@ -45,6 +45,12 @@ the WebSocket also need `Origin: https://kore.namike.me`. 403 otherwise.
 - `GET /kore/names/{lang}.json` (`en` = tables/iRO, `zh-tw` = twRO, `zh-cn` = cRO) →
   `{"items":{id:name},"skills":{handle:name}}`; missing names filled from the other two tables.
   The panel's header picker (EN / 繁中 / 简中 / Bot) swaps item and skill names client side.
+- `GET /kore/skillinfo/{lang}.json` (`en` = tables/iRO, `zh-tw` = tables/rooff, `zh-cn` = cRO
+  `skillsdescriptions.txt`) → `{HANDLE:{"max":n|null,"req":text|null,"about":text,"lv":{"1":text,..}}}`,
+  colour codes stripped. Skills window: icon, `Lv x / max`, Use / +, current and next-level text.
+- `GET /kore/skillicon/{handle}.png` — client skill icon (`유저인터페이스/item/<handle>.bmp` from
+  `KORE_ASSET_URL`, default the Ragnarok Offline asset server :3338), magenta → transparent.
+  404 = no icon, 502 = asset server down (not cached).
 
 ## status.json (plugin, written every ~1 s, atomic)
 Existing keys (keep): `time state name lv job_lv job hp hp_max sp sp_max exp exp_max job_exp

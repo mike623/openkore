@@ -120,7 +120,15 @@ textarea{width:100%;padding:6px;font:12px/1.4 var(--mono);resize:vertical}
 .tr.sel{background:var(--sel)}
 .tr .c2{color:var(--dim)}
 .it-grid{grid-template-columns:52px minmax(0,1fr) 80px 110px 150px}
-.sk-grid{grid-template-columns:minmax(0,1fr) 70px 70px 90px 120px}
+.skg{padding-bottom:4px}
+.skr{display:grid;grid-template-columns:28px minmax(0,1fr) auto auto;align-items:center;gap:2px 8px;padding:8px 0;border-bottom:1px dotted var(--kC8C8C8)}
+.skr:last-child{border-bottom:0}
+.ski{width:24px;height:24px;image-rendering:pixelated}
+.skn{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.skl{white-space:nowrap;font-variant-numeric:tabular-nums}
+.skr .skup{width:36px;padding:0;font-weight:600}
+.skd,.skq{grid-column:2/-1;font-size:12px;color:var(--dim);white-space:pre-line}
+.skq{color:var(--fg)}
 .tag.sell{color:var(--kC42B1C);border-color:var(--kC42B1C);font-weight:600}
 .tag.store{color:var(--k0067C0);border-color:var(--k0067C0);font-weight:600}
 .tag{font-size:10px;padding:0 5px;border:1px solid var(--kC8C8C8);border-radius:2px;margin-left:6px;color:var(--k444444);background:var(--kFFFFFF)}
@@ -296,10 +304,8 @@ a.help{display:inline-flex;align-items:center;justify-content:center;min-width:2
   .it-grid{grid-template-columns:40px minmax(0,1fr) 56px}
   .it-grid>.c4,.it-grid>.c5{display:none}
   .tr .sub{display:block;font-size:11px;color:var(--dim);white-space:normal}
-  .it-grid.tr,.sk-grid.tr{min-height:44px;padding:3px 0}
+  .it-grid.tr{min-height:44px;padding:3px 0}
   .tr>span{white-space:normal}
-  .sk-grid{grid-template-columns:minmax(0,1fr) 120px}
-  .sk-grid>.c2,.sk-grid>.c3,.sk-grid>.c4{display:none}
   .stat button{width:44px;height:36px}
   .cfgwrap{flex-direction:column;padding:6px;overflow:auto}
   .cfgside{flex:none;min-width:0}
@@ -1067,27 +1073,54 @@ function renderItems(){
 }
 
 // ---------------------------------------------------------------- skills
+// skill window: icon, Lv x / max, + and Use, current / next level effect from the client descriptions
+const SKINFO = {lang: null, t: null};
+const SK_JOBS = {NV: "Novice", SM: "Swordman", MG: "Mage", AC: "Archer", AL: "Acolyte", MC: "Merchant", TF: "Thief",
+  KN: "Knight", PR: "Priest", WZ: "Wizard", BS: "Blacksmith", HT: "Hunter", AS: "Assassin", CR: "Crusader", MO: "Monk",
+  SA: "Sage", RG: "Rogue", AM: "Alchemist", BA: "Bard", DC: "Dancer", LK: "Lord Knight", HP: "High Priest",
+  HW: "High Wizard", WS: "Whitesmith", SN: "Sniper", ASC: "Assassin Cross", PA: "Paladin", CH: "Champion",
+  PF: "Professor", ST: "Stalker", CG: "Clown / Gypsy", TK: "Taekwon", SG: "Star Gladiator",
+  SL: "Soul Linker", NJ: "Ninja", GS: "Gunslinger"};
+async function loadSkillInfo(){
+  const lang = NAMES.lang === "en" || NAMES.lang === "zh-cn" ? NAMES.lang : "zh-tw";
+  if (SKINFO.lang === lang) return;
+  SKINFO.lang = lang; SKINFO.t = null;
+  const r = await fetch(`/kore/skillinfo/${lang}.json`, {credentials: "include"}).catch(() => null);
+  const j = r && r.ok ? await r.json().catch(() => null) : null;
+  if (SKINFO.lang === lang && obj(j)) { SKINFO.t = j; renderSkills(); }
+}
 function renderSkills(){
-  const s = S, st = obj(s.stats), pts = int(st && st.skill_points_free);
+  loadSkillInfo();
+  const s = S, st = obj(s.stats), pts = int(st && st.skill_points_free), info = SKINFO.t || {};
   $("k-points").textContent = `Skill points: ${pts ?? "-"} · SP ${fmt(s.sp)} / ${fmt(s.sp_max)}`;
   const box = $("k-list-box"), list = arr(s.skills).filter(obj);
-  sec("k-list-box", JSON.stringify([list, pts, Array.isArray(s.skills)]), () => {
+  sec("k-list-box", JSON.stringify([list, pts, Array.isArray(s.skills), !!SKINFO.t]), () => {
     if (!list.length) { fill(box, el("div", {class: "empty"}, Array.isArray(s.skills) ? "No skills" : "Skills not available yet")); return; }
-    fill(box, el("div", {class: "th sk-grid"}, el("span", null, "Skill"), el("span", {class: "c2"}, "Level"), el("span", {class: "c3"}, "SP"), el("span", {class: "c4"}, "Target"), el("span", null, "")),
-      list.map(k => {
-        const h = handleOk(k.handle), lv = int(k.lv) ?? 0, max = int(k.max_lv);
-        const canUse = h && lv > 0 && k.target !== "passive";
-        const sid = int(k.id); // `skills add` takes the skill number, not the handle
-        const canUp = sid != null && (k.up === true || (k.up == null && pts > 0 && (max == null || lv < max)));
-        const lvT = `${lv}${max != null ? " / " + max : ""}`;
-        return el("div", {class: "tr sk-grid"},
-          el("span", null, dash(k.name), el("span", {class: "sub"}, `Lv ${lvT} · ${k.sp != null ? k.sp + " SP" : "-"} · ${str(k.target || "?")}`)),
-          el("span", {class: "c2"}, lvT), el("span", {class: "c2 c3"}, k.sp != null ? str(k.sp) : "-"), el("span", {class: "c2 c4"}, str(k.target || "?")),
-          el("span", {class: "acts-cell"},
-            canUp ? el("button", {type: "button", "aria-label": "Add a skill point", onclick: () => run("skills add " + sid, {confirm: `Add a skill point to ${str(k.name)}?`})}, "+") : null,
-            canUse ? el("button", {type: "button", class: "primary", onclick: () => useSkill(k)}, "Use") : null));
-      }));
+    const groups = new Map();
+    for (const k of list) { const p = str(k.handle).split("_")[0] || "?"; if (!groups.has(p)) groups.set(p, []); groups.get(p).push(k); }
+    fill(box, el("div", {class: "pad"}, [...groups].map(([p, ks]) => el("fieldset", {class: "skg"},
+      el("legend", null, SK_JOBS[p] || p), ks.map(k => skillRow(k, pts, obj(info[k.handle]) || {}))))));
   });
+}
+function skillRow(k, pts, d){
+  const h = handleOk(k.handle), lv = int(k.lv) ?? 0, max = int(k.max_lv) ?? int(d.max);
+  const canUse = h && lv > 0 && k.target !== "passive";
+  const sid = int(k.id); // `skills add` takes the skill number, not the handle
+  const canUp = sid != null && (k.up === true || (k.up == null && pts > 0 && (max == null || lv < max)));
+  const lvs = obj(d.lv) || {}, cur = lv > 0 ? lvs[lv] : null, next = max == null || lv < max ? lvs[lv + 1] : null;
+  const meta = k.target && k.target !== "passive" ? `${k.sp ? k.sp + " SP · " : ""}${str(k.target)}` : null;
+  return el("div", {class: "skr"},
+    el("img", {class: "ski", src: `/kore/skillicon/${encodeURIComponent(str(k.handle))}.png`, alt: "", loading: "lazy", onerror: e => { e.target.style.visibility = "hidden"; }}),
+    el("span", {class: "skn"}, el("b", null, dash(k.name)), meta ? el("small", {class: "dim"}, " " + meta) : null),
+    el("span", {class: "skl"}, `Lv ${lv}${max != null ? " / " + max : ""}`),
+    el("span", {class: "acts-cell"},
+      canUse ? el("button", {type: "button", class: "primary", onclick: () => useSkill(k)}, "Use") : null,
+      el("button", {type: "button", class: "skup", disabled: !canUp, "aria-label": "Add a skill point",
+        onclick: () => run("skills add " + sid, {confirm: `Add a skill point to ${str(k.name)}?`})}, "+")),
+    cur ? el("div", {class: "skd"}, el("span", null, "Current: "), cur) : null,
+    next ? el("div", {class: "skd"}, el("span", null, "Next level: "), next) : null,
+    !cur && !next && d.about ? el("div", {class: "skd"}, str(d.about).split("\n")[0]) : null,
+    lv === 0 && d.req ? el("div", {class: "skq"}, el("span", null, "Requires "), d.req) : null);
 }
 function chooseLevel(k, cb){
   const lv = int(k.lv) ?? 1;

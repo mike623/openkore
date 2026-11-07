@@ -33,6 +33,7 @@ import time
 import zlib
 from pathlib import Path
 
+import aiohttp
 from aiohttp import WSMsgType, web
 
 PUBLIC_HOST = os.environ.get("KORE_PUBLIC_HOST", "kore.namike.me")
@@ -621,6 +622,20 @@ def selftest() -> None:
         hdr = gzip.decompress((FIELDS / "izlude.fld2.gz").read_bytes())[:4]
         assert struct.unpack(">II", real[0][16:24]) == struct.unpack("<HH", hdr) == (real[1], real[2])
         print(f"izlude {real[1]}x{real[2]}, {len(real[0])} bytes")
+    sd = parse_skill_descriptions("AS_X#\n音速投擲(Sonic)\nMAX Lv : 10\n^777777習得條件 : 拳刃修練 4^000000\n"
+                                  "內容 : ^777777快速攻擊\n暈眩^000000\n^ffffff_^000000\n[Lv 1] : ^777777ATK300%^000000\n"
+                                  "[Lv10] : ATK750%\n第二行\n#\nTF_Y#\nHiding\nMax Lv : 10\n#\n")
+    assert sd["AS_X"] == {"max": 10, "req": "拳刃修練 4", "about": "快速攻擊\n暈眩", "lv": {"1": "ATK300%", "10": "ATK750%\n第二行"}}, sd
+    assert sd["TF_Y"]["max"] == 10 and sd["TF_Y"]["lv"] == {}
+    # 3x2 bottom-up 8-bit BMP, palette 0 = magenta (transparent), 1 = red
+    pal = b"\xff\x00\xff\x00" + b"\x00\x00\xff\x00"
+    bmp = b"BM" + struct.pack("<IHHI", 0, 0, 0, 14 + 40 + 8) + struct.pack("<IiiHHIIiiII", 40, 3, 2, 1, 8, 0, 8, 0, 0, 2, 0) \
+        + pal + b"\x01\x00\x01\x00" + b"\x00\x01\x00\x00"
+    ip = bmp8_png(bmp)
+    assert ip[12:16] == b"IHDR" and struct.unpack(">II", ip[16:24]) == (3, 2)
+    assert b"PLTE\xff\x00\xff\xff\x00\x00" in ip and b"tRNS\x00\xff" in ip
+    rows = zlib.decompress(ip[ip.index(b"IDAT") + 4:ip.index(b"IEND") - 8])
+    assert rows == b"\0\x00\x01\x00" + b"\0\x01\x00\x01", rows  # top row first
     print("selftest ok")
 
 
@@ -662,6 +677,110 @@ async def names_get(request: web.Request) -> web.Response:
         names_cache[lang] = json.dumps(tables, ensure_ascii=False).encode()
     return web.Response(body=names_cache[lang], content_type="application/json",
                         headers={"Cache-Control": "private, max-age=86400"})
+
+
+# ---- skill window data -----------------------------------------------------------------------
+# GET /kore/skillinfo/{lang}.json -> {HANDLE: {max, req, about, lv: {"1": text, ...}}} from the client
+# skill descriptions (tables/<server>/skillsdescriptions.txt). GET /kore/skillicon/{handle}.png -> the
+# client's skill icon, fetched from Ragnarok Offline's asset server, magenta made transparent.
+DESC_DIRS = {"en": "iRO", "zh-tw": "rooff", "zh-cn": "cRO"}
+ASSET_URL = os.environ.get("KORE_ASSET_URL", "http://127.0.0.1:3338").rstrip("/")
+ICON_DIR = "data/texture/%EC%9C%A0%EC%A0%80%EC%9D%B8%ED%84%B0%ED%8E%98%EC%9D%B4%EC%8A%A4/item/"  # 유저인터페이스
+skillinfo_cache: dict[str, bytes] = {}
+icon_cache: dict[str, bytes | None] = {}
+COLOR_CODE = re.compile(r"\^[0-9a-fA-F]{6}")
+REQ_LINE = re.compile(r"(習得條件|学习条件|習得条件|Requirement)\s*[:：]\s*(.+)", re.I)
+ABOUT_LINE = re.compile(r"^(內容|内容|Description)\s*[:：]\s*(.*)", re.I)
+LV_LINE = re.compile(r"^\[Lv\s*(\d+)\]\s*[:：]?\s*(.*)", re.I)
+
+
+def parse_skill_descriptions(text: str) -> dict[str, dict]:
+    out = {}
+    for block in text.split("\n#\n"):
+        head, _, body = block.strip("\n").partition("#\n")
+        handle = head.strip()
+        if not re.fullmatch(r"[A-Z0-9_]+", handle):
+            continue
+        info = {"max": None, "req": None, "about": "", "lv": {}}
+        cur = None  # where continuation lines go: "about" or a level key
+        for raw in body.splitlines()[1:]:  # first line is the skill's display name
+            line = COLOR_CODE.sub("", raw).strip()
+            if not line or line == "_":
+                cur = None
+                continue
+            if m := re.match(r"max\s*lv\s*[:：]\s*(\d+)", line, re.I):
+                info["max"] = int(m[1])
+            elif m := REQ_LINE.search(line):
+                info["req"] = m[2].strip()
+            elif m := LV_LINE.match(line):
+                cur = m[1].lstrip("0") or "0"
+                info["lv"][cur] = m[2].strip()
+            elif m := ABOUT_LINE.match(line):
+                cur, info["about"] = "about", m[2].strip()
+            elif cur == "about":
+                info["about"] += "\n" + line
+            elif cur:
+                info["lv"][cur] += "\n" + line
+        out[handle] = info
+    return out
+
+
+async def skillinfo_get(request: web.Request) -> web.Response:
+    if not authed(request):
+        return web.json_response({"error": "forbidden"}, status=403)
+    lang = request.match_info["lang"]
+    if lang not in DESC_DIRS:
+        return web.json_response({"error": "unknown language"}, status=404)
+    if lang not in skillinfo_cache:
+        path = OPENKORE_DIR / "tables" / DESC_DIRS[lang] / "skillsdescriptions.txt"
+        try:
+            info = parse_skill_descriptions(path.read_text("utf-8", "replace").replace("\r\n", "\n"))
+        except OSError:
+            info = {}
+        skillinfo_cache[lang] = json.dumps(info, ensure_ascii=False).encode()
+    return web.Response(body=skillinfo_cache[lang], content_type="application/json",
+                        headers={"Cache-Control": "private, max-age=86400"})
+
+
+def bmp8_png(bmp: bytes) -> bytes:
+    """8-bit palette BMP -> palette PNG; magenta (the client's transparent colour) becomes alpha 0."""
+    if bmp[:2] != b"BM" or struct.unpack_from("<H", bmp, 28)[0] != 8 or struct.unpack_from("<I", bmp, 30)[0]:
+        raise ValueError("not an uncompressed 8-bit BMP")  # ponytail: the client's skill icons are all 8-bit
+    off, dib = struct.unpack_from("<I", bmp, 10)[0], struct.unpack_from("<I", bmp, 14)[0]
+    w, h = struct.unpack_from("<ii", bmp, 18)
+    ncol = struct.unpack_from("<I", bmp, 46)[0] or 256
+    pal = bmp[14 + dib:14 + dib + 4 * ncol]
+    plte = b"".join(bytes((pal[i + 2], pal[i + 1], pal[i])) for i in range(0, len(pal), 4))
+    trns = bytes(0 if plte[i:i + 3] == b"\xff\x00\xff" else 255 for i in range(0, len(plte), 3))
+    stride, rows = (w + 3) & ~3, range(abs(h) - 1, -1, -1) if h > 0 else range(abs(h))
+    raw = b"".join(b"\0" + bmp[off + y * stride:off + y * stride + w] for y in rows)
+    if len(raw) != abs(h) * (w + 1):
+        raise ValueError("truncated BMP")
+    return (b"\x89PNG\r\n\x1a\n" + png_chunk(b"IHDR", struct.pack(">IIBBBBB", w, abs(h), 8, 3, 0, 0, 0))
+            + png_chunk(b"PLTE", plte) + png_chunk(b"tRNS", trns) + png_chunk(b"IDAT", zlib.compress(raw, 9))
+            + png_chunk(b"IEND", b""))
+
+
+async def skillicon_get(request: web.Request) -> web.Response:
+    if not authed(request):
+        return web.json_response({"error": "forbidden"}, status=403)
+    handle = request.match_info["handle"].lower()
+    if not re.fullmatch(r"[a-z0-9_]{2,40}", handle):
+        return web.Response(status=404)
+    if handle not in icon_cache:
+        png = None
+        try:
+            async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=5)) as s:
+                async with s.get(f"{ASSET_URL}/{ICON_DIR}{handle}.bmp") as r:
+                    if r.status == 200:
+                        png = bmp8_png(await r.read())
+        except (aiohttp.ClientError, asyncio.TimeoutError, ValueError, struct.error):
+            return web.Response(status=502)  # asset server down: don't cache, retry next time
+        icon_cache[handle] = png
+    png = icon_cache[handle]
+    if png is None:
+        return web.Response(status=404)
+    return web.Response(body=png, content_type="image/png", headers={"Cache-Control": "private, max-age=604800"})
 
 
 # ---- AI advisor ----------------------------------------------------------------------------
@@ -1312,6 +1431,8 @@ app.router.add_get("/kore/config", config_get)
 app.router.add_post("/kore/config", config_post)
 app.router.add_get("/kore/files", files_get)
 app.router.add_get("/kore/names/{lang}.json", names_get)
+app.router.add_get("/kore/skillinfo/{lang}.json", skillinfo_get)
+app.router.add_get("/kore/skillicon/{handle}.png", skillicon_get)
 app.router.add_get("/kore/file/{name}", file_get)
 app.router.add_post("/kore/file/{name}", file_post)
 app.router.add_get("/kore/map/{field}.png", map_get)
