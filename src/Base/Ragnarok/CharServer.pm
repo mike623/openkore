@@ -177,6 +177,9 @@ sub char_login {
 					mapIP => $host,
 					mapPort => $self->{mapServer}->getPort,
 				}));
+				# rooff: on success leave the socket to the client, as rAthena does
+				# (roBrowser shows a server-side close as "Disconnected from Server").
+				return;
 			}
 		}
 	}

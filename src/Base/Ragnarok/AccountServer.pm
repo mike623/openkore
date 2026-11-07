@@ -119,7 +119,9 @@ sub master_login {
 			accountSex => $session{sex},
 			servers => \@servers,
 		}));
-		$client->close();
+		# rooff: leave the socket to the client, as rAthena does. roBrowser treats a
+		# server-side close here as "Disconnected from Server" and its OK button
+		# returns to the login screen, although the login succeeded.
 
 	} elsif ($result == ACCOUNT_NOT_FOUND) {
 		$client->send($self->{recvPacketParser}->reconstruct({
@@ -259,6 +261,7 @@ sub secure_login_key_request {
 
 sub unhandledMessage {
 	my ($self, $args, $client) = @_;
+	Log::warning(sprintf("XKore2 account server: unhandled packet %s (%s)\n", $args->{switch}, $args->{KEYS} ? join(",", @{$args->{KEYS}}) : ""));
 	$client->close();
 }
 
