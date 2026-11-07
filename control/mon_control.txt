@@ -59,10 +59,10 @@
 
 
 ##### Eggs #####
-Ant's Egg 0 0 0
-PecoPeco's Egg 0 0 0
-Pupa 0 0 0
-Thief Bug's Egg 0 0 0
+1097 0 0 0 # Ant's Egg
+1047 0 0 0 # PecoPeco's Egg
+1008 0 0 0 # Pupa
+1048 0 0 0 # Thief Bug's Egg
 
 ##### Alchemist Summons ####
 # Summoned Parasite
@@ -81,14 +81,14 @@ Thief Bug's Egg 0 0 0
 1590 0 0 0 
 
 ##### Plants #####
-Black Mushroom 0 0 0
-Blue Plant 0 0 0
-Green Plant 0 0 0
-Red Mushroom 0 0 0
-Red Plant 0 0 0
-Shining Plant 0 0 0
-White Plant 0 0 0
-Yellow Plant 0 0 0
+1084 0 0 0 # Black Mushroom
+1079 0 0 0 # Blue Plant
+1080 0 0 0 # Green Plant
+1085 0 0 0 # Red Mushroom
+1078 0 0 0 # Red Plant
+1083 0 0 0 # Shining Plant
+1082 0 0 0 # White Plant
+1081 0 0 0 # Yellow Plant
 
 
 ##### Homunculus #####

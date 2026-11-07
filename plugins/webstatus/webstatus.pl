@@ -357,9 +357,11 @@ sub tick {
 				my $st = $ai_v{npc_talk}{talk} // '';
 				my %sm = (select => 'responses', next => 'next', number => 'number', text => 'text', close => 'close');
 				my $npc = $npcsList && $npcsList->getByID($talk{ID});
+				# zhTW plugin (if loaded) translates for display; responses are still picked by index
+				my $zh = defined &zhTW::lookup ? sub { zhTW::lookup($_[0]) // $_[0] } : sub { $_[0] };
 				return {npc => str($npc ? $npc->name : 'Unknown #' . unpack('V', $talk{ID})),
-					messages => [map { str($_) } @msg], state => $sm{$st} // ($st eq '' ? undef : $st),
-					responses => [map { str($_) } @{$talk{responses} || []}]};
+					messages => [map { str($zh->($_)) } @msg], state => $sm{$st} // ($st eq '' ? undef : $st),
+					responses => [map { str($zh->($_)) } @{$talk{responses} || []}]};
 			});
 			section(\%s, shop => sub {
 				my $st = $ai_v{npc_talk}{talk} // '';
