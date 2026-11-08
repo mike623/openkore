@@ -15,6 +15,7 @@
 package Network::XKore2::MapServer;
 
 use strict;
+use Time::HiRes ();
 use Scalar::Util qw(weaken);
 use Globals qw(
 	$char $field %statusHandle @skillsID @itemsID %items
@@ -45,12 +46,22 @@ sub _weak_hook {
 	};
 }
 
+our $serverTickOffset = 0;
+
 sub new {
 	my $class = shift;
 	my $self = $class->SUPER::new(@_);
 	debug "XKore 2 Map Server started \n";
 	$self->{kore_map_loaded_hook} = Plugins::addHook('packet/map_loaded', _weak_hook($self, \&kore_map_loaded));
 	$self->{kore_disconnected} = Plugins::addHook('disconnected', _weak_hook($self, \&kore_disconnected));
+	# rooff: learn the server tick from the server's answers to Kore's own syncs, and keep those
+	# answers from the client (it would pair them with its own unanswered ping -> wrong tick/ping,
+	# which skews roBrowser's walk start and makes movement stutter).
+	$self->{kore_received_sync} = Plugins::addHook('packet_pre/received_sync', sub {
+		my (undef, $args) = @_;
+		$serverTickOffset = $args->{time} - int(Time::HiRes::time() * 1000);
+		$args->{mangle} = 2;
+	});
 	return $self;
 }
 
@@ -58,7 +69,10 @@ sub DESTROY {
 	my ($self) = @_;
 	Plugins::delHook(delete $self->{kore_map_loaded_hook}) if $self->{kore_map_loaded_hook};
 	Plugins::delHook(delete $self->{kore_disconnected}) if $self->{kore_disconnected};
+	Plugins::delHook(delete $self->{kore_received_sync}) if $self->{kore_received_sync};
 }
+
+sub serverTick { (int(Time::HiRes::time() * 1000) + $serverTickOffset) & 0xFFFFFFFF }
 
 # Overrided method.
 sub onClientNew {
@@ -876,7 +890,7 @@ sub map_login {
 		shiftPack(\$coords, 0, 4);
 		$client->send($self->{recvPacketParser}->reconstruct({
 			switch => 'map_loaded',
-			syncMapSync => int time,
+			syncMapSync => serverTick(),
 			coords => $coords,
 		}));
 	}
@@ -904,11 +918,11 @@ sub quit_request {
 
 sub sync {
 	my ($self, $args, $client) = @_;
-	# my $data = $self->{recvPacketParser}->reconstruct({
-			# switch => 'received_sync',
-			# time => getTickCount
-		# });
-	#$client->send($data);
+	# rooff: answer the client's ping ourselves with the server's tick (was swallowed unanswered).
+	$client->send($self->{recvPacketParser}->reconstruct({
+		switch => 'received_sync',
+		time => serverTick(),
+	}));
 	$args->{mangle} = 2;
 }
 
