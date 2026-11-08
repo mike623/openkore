@@ -337,7 +337,8 @@ sub tick {
 					push @m, {name => str($u->{name}), map => $me ? $s{map} : defined $u->{map} ? ($u->{map} =~ s/\.(gat|rsw)$//r) : undef,
 						x => num($me ? $s{x} : $u->{pos}{x}), y => num($me ? $s{y} : $u->{pos}{y}),
 						hp => num($me ? $char->{hp} : $u->{hp}), hp_max => num($me ? $char->{hp_max} : $u->{hp_max}),
-						online => bool($me || $u->{online}), leader => bool($u->{admin})};
+						online => bool($me || $u->{online}), leader => bool($u->{admin}),
+						lv => num($me ? $char->{lv} : $u->{lv}), job => do { my $j = $me ? $char->{jobID} : $u->{jobID}; defined $j ? str($jobs_lut{$j} // $j) : undef }};
 				}
 				return {name => str($p->{name}), members => \@m};
 			});

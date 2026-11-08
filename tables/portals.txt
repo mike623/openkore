@@ -401,7 +401,7 @@ spl_fild02 103 30 spl_fild03 99 370
 spl_fild03 99 373 spl_fild02 102 32
 # rooff-stale spl_fild02 289 374 spl_fild01 291 36
 # rooff-stale spl_fild01 291 28 spl_fild02 286 369
-spl_fild02 6 243 splendide 383 251
+spl_fild02 6 241 splendide 383 251
 splendide 388 251 spl_fild02 11 243
 splendide 170 168 spl_in01 190 301
 spl_in01 190 299 splendide 170 166
@@ -604,7 +604,7 @@ alberta 65 233 alberta_in 14 141
 alberta 93 205 alberta_in 114 130
 alberta 98 153 alberta_in 189 89
 alberta 99 221 alberta_in 125 160
-alberta 117 38 alberta_in 180 34
+alberta 117 38 alberta_in 180 30
 alberta 170 170 alb_ship 26 166
 alberta 178 165 alb_ship 41 163
 alberta 209 173 alb_ship 160 171
@@ -626,7 +626,7 @@ alberta_in 125 160 alberta 99 221
 alberta_in 152 186 alberta_in 114 183
 alberta_in 159 153 alberta_in 114 49
 alberta_in 159 175 alberta_in 114 97
-alberta_in 180 34 alberta 117 38
+alberta_in 180 34 alberta 117 42
 alberta_in 189 89 alberta 98 153
 # rooff-stale alde_dun01 167 158 c_tower2 142 283
 alde_dun01 292 306 alde_dun02 43 20
@@ -883,7 +883,7 @@ cmd_fild05 148 19 cmd_fild06 150 380
 # rooff-stale cmd_fild06 151 27 cmd_fild07 149 379
 # rooff-stale cmd_fild06 368 96 cmd_fild08 15 102
 # rooff-stale cmd_fild06 372 359 cmd_fild08 25 355
-cmd_fild06 379 174 cmd_fild08 25 170
+cmd_fild06 379 174 cmd_fild08 28 166
 # rooff-stale cmd_fild07 149 379 cmd_fild06 151 27
 # rooff-stale cmd_fild07 389 186 cmd_fild09 12 170
 # rooff-stale cmd_fild08 15 102 cmd_fild06 368 96
@@ -950,10 +950,10 @@ ein_fild06 251 365 yuno_fild04 249 25
 ein_fild07 144 362 ein_fild06 135 39
 # rooff-stale ein_fild07 183 43 ein_fild10 196 368
 ein_fild08 164 380 einbroch 150 28
-ein_fild08 361 129 ein_fild09 37 135
+ein_fild08 363 128 ein_fild09 37 135
 ein_fild09 71 352 einbech 62 32
-ein_fild09 34 135 ein_fild08 358 130
-ein_fild09 328 344 ein_fild10 28 330
+ein_fild09 34 132 ein_fild08 358 130
+ein_fild09 329 346 ein_fild10 28 330
 ein_fild10 25 330 ein_fild09 325 344
 # rooff-stale ein_fild10 196 371 ein_fild07 179 46
 gef_dun00 104 103 gef_tower 153 28
@@ -1035,7 +1035,7 @@ gef_tower 42 86 gef_tower 38 160
 gef_tower 44 36 gef_tower 106 158
 # rooff-stale gef_tower 52 135 gef_tower 158 174
 gef_tower 52 181 geffen 120 114
-gef_tower 60 34 gef_tower 62 87
+gef_tower 60 32 gef_tower 62 87
 gef_tower 62 87 gef_tower 60 34
 gef_tower 66 156 gef_tower 42 86
 gef_tower 106 69 gef_tower 106 115
@@ -1351,7 +1351,7 @@ izlude_in 172 139 izlude_in 172 158
 izlude_in 172 158 izlude_in 172 139
 juperos_01 51 249 jupe_cave 29 52
 # rooff-stale jupe_cave 147 52 yuno_fild07 202 175
-jupe_cave 29 52 juperos_01 54 246
+jupe_cave 26 52 juperos_01 54 246
 lhz_cube 231 12 lighthalzen 310 302
 lhz_cube 231 96 lhz_dun02 220 6
 lhz_dun01 149 9 lhz_dun02 153 19
@@ -1362,7 +1362,7 @@ lhz_dun02 224 6 lhz_cube 231 90
 # rooff-stale lhz_dun02 149 149 lhz_dun03 140 133
 lhz_dun03 139 137 lhz_dun02 149 142
 # rooff-stale lhz_dun02 283 153 lhz_dun01 281 154
-lhz_dun02 17 153 lhz_dun01 18 150
+lhz_dun02 17 156 lhz_dun01 18 150
 # rooff-stale lhz_dun02 146 19 lhz_dun02 17 156
 # rooff-stale lhz_dun02 17 156 lhz_dun02 159 33
 lhz_dun02 146 19 lhz_dun01 144 9
@@ -1422,7 +1422,7 @@ mjo_dun02 384 343 mjo_dun01 14 283
 mjo_dun03 302 264 mjo_dun02 31 21
 mjo_dun03 308 264 mjo_dun02 39 21
 mjolnir_01 284 18 gef_fild04 261 362
-mjolnir_01 381 256 mjolnir_02 28 258
+mjolnir_01 378 256 mjolnir_02 28 258
 # rooff-stale mjolnir_02 28 258 mjolnir_01 381 256
 mjolnir_02 79 365 mjo_dun01 52 14
 mjolnir_02 326 289 mjolnir_03 21 258
@@ -1517,7 +1517,7 @@ moc_fild07 198 21 morocc 160 297
 moc_fild11 26 161 moc_fild12 289 168
 moc_fild11 212 29 moc_fild17 218 369
 moc_fild12 118 30 moc_fild18 158 382
-moc_fild12 159 381 morocc 160 17
+moc_fild12 159 381 morocc 160 20
 moc_fild12 289 168 moc_fild11 26 161
 moc_fild13 146 368 moc_fild02 71 18
 moc_fild13 298 370 moc_fild02 228 29
@@ -1551,7 +1551,7 @@ moc_pryd04 184 11 moc_pryd03 184 11
 moc_pryd04 188 184 moc_pryd03 188 184
 moc_pryd05 94 98 moc_prydb1 100 55
 moc_pryd05 223 9 moc_pryd06 195 8
-moc_pryd06 195 8 moc_pryd05 223 9
+moc_pryd06 197 10 moc_pryd05 223 9
 moc_prydb1 59 115 moc_prydb1 87 115
 moc_prydb1 87 115 moc_prydb1 59 115
 moc_prydb1 100 55 moc_pryd05 94 98
@@ -1620,7 +1620,7 @@ nif_fild01 344 322 nif_fild02 22 311
 # rooff-stale nif_fild02 373 235 niflheim 19 154
 nif_fild02 22 311 nif_fild01 344 322
 niflheim 189 210 nif_in 23 11
-niflheim 19 154 nif_fild02 378 235
+niflheim 18 151 nif_fild02 378 235
 orcsdun01 32 172 in_orcs01 30 182
 orcsdun01 183 8 orcsdun02 21 188
 orcsdun02 21 188 orcsdun01 183 8
@@ -1634,7 +1634,7 @@ payon 151 127 payon_in01 56 53
 payon 136 158 payon_in01 20 129
 payon 130 169 payon_in01 13 139
 payon 189 233 payon_in03 149 39
-payon 187 233 payon_in03 149 39
+payon 189 233 payon_in03 149 39
 payon 270 152 payon_in01 90 9
 pay_arche 36 131 pay_dun00 21 186
 pay_arche 81 17 payon 228 329
@@ -1656,9 +1656,9 @@ pay_fild01 13 152 moc_fild03 303 170
 pay_fild01 278 14 pay_fild02 83 386
 # rooff-stale pay_fild01 353 14 pay_fild02 167 390
 # rooff-stale pay_fild01 379 201 pay_fild07 16 200
-pay_fild01 333 361 payon 122 27
+pay_fild01 333 360 payon 122 31
 #pay_fild02 16 175 pay_fild11 297 135
-pay_fild02 83 386 pay_fild01 278 14
+pay_fild02 83 386 pay_fild01 278 18
 # rooff-stale pay_fild02 134 16 pay_fild05 127 378
 pay_fild02 167 390 pay_fild01 353 14
 # rooff-stale pay_fild02 284 108 pay_fild03 15 110
@@ -1690,7 +1690,7 @@ pay_gld 121 238 payg_cas01 214 44
 pay_gld 140 156 payg_cas04 252 275
 pay_gld 204 270 payg_cas05 62 223
 pay_gld 291 116 payg_cas02 276 61
-pay_gld 321 293 payg_cas03 226 22
+pay_gld 323 293 payg_cas03 226 22
 pay_gld 374 149 payon 19 143
 payg_cas01 214 44 pay_gld 121 233
 payg_cas01 201 126 payg_cas01 102 21
@@ -1715,7 +1715,7 @@ payg_cas02 215 31 payg_cas02 65 288
 payg_cas02 65 292 payg_cas02 215 35
 payg_cas02 47 223 payg_cas02 280 287
 payg_cas02 280 291 payg_cas02 47 227
-payg_cas02 254 239 payg_cas02 13 38
+payg_cas02 254 241 payg_cas02 13 38
 payg_cas02 13 42 payg_cas02 254 243
 payg_cas03 226 22 pay_gld 317 293
 payg_cas03 255 76 payg_cas03 24 19
@@ -1811,7 +1811,7 @@ payon_in02 70 33 payon_in02 61 33
 payon_in02 75 67 payon_in02 10 25
 payon_in02 82 45 pay_arche 71 156
 payon_in03 172 33 payon_in03 160 14
-payon_in03 160 15 payon_in03 172 35
+payon_in03 160 17 payon_in03 172 35
 payon_in03 147 39 payon 186 233
 # rooff-stale payon_in03 158 32 payon 189 233
 payon_in03 130 17 payon_in03 158 32
@@ -1828,11 +1828,11 @@ prontera 74 90 prt_in 248 173
 prontera 84 89 prt_in 282 179
 prontera 107 215 prt_in 240 141
 prontera 120 267 prt_in 183 97
-prontera 132 222 prt_in 135 71
+prontera 134 221 prt_in 131 71
 prontera 133 183 prt_in 53 105
 prontera 156 22 prt_fild08 170 375
 # rooff-stale prontera 156 360 prt_castle 102 16
-prontera 177 221 prt_in 168 124
+prontera 177 221 prt_in 168 128
 prontera 179 184 prt_in 60 77
 prontera 192 267 prt_in 181 55
 prontera 204 192 prt_in 68 130
@@ -1954,8 +1954,8 @@ prt_in 70 143 prt_in 70 162
 prt_in 70 162 prt_in 70 143
 prt_in 80 113 prontera 45 346
 prt_in 82 65 prt_in 69 65
-prt_in 135 71 prontera 132 222
-prt_in 168 124 prontera 177 221
+prt_in 135 71 prontera 136 219
+prt_in 168 124 prontera 174 218
 prt_in 172 33 prontera 208 154
 prt_in 181 55 prontera 192 267
 prt_in 183 97 prontera 120 267
@@ -2231,7 +2231,7 @@ umbala 107 118 um_in 15 20
 #umbala 140 197 nif_in 68 14
 um_dun01 42 27 umbala 106 285
 um_dun01 149 198 um_dun02 52 22
-um_dun02 52 22 um_dun01 149 198
+um_dun02 55 19 um_dun01 149 198
 # rooff-stale um_dun02 126 162 yggdrasil01 38 63
 # rooff-stale um_fild01 31 374 beach_dun2 258 244
 um_fild01 369 277 um_fild02 22 272
@@ -2254,14 +2254,14 @@ um_in 99 63 umbala 107 130
 um_in 141 39 umbala 94 183
 um_in 11 18 umbala 107 118
 um_in 166 69 umbala 100 203
-yggdrasil01 27 195 yggdrasil01 270 52
+yggdrasil01 26 193 yggdrasil01 270 52
 yggdrasil01 270 52 yggdrasil01 27 195
-yggdrasil01 248 259 nif_fild01 316 67
+yggdrasil01 249 262 nif_fild01 316 67
 yuno 48 105 yuno_in01 40 176
 yuno 48 151 yuno_in01 34 100
 yuno 87 321 yuno_in02 172 61
 yuno 117 135 yuno_in01 116 40
-yuno 158 13 yuno_fild04 231 288
+yuno 158 15 yuno_fild04 231 288
 yuno 196 138 yuno_in01 32 36
 yuno 245 147 yuno_in01 101 85
 yuno 264 87 yuno_in01 168 104
@@ -2273,7 +2273,7 @@ yuno_fild01 208 18 aldebaran 140 243
 # rooff-stale yuno_fild01 27 247 yuno_fild12 366 244
 yuno_fild01 70 378 yuno_fild09 70 19
 yuno_fild01 286 368 yuno_fild09 280 30
-yuno_fild02 19 340 yuno_fild03 382 331
+yuno_fild02 18 337 yuno_fild03 382 331
 yuno_fild02 117 375 hu_fild04 122 35
 yuno_fild02 69 23 yuno_fild08 75 375
 # rooff-stale yuno_fild02 287 16 yuno_fild08 285 385
@@ -2281,11 +2281,11 @@ yuno_fild03 20 79 yuno_fild04 374 82
 # rooff-stale yuno_fild03 20 162 yuno_fild04 374 149
 yuno_fild03 33 140 mag_dun01 125 67
 yuno_fild03 382 331 yuno_fild02 19 340
-yuno_fild03 179 16 yuno_fild07 179 352
+yuno_fild03 179 15 yuno_fild07 179 354
 yuno_fild03 178 15 yuno_fild07 179 351
 # rooff-stale yuno_fild03 21 162 yuno_fild04 371 147
 yuno_fild04 231 288 yuno 158 13
-yuno_fild04 374 82 yuno_fild03 20 79
+yuno_fild04 375 84 yuno_fild03 20 79
 # rooff-stale yuno_fild04 374 149 yuno_fild03 21 162
 # rooff-stale yuno_fild04 42 370 yuno_fild05 61 33
 # rooff-stale yuno_fild04 249 22 ein_fild06 255 358
@@ -2294,12 +2294,12 @@ yuno_fild05 61 29 yuno_fild04 42 366
 yuno_fild07 179 353 yuno_fild03 179 17
 # rooff-stale yuno_fild07 352 292 yuno_fild08 27 275
 yuno_fild07 360 72 yuno_fild08 35 61
-yuno_fild07 57 79 ein_fild06 352 95
+yuno_fild07 56 76 ein_fild06 352 95
 # rooff-stale yuno_fild07 92 28 yuno_fild11 91 369
 yuno_fild07 208 175 jupe_cave 143 52
 yuno_fild07 179 354 yuno_fild03 178 15
 yuno_fild08 31 58 yuno_fild07 357 75
-yuno_fild08 24 275 yuno_fild07 348 288
+yuno_fild08 20 278 yuno_fild07 352 291
 # rooff-stale yuno_fild08 134 29 yuno_fild12 197 371
 yuno_fild08 75 375 yuno_fild02 72 28
 # rooff-stale yuno_fild08 285 385 yuno_fild02 290 20
@@ -2331,7 +2331,7 @@ yuno_in03 25 11 yuno 278 293
 yuno_in03 25 56 yuno_in03 32 89
 yuno_in03 32 89 yuno_in03 25 56
 yuno_in03 66 186 yuno_in03 153 134
-yuno_in03 96 62 yuno_in03 223 167
+yuno_in03 96 58 yuno_in03 223 167
 yuno_in03 104 115 yuno_in03 219 50
 yuno_in03 111 192 yuno_in03 162 129
 yuno_in03 124 178 yuno_in03 173 118
@@ -2666,7 +2666,7 @@ lhz_airport 160 14 lhz_airport 48 20
 lhz_airport 48 18 lhz_airport 162 14
 lighthalzen 267 76 lhz_airport 143 15
 lhz_airport 143 13 lighthalzen 265 76
-lhz_airport 143 63 lighthalzen 296 76
+lhz_airport 142 60 lighthalzen 296 76
 # rooff-stale lighthalzen 294 76 lhz_airport 143 60
 # rooff-stale lighthalzen 308 76 airplane 224 64
 y_airport 125 14 y_airport 19 20
@@ -2747,7 +2747,7 @@ ein_fild08 23 275 lhz_fild03 361 283
 # rooff-stale sch_gld 293 91 schg_cas01 276 243
 # rooff-stale schg_cas01 276 241 sch_gld 293 95
 # rooff-stale sch_gld 288 256 schg_cas02 340 73
-schg_cas02 340 69 sch_gld 288 253
+schg_cas02 339 73 sch_gld 288 253
 sch_gld 98 182 schg_cas03 338 332
 # rooff-stale schg_cas03 338 335 sch_gld 98 187
 # rooff-stale sch_gld 138 96 schg_cas04 276 243
@@ -3006,7 +3006,7 @@ s_atelier 131 75 rachel 180 118
 # rooff-stale s_atelier 159 130 s_atelier 108 129
 s_atelier 108 129 s_atelier 159 125
 yuno 278 67 s_atelier 109 123
-s_atelier 105 123 yuno 275 67
+s_atelier 107 122 yuno 275 67
 # rooff-stale s_atelier 80 66 s_atelier 32 64
 s_atelier 32 64 s_atelier 80 63
 lighthalzen 41 52 s_atelier 18 75
@@ -3022,7 +3022,7 @@ einbroch 175 196 einbroch 216 188 0 c c r0
 einbroch 137 199 que_ng 138 167
 que_ng 130 166 einbroch 130 197
 que_ng 178 162 que_ng 176 86
-que_ng 170 85 que_ng 182 161
+que_ng 166 85 que_ng 182 161
 que_ng 165 137 que_ng 177 41
 que_ng 172 42 que_ng 160 139
 
@@ -5015,5 +5015,8 @@ odin_tem01 93 146 hugel 206 109 0 c r1
 # rooff: script entrances (re/cities/lutie.txt Mr. Claus, re/warps/dungeons/iz_dun.txt Gatekeeper, warps/dungeons/pay_dun.txt random touch warp)
 aldebaran 168 168 xmas_fild01 78 68 0 c r1 c c c
 iz_dun04 130 234 iz_dun05 141 187 0 c c r0
-pay_dun03 127 62 pay_dun04 201 204
+# rooff-stale pay_dun03 127 62 pay_dun04 201 204
 iz_dun05 142 190 iz_dun04 129 232 0 c r0
+
+# rooff: walk portals from this server's warp NPCs (warpsync.py)
+s_atelier 160 130 s_atelier 114 129

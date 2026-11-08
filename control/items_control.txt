@@ -425,7 +425,6 @@ Animal Poop 0 0 1
 1028 0 0 1 # Mane
 1032 0 0 1 # Maneater Blossom
 1033 0 0 1 # Maneater Root
-1031 0 0 1 # Mantis Scythe
 7035 0 0 1 # Matchstick
 517 0 0 1 # Meat
 934 0 0 1 # Memento
@@ -1767,3 +1766,6 @@ Spearman Scroll 10 0 0 0
 22542 0 0 0 # [Event] Concentration Potion
 757 0 1 0 # 에르늄 원석
 991 0 1 0 # 크리스탈 블루
+1031 0 0 1 # 螳螂臂
+722 0 0 1 # 珍珠
+726 0 0 1 # 藍寶石

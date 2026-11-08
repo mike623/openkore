@@ -25,7 +25,7 @@ for w in warps.values(): srv.setdefault(w[0], []).append(w)
 lines = P.read_text("utf-8", "surrogateescape").split("\n")
 L = re.compile(r"^([a-z0-9_@-]+) (\d+) (\d+) ([a-z0-9_@-]+) (\d+) (\d+)\s*$", re.I)  # plain walk portals only
 near = lambda a, b: abs(a[0]-b[0]) <= 4 and abs(a[1]-b[1]) <= 4
-out, stale, have = [], [], set()
+out, stale, have, moved = [], [], set(), []
 for line in lines:
     m = L.match(line)
     if m and m.group(1) in srv:
@@ -33,11 +33,16 @@ for line in lines:
         dx, dy = int(dx), int(dy)
         hit = [w for w in srv[s] if w[3] == d and near((x, y), w[1:3]) and near((dx, dy), w[4:6])]
         if hit:
-            have.add(hit[0]); out.append(line); continue
+            w = hit[0]; have.add(w)
+            if abs(x - w[1]) > 1 or abs(y - w[2]) > 1:  # warp span is ~1 cell: 4 off never triggers -> snap
+                moved.append(f"{line}  ->  {w[1]} {w[2]}")
+                out.append(f"{s} {w[1]} {w[2]} {d} {dx} {dy}"); continue
+            out.append(line); continue
         stale.append(line); out.append("# rooff-stale " + line); continue
     out.append(line)
 missing = [w for ws in srv.values() for w in ws if w not in have]
-print(f"server warps {len(warps)}, ok {len(have)}, stale lines {len(stale)}, missing {len(missing)}")
+print(f"server warps {len(warps)}, ok {len(have)}, moved {len(moved)}, stale lines {len(stale)}, missing {len(missing)}")
+for m in moved[:40]: print("  moved  ", m)
 for s in stale[:15]: print("  stale  ", s)
 for w in [w for w in missing if w[0] in ('comodo','beach_dun3','cmd_fild01','cmd_fild02','izlude','prontera','morocc')][:20]: print("  missing", *w)
 if sys.argv[1:] == ["apply"]:

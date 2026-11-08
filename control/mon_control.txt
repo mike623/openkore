@@ -220,3 +220,4 @@
 1648 -1 1 0 #Whitesmith Harword
 1917 -1 1 0 #Wounded Morroc
 1658 -1 1 0 #Ygnizem
+1368 0 0 0 # Geographer 邪惡向日葵

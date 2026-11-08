@@ -3,12 +3,12 @@
 
 ######## Login options and server-specific options ########
 
-master
-server
+master Ragnarok Offline (local)
+server 0
 username
 password
 loginPinCode
-char
+char 0
 otpSeed
 
 # Poseidon Settings: https://openkore.com/wiki/Poseidon
@@ -22,7 +22,7 @@ forceMapIP
 
 # 1 = hook into RO client, 2 = Act as stand-alone proxy, proxy = act as true proxy
 # https://openkore.com/wiki/XKore
-XKore 0
+XKore 2
 XKore_port 2350
 XKore_dll NetRedirect.dll
 XKore_injectDLL 1
@@ -33,15 +33,15 @@ XKore_bypassBotDetection 0
 XKore_exeName ragexe.exe
 
 # XKore 2 / Proxy configuration
-XKore_listenIp 127.0.0.1
+XKore_listenIp 0.0.0.0
 XKore_listenPort 6901
-XKore_listenPort_map
-XKore_listenPort_char
+XKore_listenPort_map 6903
+XKore_listenPort_char 6902
 XKore_publicIp 127.0.0.1
 XKore_ID
 
 # It is not advised to set secureAdminPassword if you're using Xkore 2
-secureAdminPassword 1
+secureAdminPassword 0
 adminPassword
 callSign
 commandPrefix ;
@@ -208,13 +208,13 @@ itemsGatherAuto_notInTown 0
 itemsGatherAutoMinPlayerDistance 6
 itemsGatherAutoMinPortalDistance 5
 itemsMaxWeight 89
-itemsMaxWeight_sellOrStore 48
+itemsMaxWeight_sellOrStore 75
 itemsMaxNum_sellOrStore 99
 cartMaxWeight 7900
 itemsTakeGreed 0
 itemsCheckWeight 1
 
-lockMap
+lockMap cmd_fild06
 lockMap_x
 lockMap_y
 lockMap_randX
@@ -268,7 +268,7 @@ runFromTarget_noAttackMethodFallback 0
 runFromTarget_noAttackMethodFallback_attackMaxDist 14
 runFromTarget_noAttackMethodFallback_minStep 8
 
-saveMap
+saveMap izlude
 saveMap_x
 saveMap_y
 saveMap_warp 0
@@ -299,18 +299,18 @@ sitAuto_look_from_wall
 sitAuto_look_delay
 sitTensionRelax 0
 
-statsAddAuto 0
-statsAddAuto_list
-statsAddAuto_dontUseBonus 0
+statsAddAuto 1
+statsAddAuto_list 95 agi, 60 dex, 99 agi
+statsAddAuto_dontUseBonus 1
 statsAdd_over_99 1
 
-skillsAddAuto 0
-skillsAddAuto_list
+skillsAddAuto 1
+skillsAddAuto_list AS_KATAR 10, AS_CLOAKING 5
 
 tankMode 0
 tankModeTarget
 
-teleportAuto_hp 10
+teleportAuto_hp 40
 teleportAuto_sp 0
 teleportAuto_idle 0
 teleportAuto_portal 0
@@ -410,7 +410,7 @@ sleepTime 10000
 
 ignoreAll 0
 itemHistory 0
-autoTalkCont 1
+autoTalkCont 0
 noAutoSkill 0
 portalCompile 1
 portalRecord 2
@@ -602,8 +602,8 @@ pet_return 20
 # You can copy & paste any block multiple times. So if you want to
 # configure two attack skills, just duplicate the attackSkillSlot block.
 
-attackSkillSlot {
-	lvl
+attackSkillSlot 52 {
+	lvl 10
 	dist 1
 	maxDist 1
 	maxCastTime 0
@@ -724,22 +724,23 @@ equipAuto {
 	# [checkMonsterCondition]
 }
 
-useSelf_item {
+useSelf_item 569 {
+	hp < 90%
 	dcOnEmpty 0
 	# [checkSelfCondition]
 }
 
 ######## Autostorage/autosell ########
 
-buyAuto {
-	npc
+buyAuto 602 {
+	npc izlude_in 57 110
 	npc_steps b
 	isMarket 0
 	standpoint
 	distance 3
 	price
 	minAmount 2
-	maxAmount 3
+	maxAmount 10
 	batchSize
 	onlyIdentified
 	zeny
@@ -749,16 +750,16 @@ buyAuto {
 	# [checkSelfCondition]
 }
 
-sellAuto 0
-sellAuto_npc
+sellAuto 1
+sellAuto_npc izlude 128 158
 sellAuto_standpoint
 sellAuto_distance 3
 sellAuto_maxDistance
 sellAuto_npc_steps s
 
-storageAuto 0
+storageAuto 1
 storageAuto_onStart 0
-storageAuto_npc
+storageAuto_npc izlude 128 148
 storageAuto_standpoint
 storageAuto_distance 3
 storageAuto_maxDistance
@@ -778,9 +779,9 @@ minStorageZeny 50
 npcTimeResponse
 npcWrongStepsMethod 0
 
-getAuto {
-	minAmount
-	maxAmount
+getAuto 501 {
+	minAmount 10
+	maxAmount 50
 	batchSize
 	passive
 	dcOnEmpty 0
@@ -991,3 +992,46 @@ avoidObstaclesDefaultPortals {
 #	target_isAIMode_TakesFixed_1_Damage_None 0
 #}
 
+macro_orphans terminate
+buyAuto_1 501
+buyAuto_1_npc_steps b
+buyAuto_1_npc izlude_in 57 110
+buyAuto_1_minAmount 10
+buyAuto_1_maxAmount 50
+useSelf_item_1 501
+useSelf_item_1_hp < 50%
+useSelf_item_2 601
+useSelf_item_2_hp < 20%
+getAuto_0_storage 1
+getAuto_1 601
+getAuto_1_minAmount 1
+getAuto_1_storage 1
+getAuto_1_maxAmount 10
+getAuto_2 602
+getAuto_2_maxAmount 10
+getAuto_2_minAmount 1
+getAuto_2_storage 1
+attackSkillSlot_0_sp > 15%
+useSelf_item_3 11614
+useSelf_item_3_hp < 60%
+useSelf_item_4 11518
+useSelf_item_4_sp < 30%
+useSelf_item_5 0
+useSelf_item_5_inLockOnly 1
+useSelf_item_5_timeout 1800
+
+######## RO Offline companions (plugins/companions) ########
+comp_autoSummon 1
+comp_stanceTown
+comp_stanceField
+comp_partyName
+attackSkillSlot_1 136
+attackSkillSlot_1_timeout 0
+attackSkillSlot_1_stopWhenHit 0
+attackSkillSlot_1_sp > 33
+attackSkillSlot_1_hp > 20%
+attackSkillSlot_1_minCastTime 0
+attackSkillSlot_1_maxCastTime 0
+attackSkillSlot_1_lvl 10
+attackSkillSlot_1_dist 1
+attackSkillSlot_1_maxDist 1

@@ -400,7 +400,7 @@ html[data-skin=ro] .dlg{border-color:var(--ro-win);background:#F4F6FB}
 
       <!-- AI ADVISOR -->
       <section class="page" id="p-ai" role="tabpanel">
-        <div class="tb"><button type="button" id="ai-q1">Where should I level?</button><button type="button" id="ai-q2">Spend my skill points?</button><span class="grow"></span><select id="ai-model" title="AI model (via CLIProxyAPI)"><option value="gemini-3-flash">Gemini 3 Flash</option><option value="claude-sonnet-5">Claude Sonnet 5</option><option value="claude-haiku-4-5-20251001">Claude Haiku 4.5</option></select><button type="button" id="ai-sid" title="Copy session ID (full log in logs/ai-sessions/)">Copy ID</button><button type="button" id="ai-clear">Clear</button></div>
+        <div class="tb"><button type="button" id="ai-q1">Where should I level?</button><button type="button" id="ai-q2">Spend my skill points?</button><span class="grow"></span><select id="ai-model" title="AI model (via CLIProxyAPI)"></select><button type="button" id="ai-sid" title="Copy session ID (full log in logs/ai-sessions/)">Copy ID</button><button type="button" id="ai-clear">Clear</button></div>
         <div id="ailog" role="log" aria-label="AI advisor"></div>
         <form id="ai-form" class="tb"><input id="ai-in" autocomplete="off" placeholder="Ask about maps, skills, stats, gear…" style="flex:1"><button id="ai-send">Ask</button></form>
       </section>
@@ -752,7 +752,7 @@ async function poll(){
   try {
     const r = await fetch("/kore/status", {credentials: "include", cache: "no-store"});
     if (r.status === 403) { gate(); return; }
-    render(await r.json());
+    const st = await r.json(); botMenu(st); render(st);
   } catch (e) { render({state: "offline"}); }
   setTimeout(poll, mapVisible() ? 1000 : 2000);
 }
@@ -1635,6 +1635,17 @@ const MENUS = [
     mi("Config options", null, {fn: url("https://openkore.com/wiki/Category:Config.txt")}), mi("Forum", null, {fn: url("https://forums.openkore.com/")})]],
 ];
 let menuOpen = null;
+// View > Bot: pick which OpenKore instance the whole panel shows (gateway reads cookie kore-bot)
+let botsShown = "";
+function botMenu(st){
+  const bots = arr(st.bots), key = bots.join() + "|" + st.bot;
+  if (bots.length < 2 || key === botsShown) return;
+  botsShown = key;
+  const items = MENUS.find(m => m[0] === "View")[1];
+  for (let i = items.length; i--;) if (items[i].bot) items.splice(i, 1);
+  items.unshift(...bots.map(b => mi("Bot: " + b, null, {bot: true, check: () => st.bot === b, fn: () => {
+    document.cookie = "kore-bot=" + b + "; path=/; max-age=31536000; secure; samesite=strict"; location.reload(); }})), Object.assign({bot: true}, SEP));
+}
 fill($("mb-menus"), MENUS.map(([title], n) => el("button", {type: "button", class: "mb", id: "mb-" + n, "aria-haspopup": "menu",
   onclick: () => menuOpen === n ? closeMenu() : openMenu(n),
   onpointerenter: e => { if (menuOpen != null && menuOpen !== n && e.pointerType === "mouse") openMenu(n); }}, title)));
@@ -1906,7 +1917,16 @@ async function aiAsk(q){
 $("ai-form").onsubmit = e => { e.preventDefault(); const v = $("ai-in").value; $("ai-in").value = ""; aiAsk(v); };
 $("ai-q1").onclick = () => aiAsk("Where should I level next? Rank 3 maps for my character.");
 $("ai-q2").onclick = () => aiAsk("How should I spend my free skill and stat points?");
-$("ai-model").value = store("kp-ai-model") || "gemini-3-flash";
+// Models come from the AI endpoint's /models list (gateway GET /kore/models), not a hardcoded list.
+// Called once the session cookie is valid (after login), else the gateway answers 403.
+function loadModels() {
+  fetch("/kore/models", {credentials: "include", cache: "no-store"}).then(r => r.json()).then(d => {
+    if (!d.models) return;
+    const sel = $("ai-model"), want = store("kp-ai-model");
+    sel.replaceChildren(...d.models.map(id => new Option(id, id)));
+    sel.value = d.models.includes(want) ? want : d.default;
+  }).catch(() => {});
+}
 $("ai-model").onchange = e => store("kp-ai-model", e.target.value);
 $("ai-clear").onclick = () => { AI.msgs = []; AI.sid = newSid(); $("ailog").replaceChildren(); };
 $("ai-sid").onclick = async () => {
@@ -1978,7 +1998,7 @@ $("h-lang").onchange = e => { const ui = (NAMES.lang === "zh-tw") !== (e.target.
   authed = true;
   render(await r.json().catch(() => ({state: "offline"})));
   setTimeout(poll, 2000);
-  connect(); loadNames();
+  connect(); loadNames(); loadModels();
 })();
 </script>
 <script>

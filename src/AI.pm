@@ -315,9 +315,16 @@ sub ai_partyfollow {
 			&& timeOut($ai_v{master}{time}, 15)
 			&& blockDistance(\%master, $char->{pos_to}) > $config{followDistanceMax}
 		);
+		# rooff: master on another map and our route to it was dropped/failed -> re-plan every 15s
+		# (stock only re-routes when the master's map changes, so one failed route = stuck forever)
+		my $masterElsewhereNoRoute = (
+			$master{map} ne $field->name
+			&& timeOut($ai_v{master}{time}, 15)
+			&& !AI::inQueue("route", "mapRoute", "move")
+		);
 
 		# Compare map names including InstanceID
-		if ($masterMovedFar || $masterMapChanged || $masterTimedOutFar) {
+		if ($masterMovedFar || $masterMapChanged || $masterTimedOutFar || $masterElsewhereNoRoute) {
 
 			if (exists $master{x}) {
 				$ai_v{master}{x} = $master{x};

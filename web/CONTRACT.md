@@ -21,6 +21,7 @@ the WebSocket also need `Origin: https://kore.namike.me`. 403 otherwise.
 ## Existing routes (unchanged)
 - `GET /` — the panel.
 - `GET /kore/status` — `logs/status.json` (below), or `{"state":"offline"}`.
+- Bot choice: cookie `kore-bot=<name>` (panel View > Bot) points every /kore/* route at that instance: main = `logs/`+`control/`; `<name>` = `logs-<name>/`+`control-<name>/` (both must exist), console log `../kore-<name>.log`. Status adds `bots` (list) and `bot` (current).
 - `GET /kore/console` (WS) — server→browser `{"ev":"output","type","message","domain"}`,
   `{"ev":"title","title"}`, `{"ev":"inputted","data"}`, `{"ev":"error","message"}`;
   browser→server `{"input":"<console command>"}`.

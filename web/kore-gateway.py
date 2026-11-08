@@ -9,7 +9,8 @@ works unchanged:
   POST /_friend/exchange {"invite": TOKEN}  -> session cookie
   GET  /ws/<host>:<port> (WebSocket)        -> raw TCP to OpenKore at KORE_HOST:<port>
   GET  /                                    -> kore-panel.html (bot control panel)
-  GET  /kore/status                         -> OPENKORE_DIR/logs/status.json (session required)
+  GET  /kore/status                         -> <bot logs>/status.json + bots list (cookie kore-bot picks the bot)
+  GET  /kore/models                        -> chat models from KORE_AI_URL/models
   POST /kore/chat                          -> AI advisor (tools over game data; KORE_AI_URL/MODEL)
   GET  /kore/console (WebSocket)            -> OpenKore Bus console at OPENKORE_DIR/logs/console.socket
 
@@ -20,6 +21,7 @@ usage: uv run kore-gateway.py [selftest | cmd "<console command>" | ask "<questi
 """
 
 import asyncio
+import contextvars
 import gzip
 import hmac
 import json
@@ -44,6 +46,34 @@ COOKIE = "__Host-ro-friend"
 OPENKORE_DIR = Path(os.environ.get("OPENKORE_DIR", Path(__file__).resolve().parent.parent))
 PANEL = Path(__file__).with_name("kore-panel.html")
 ORIGIN = f"https://{PUBLIC_HOST}"
+
+# Which bot the panel looks at: cookie kore-bot (View > Bot). main = logs/ + control/; any other
+# instance runs with --control=control-<name> --logs=logs-<name>, its console in ../kore-<name>.log.
+BOTS = {"main": ("logs", "control", "kore.log")} | {
+    p.name[8:]: (f"logs-{p.name[8:]}", p.name, f"kore-{p.name[8:]}.log")
+    for p in OPENKORE_DIR.glob("control-*") if (OPENKORE_DIR / f"logs-{p.name[8:]}").is_dir()}
+BOT = contextvars.ContextVar("bot", default="main")
+
+
+def logs_dir() -> Path:
+    return OPENKORE_DIR / BOTS[BOT.get()][0]
+
+
+def control_dir() -> Path:
+    return OPENKORE_DIR / BOTS[BOT.get()][1]
+
+
+def console_txt() -> Path:
+    logs = sorted(logs_dir().glob("console_*_0.txt"), key=lambda p: p.stat().st_mtime)
+    return logs[-1] if logs else logs_dir() / "console.txt"
+
+
+@web.middleware
+async def pick_bot(request: web.Request, handler):
+    bot = request.cookies.get("kore-bot", "main")
+    BOT.set(bot if bot in BOTS else "main")
+    return await handler(request)
+
 
 invite_file = Path(__file__).with_name("kore-gateway.invite")
 if not invite_file.exists():
@@ -182,9 +212,10 @@ async def status(request: web.Request) -> web.Response:
     if not authed(request):
         return web.json_response({"error": "forbidden"}, status=403)
     try:
-        data = json.loads((OPENKORE_DIR / "logs" / "status.json").read_text())
+        data = json.loads((logs_dir() / "status.json").read_text())
     except (OSError, ValueError):
         data = {"state": "offline"}
+    data |= {"bots": list(BOTS), "bot": BOT.get()}
     return web.json_response(data, headers={"Cache-Control": "no-store"})
 
 
@@ -192,8 +223,6 @@ async def status(request: web.Request) -> web.Response:
 # Edits control/config.txt in place. Settings mode changes top-level `key value` lines only; raw
 # mode replaces the whole file. Credentials never leave the Mac: their values are masked on read
 # and the masked line is restored from disk on write, and the web can't change them.
-CONFIG = OPENKORE_DIR / "control" / "config.txt"
-BACKUPS = OPENKORE_DIR / "control" / "backups"
 MASK = "********"
 SECRET = re.compile(r"password|passwd|pincode|username|otpseed|secret|token", re.I)
 config_lock = asyncio.Lock()
@@ -259,18 +288,18 @@ def check_raw(text: str) -> None:
 def backup_names(stem: str) -> list[str]:
     """Backups of control/<stem>.txt, newest first."""
     pattern = re.compile(re.escape(stem) + r"-\d{8}-\d{6}\.txt")
-    if not BACKUPS.exists():
+    if not (control_dir() / "backups").exists():
         return []
-    return sorted((p.name for p in BACKUPS.iterdir() if pattern.fullmatch(p.name)), reverse=True)
+    return sorted((p.name for p in (control_dir() / "backups").iterdir() if pattern.fullmatch(p.name)), reverse=True)
 
 
 def write_backed_up(path: Path, stem: str, text: str) -> str:
     """Copy path to backups/<stem>-YYYYmmdd-HHMMSS.txt (keep 20), then atomically replace it."""
-    BACKUPS.mkdir(exist_ok=True)
+    (control_dir() / "backups").mkdir(exist_ok=True)
     name = time.strftime(f"{stem}-%Y%m%d-%H%M%S.txt")
-    shutil.copy2(path, BACKUPS / name)
+    shutil.copy2(path, (control_dir() / "backups") / name)
     for old in backup_names(stem)[20:]:  # keep the last 20
-        (BACKUPS / old).unlink()
+        ((control_dir() / "backups") / old).unlink()
     tmp = path.with_suffix(".txt.tmp")
     tmp.write_bytes(text.encode("utf-8", "surrogateescape"))
     os.replace(tmp, path)
@@ -278,12 +307,12 @@ def write_backed_up(path: Path, stem: str, text: str) -> str:
 
 
 def write_config(text: str) -> str:
-    return write_backed_up(CONFIG, "config", text)
+    return write_backed_up(control_dir() / "config.txt", "config", text)
 
 
 async def kore_command(cmd: str) -> bool:
     try:
-        _, writer = await asyncio.open_unix_connection(str(OPENKORE_DIR / "logs" / "console.socket"))
+        _, writer = await asyncio.open_unix_connection(str(logs_dir() / "console.socket"))
     except OSError:
         return False
     writer.write(bus_encode("set active"))  # OpenKore ignores input from a client that isn't active
@@ -294,7 +323,7 @@ async def kore_command(cmd: str) -> bool:
 
 
 def read_config() -> str:
-    return CONFIG.read_bytes().decode("utf-8", "surrogateescape")
+    return (control_dir() / "config.txt").read_bytes().decode("utf-8", "surrogateescape")
 
 
 async def config_get(request: web.Request) -> web.Response:
@@ -333,7 +362,7 @@ async def config_post(request: web.Request) -> web.Response:
                     lines[where[key]] = f"{key} {value.strip()}".rstrip()
                 new = "\n".join(lines)
             elif isinstance(body.get("restore"), str) and re.fullmatch(r"config-\d{8}-\d{6}\.txt", body["restore"]):
-                new = (BACKUPS / body["restore"]).read_bytes().decode("utf-8", "surrogateescape")
+                new = ((control_dir() / "backups") / body["restore"]).read_bytes().decode("utf-8", "surrogateescape")
             else:
                 raise ValueError("nothing to save")
         except (ValueError, OSError) as e:
@@ -346,7 +375,6 @@ async def config_post(request: web.Request) -> web.Response:
 
 
 # ---- other control files ----------------------------------------------------------------------
-CONTROL = OPENKORE_DIR / "control"
 CONTROL_FILES = ("mon_control.txt items_control.txt pickupitems.txt shop.txt buyer_shop.txt timeouts.txt "
                  "priority.txt routeweights.txt chat_resp.txt responses.txt avoid.txt arrowcraft.txt "
                  "consolecolors.txt").split()
@@ -357,13 +385,13 @@ def control_file(name: str) -> Path | None:
     """The control file for an allowlisted name, else None (no paths, no config.txt)."""
     if not re.fullmatch(r"[a-z_]+\.txt", name) or name not in CONTROL_FILES:
         return None
-    return CONTROL / name
+    return control_dir() / name
 
 
 async def files_get(request: web.Request) -> web.Response:
     if not authed(request):
         return web.json_response({"error": "forbidden"}, status=403)
-    files = [{"name": n, "size": (CONTROL / n).stat().st_size} for n in CONTROL_FILES if (CONTROL / n).is_file()]
+    files = [{"name": n, "size": (control_dir() / n).stat().st_size} for n in CONTROL_FILES if (control_dir() / n).is_file()]
     return web.json_response({"files": files}, headers={"Cache-Control": "no-store"})
 
 
@@ -400,7 +428,7 @@ async def file_post(request: web.Request) -> web.Response:
                 new = body["text"].replace("\r\n", "\n")
             elif isinstance(body.get("restore"), str) and re.fullmatch(re.escape(stem) + r"-\d{8}-\d{6}\.txt",
                                                                        body["restore"]):
-                new = (BACKUPS / body["restore"]).read_bytes().decode("utf-8", "surrogateescape")
+                new = ((control_dir() / "backups") / body["restore"]).read_bytes().decode("utf-8", "surrogateescape")
             else:
                 raise ValueError("nothing to save")
             if len(new.encode("utf-8", "surrogateescape")) > MAX_TEXT:
@@ -482,7 +510,7 @@ async def console(request: web.Request) -> web.StreamResponse:
     ws = web.WebSocketResponse(heartbeat=30)
     await ws.prepare(request)
     try:
-        reader, writer = await asyncio.open_unix_connection(str(OPENKORE_DIR / "logs" / "console.socket"))
+        reader, writer = await asyncio.open_unix_connection(str(logs_dir() / "console.socket"))
     except OSError:
         await ws.send_json({"ev": "error", "message": "OpenKore not running with --interface=Socket"})
         await ws.close()
@@ -568,7 +596,7 @@ def selftest() -> None:
     assert prefer_ids("ic_set Nope Thing 0 1 0")[1]
     assert hp_percent("conf -f useSelf_item_1_hp < 40") == "conf -f useSelf_item_1_hp < 40%"
     assert hp_percent("conf useSelf_item_1_hp < 400") == "conf useSelf_item_1_hp < 400"
-    if '"id": 6008' in (OPENKORE_DIR / "logs" / "status.json").read_text():
+    if '"id": 6008' in (logs_dir() / "status.json").read_text():
         assert prefer_ids("ic_set Wood 0 1 0")[0] == "ic_set 6008 0 1 0", prefer_ids("ic_set Wood 0 1 0")
     for c, ro in (("s", True), ("conf lockMap", True), ("conf lockMap x", False), ("skills", True), ("skills add 5", False),
                   ("storage", True), ("storage get 1", False), ("quest list", True), ("move prontera", False), ("ai off", False),
@@ -602,7 +630,7 @@ def selftest() -> None:
             raise AssertionError(bad)
         except ValueError:
             pass
-    assert control_file("mon_control.txt") == CONTROL / "mon_control.txt"
+    assert control_file("mon_control.txt") == control_dir() / "mon_control.txt"
     for bad in ("config.txt", "../config.txt", "mon_control.txt/..", "/etc/passwd", "sys.txt", "MON_CONTROL.TXT",
                 "mon_control.txt\0", "..", "", "control/mon_control.txt", "mon_control.txt.bak"):
         assert control_file(bad) is None, bad
@@ -837,7 +865,7 @@ Items in config (useSelf_item, buyAuto, getAuto...): write the exact English ite
 show it, e.g. 'Green Potion'); the gateway converts it to the item ID the bot needs. Never type an ID from memory.
 RULES: only use conf keys that get_config shows or that are listed here; never invent keys or step codes.
 If a fact (save point, coordinates) isn't in tool output, say so instead of guessing.
-- storageAuto 1 + storageAuto_npc <map x y> (+ storageAuto_npc_type 3 for Renewal Kafras): store items_control storage=1.
+- storageAuto 1 + storageAuto_npc <map x y> (storageAuto_npc_type 1 = Kafra 'c r1'; never set type 3, it needs storageAuto_npc_steps and loops forever without them): store items_control storage=1.
 - useSelf_item / useSelf_skill blocks with hp/sp conditions (e.g. 'conf useSelf_item_0 Novice Potion', 'conf useSelf_item_0_hp < 50').
   Before editing, get_config('useSelf_item') to reuse an empty block or the next free index, and pick items the player
   actually has (get_character usable_items). NEW blocks: always add_config_block (it picks the free index); use
@@ -900,9 +928,9 @@ AI_TOOLS = [
          "kind": {"type": "string", "enum": ["any", "field", "dungeon"], "description": "default any"},
          "avoid_aggressive": {"type": "boolean", "description": "skip maps where most in-range monsters are aggressive"}},
          "required": ["min_level", "max_level"]}},
-    {"name": "map_monsters", "description": "All monsters that spawn on one map (e.g. prt_fild07), with level, HP, race, element, size, aggressive, count.",
+    {"name": "map_monsters", "description": "All monsters that spawn on one map (e.g. prt_fild07), with level, HP, race, element, size, aggressive, count; zh = the Chinese name shown in the log/game.",
      "parameters": {"type": "object", "properties": {"map": {"type": "string"}}, "required": ["map"]}},
-    {"name": "monster_info", "description": "Stats of a monster by name or id, and the maps where it spawns.",
+    {"name": "monster_info", "description": "Stats of a monster by English or Chinese (zh) name or id, and the maps where it spawns.",
      "parameters": {"type": "object", "properties": {"monster": {"type": "string"}}, "required": ["monster"]}},
     {"name": "read_log", "description": "Recent OpenKore console log (kore.log), newest last. Use to diagnose: why it sells, "
      "where it walks, stuck routes, NPC talk loops, errors. Optional regex filter (case-insensitive).",
@@ -955,6 +983,11 @@ def ai_data() -> dict:
             mobs[int(r["ID"])] = {"id": int(r["ID"]), "name": r["Name"], "level": int(r["Level"] or 0), "hp": int(r["Hp"] or 0),
                                   "race": r["Race"], "element": f'{r["Element"]} {r["ElementLevel"]}', "size": r["Size"],
                                   "aggressive": r.get("isAIMode_Aggressive") == "1", "mvp": r.get("isAIMode_MVP") == "1"}
+    zh = OPENKORE_DIR / "tables" / "rooff-zh" / "monsters.txt"  # Chinese names the log/user use
+    for line in (zh.read_text("utf-8-sig", "replace").splitlines() if zh.is_file() else []):
+        i, _, n = line.strip().partition(" ")
+        if i.isdigit() and int(i) in mobs and n:
+            mobs[int(i)]["zh"] = n.strip()
     spawns: dict[str, dict] = {}  # map -> {"kind", "mobs": {id: count}}
     for f in sorted(SPAWNS_DIR.rglob("*.txt")):
         kind = "dungeon" if "dungeon" in f.parts else "field"
@@ -1008,7 +1041,7 @@ def find_leveling_maps(min_level: int, max_level: int, kind: str = "any", avoid_
 
 def ai_companions() -> dict:
     try:
-        s = json.loads((OPENKORE_DIR / "logs" / "status.json").read_text())
+        s = json.loads((logs_dir() / "status.json").read_text())
     except (OSError, ValueError):
         return {"error": "bot offline"}
     c = s.get("companions") or {}
@@ -1018,7 +1051,7 @@ def ai_companions() -> dict:
         rx = re.compile("|".join(map(re.escape, names)))
         ev = re.compile(r"死亡|died|Died|離隊|left|加入|joined|summon|召喚")
         try:
-            lines = (OPENKORE_DIR / "logs" / "console_ragnarok_0.txt").read_text("utf-8", "replace").splitlines()[-20000:]
+            lines = (console_txt()).read_text("utf-8", "replace").splitlines()[-20000:]
         except OSError:
             lines = []
         events = [l[:160] for l in lines if rx.search(l) and ev.search(l) and "@CP|" not in l][-25:]
@@ -1031,7 +1064,7 @@ def ai_companions() -> dict:
 
 def ai_character() -> dict:
     try:
-        s = json.loads((OPENKORE_DIR / "logs" / "status.json").read_text())
+        s = json.loads((logs_dir() / "status.json").read_text())
     except (OSError, ValueError):
         return {"error": "bot offline"}
     items = ai_data()["items"]
@@ -1048,7 +1081,7 @@ def ai_character() -> dict:
 
 def ai_skills() -> list:
     try:
-        s = json.loads((OPENKORE_DIR / "logs" / "status.json").read_text())
+        s = json.loads((logs_dir() / "status.json").read_text())
     except (OSError, ValueError):
         return [{"error": "bot offline"}]
     names = ai_data()["skills"]
@@ -1061,7 +1094,7 @@ LOG_NOISE = re.compile(r"^(Player |\[dist=|Monster .* is casting Emotion|Process
 
 
 def read_log(match: str = "", lines: int = 40) -> str:
-    path = OPENKORE_DIR.parent / "kore.log"
+    path = OPENKORE_DIR.parent / BOTS[BOT.get()][2]
     with path.open("rb") as f:
         f.seek(max(0, path.stat().st_size - 400_000))
         text = ANSI.sub("", f.read().decode("utf-8", "replace"))
@@ -1195,7 +1228,7 @@ def item_ids(value: str) -> tuple[str, list[str]]:
     # no English name but the same Chinese one). Expand a match through every language's name for it.
     owned = set()
     try:
-        owned = {str(it["id"]) for it in json.loads((OPENKORE_DIR / "logs" / "status.json").read_text()).get("inventory", [])}
+        owned = {str(it["id"]) for it in json.loads((logs_dir() / "status.json").read_text()).get("inventory", [])}
     except (OSError, ValueError):
         pass
     if "names_to_ids" not in d:
@@ -1338,8 +1371,8 @@ async def run_tool(name: str, args: dict, actions: list) -> object:
                 "monsters": sorted((_mob(i, c) for i, c in e["mobs"].items()), key=lambda x: x.get("level", 0))} if e else {"error": "no spawns on that map"}
     if name == "monster_info":
         q = str(args.get("monster", "")).strip().lower()
-        hit = [m for m in d["mobs"].values() if str(m["id"]) == q or m["name"].lower() == q] or \
-              [m for m in d["mobs"].values() if q and q in m["name"].lower()][:5]
+        hit = [m for m in d["mobs"].values() if q in (str(m["id"]), m["name"].lower(), m.get("zh", ""))] or \
+              [m for m in d["mobs"].values() if q and (q in m["name"].lower() or q in m.get("zh", ""))][:5]
         return [m | {"maps": sorted(k for k, e in d["spawns"].items() if m["id"] in e["mobs"])[:15]} for m in hit[:5]] or {"error": "unknown monster"}
     if name == "read_log":
         return read_log(str(args.get("match", "")), int(args.get("lines") or 40))
@@ -1454,7 +1487,24 @@ async def ai_ask(messages: list, model: str | None = None, lang: str = "en", con
     return {"reply": "(no answer after the last round)", "actions": actions, "tools": used}
 
 
-AI_SESSIONS = OPENKORE_DIR / "logs" / "ai-sessions"  # ponytail: never pruned; delete the folder when it grows
+AI_SESSIONS = logs_dir() / "ai-sessions"  # ponytail: never pruned; delete the folder when it grows
+
+
+async def models_get(request: web.Request) -> web.Response:
+    """Chat models the AI endpoint offers (OpenAI /models), default first."""
+    if not authed(request):
+        return web.json_response({"error": "forbidden"}, status=403)
+    import aiohttp
+    key = AI_KEY_FILE.read_text().strip() if AI_KEY_FILE.exists() else ""
+    try:
+        async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=10)) as http:
+            async with http.get(f"{AI_URL}/models", headers={"Authorization": f"Bearer {key}"}) as r:
+                ids = [m["id"] for m in (await r.json(content_type=None)).get("data", [])]
+    except Exception as e:
+        return web.json_response({"default": AI_MODEL, "models": [AI_MODEL], "error": str(e)[:200]})
+    # ponytail: name heuristic drops non-chat models; add an env allowlist if it guesses wrong
+    ids = sorted({i for i in ids if not re.search(r"tts|voice|image|video|veo|embed|whisper|audio|review", i)})
+    return web.json_response({"default": AI_MODEL, "models": [AI_MODEL] + [i for i in ids if i != AI_MODEL]})
 
 
 async def chat_post(request: web.Request) -> web.Response:
@@ -1466,7 +1516,7 @@ async def chat_post(request: web.Request) -> web.Response:
     except (ValueError, KeyError, TypeError):
         return web.json_response({"error": "bad request"}, status=400)
     try:
-        model = body.get("model") if re.fullmatch(r"[\w.\-]{1,64}", str(body.get("model") or "")) else None
+        model = body.get("model") if re.fullmatch(r"[\w.:/\-]{1,128}", str(body.get("model") or "")) else None
         lang = str(body.get("lang") or "en") if re.fullmatch(r"[A-Za-z-]{2,16}", str(body.get("lang") or "")) else "en"
         sid = str(body.get("session") or "")
         convo: list = []
@@ -1483,7 +1533,7 @@ async def chat_post(request: web.Request) -> web.Response:
         return web.json_response({"error": f"AI unreachable: {e}"}, status=502)
 
 
-app = web.Application()
+app = web.Application(middlewares=[pick_bot])
 app.router.add_post("/_friend/exchange", exchange)
 app.router.add_get("/ws/{target}", socket)
 app.router.add_get("/", panel)
@@ -1499,11 +1549,12 @@ app.router.add_get("/kore/file/{name}", file_get)
 app.router.add_post("/kore/file/{name}", file_post)
 app.router.add_get("/kore/map/{field}.png", map_get)
 app.router.add_post("/kore/chat", chat_post)
+app.router.add_get("/kore/models", models_get)
 
 async def kore_capture(cmd: str, wait: float = 2.0) -> str:
     """Run one console command and return what OpenKore prints within `wait` s (ongoing bot
     chatter included)."""
-    reader, writer = await asyncio.open_unix_connection(str(OPENKORE_DIR / "logs" / "console.socket"))
+    reader, writer = await asyncio.open_unix_connection(str(logs_dir() / "console.socket"))
     writer.write(bus_encode("set active"))
     writer.write(bus_encode("input", {"data": cmd}))
     await writer.drain()

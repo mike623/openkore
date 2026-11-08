@@ -56,3 +56,4 @@ tables/**/monsters.txt
 /web/*.log
 /web/__pycache__/
 /src/auto/XSTools/XSTools.bundle
+/logs-aria
