@@ -423,10 +423,14 @@ sub send_monsters {
 		shiftPack(\$coords, $monster->{pos_to}{x}, 10);
 		shiftPack(\$coords, $monster->{pos_to}{y}, 10);
 		shiftPack(\$coords, $monster->{look}{body}, 4);
+		# roBrowser never asks for a mob's name (only on hover), so a blank one shows as "[]"
+		# in the battle log. Send the name the server gave; pack keeps it at the fixed size.
+		my $mobName = $monster->{name_given};
+		$mobName = '' if !defined $mobName || $mobName eq 'Unknown';
 		$data .= $self->{recvPacketParser}->reconstruct({
 			switch => 'actor_exists',
-			# 09FF's name is a fixed 24 bytes (108 in all): a shorter one panics the client. Blank: it asks the server.
-			name => pack('a23', ''),
+			# 09FF's name is a fixed 24 bytes (108 in all): a shorter one panics the client.
+			name => pack('a23', stringToBytes($mobName)),
 			walk_speed => $monster->{walk_speed} * 1000,
 			coords => $coords,
 			map { $_ => $monster->{$_} } qw(object_type ID opt1 opt2 option type lv)
