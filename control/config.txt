@@ -5,8 +5,8 @@
 
 master Ragnarok Offline (local)
 server 0
-username
-password
+username ragnarok
+!include secrets.txt
 loginPinCode
 char 0
 otpSeed
@@ -38,11 +38,11 @@ XKore_listenPort 6901
 XKore_listenPort_map 6903
 XKore_listenPort_char 6902
 XKore_publicIp 127.0.0.1
+XKore_skipPassword 1
 XKore_ID
 
 # It is not advised to set secureAdminPassword if you're using Xkore 2
 secureAdminPassword 0
-adminPassword
 callSign
 commandPrefix ;
 callSignGM 0

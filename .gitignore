@@ -57,3 +57,4 @@ tables/**/monsters.txt
 /web/__pycache__/
 /src/auto/XSTools/XSTools.bundle
 /logs-aria
+/control*/secrets.txt

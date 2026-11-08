@@ -5,7 +5,7 @@
 
 master Ragnarok Offline (local)
 server 0
-username
+username Aria
 password
 loginPinCode
 char 0

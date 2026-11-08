@@ -5,8 +5,8 @@
 
 master Ragnarok Offline (local)
 server 0
-username
-password
+username Aria
+!include secrets.txt
 loginPinCode
 char 0
 otpSeed
@@ -42,7 +42,6 @@ XKore_ID
 
 # It is not advised to set secureAdminPassword if you're using Xkore 2
 secureAdminPassword 1
-adminPassword
 callSign
 commandPrefix ;
 callSignGM 0
